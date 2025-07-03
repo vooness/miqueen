@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Star, ChevronLeft, ChevronRight, Award, Crown, Zap, TrendingUp, Wine } from "lucide-react";
 
 interface Wine {
@@ -247,10 +248,13 @@ const FeaturedWinesSection: React.FC = () => {
                           
                           {/* Obrázek vína s hover zoom efektem */}
                           <div className="absolute inset-0 flex items-center justify-center p-6 overflow-hidden">
-                            <img 
+                            <Image 
                               src="/vino.png" 
                               alt={wine.name}
+                              width={400}
+                              height={600}
                               className="w-full h-full object-contain group-hover:scale-125 transition-transform duration-500 ease-out"
+                              priority={false}
                             />
                           </div>
                           

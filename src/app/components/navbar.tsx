@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Wine, ChevronDown, ShoppingBag, ChevronRight, Facebook, Instagram, Mail } from 'lucide-react';
+import { X, Wine, ChevronDown, ShoppingBag, ChevronRight, Facebook, Instagram, Mail } from 'lucide-react';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -10,7 +10,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 1); // Ztmaví se okamžitě po prvním pixelu scrollu
+      setIsScrolled(window.scrollY > 1);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -30,7 +30,7 @@ const Navbar = () => {
       ]
     },
     { label: 'Novinky', href: '#news' },
-    { label: 'Adoptuj vinohrad', href: '#adopt' }, // Normální link bez speciálního stylu
+    { label: 'Adoptuj vinohrad', href: '#adopt' },
     { label: 'Kontakt', href: '#contact' }
   ];
 
@@ -48,7 +48,7 @@ const Navbar = () => {
 
   return (
     <>
-      {/* NAVBAR - úplně čistý a průhledný, pozadí se objeví okamžitě při scrollu */}
+      {/* NAVBAR */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         isScrolled || isMobileMenuOpen
           ? 'bg-black/90 backdrop-blur-xl shadow-2xl' 
@@ -57,7 +57,7 @@ const Navbar = () => {
         <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-24 xl:px-32">
           <div className="flex items-center justify-between h-16 sm:h-20 lg:h-24">
             
-            {/* Logo - dál od kraje na desktopu */}
+            {/* Logo */}
             <div className="flex items-center group cursor-pointer flex-shrink-0">
               <div className="relative">
                 <div className="absolute inset-0 bg-amber-600 rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300" style={{ backgroundColor: '#ab8754' }}></div>
@@ -75,7 +75,7 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* Desktop Navigation - vycentrovaný */}
+            {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center justify-center flex-1">
               <div className="flex items-center space-x-8 xl:space-x-12">
                 {navItems.map((item, index) => (
@@ -134,7 +134,7 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* E-shop tlačítko - úplně vpravo */}
+            {/* E-shop button */}
             <div className="hidden lg:flex items-center flex-shrink-0">
               <button className="relative group">
                 <div className="absolute inset-0 bg-amber-600 rounded-full blur opacity-40 group-hover:opacity-70 transition-opacity duration-300" style={{ backgroundColor: '#ab8754' }}></div>
@@ -145,7 +145,7 @@ const Navbar = () => {
               </button>
             </div>
 
-            {/* Mobile menu button - animovaný hamburger */}
+            {/* Mobile menu button */}
             <div className="lg:hidden">
               <button 
                 onClick={toggleMobileMenu}

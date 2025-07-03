@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import { Award, Leaf, MapPin, Users, Calendar, Wine, Star, Crown, Trophy, Sparkles } from "lucide-react";
 
 const AboutWinerySection: React.FC = () => {
@@ -139,10 +140,13 @@ const AboutWinerySection: React.FC = () => {
             {/* Obrázek nad příběhem - pokud je nastaven */}
             {storyImageUrl && (
               <div className="relative overflow-hidden rounded-2xl lg:rounded-3xl shadow-2xl mb-8">
-                <img 
+                <Image 
                   src={storyImageUrl} 
                   alt="Náš příběh - Vinařství MiQueen" 
+                  width={800}
+                  height={320}
                   className="w-full h-64 sm:h-72 lg:h-80 object-cover"
+                  priority={false}
                 />
                 {/* Overlay pro lepší kontrast */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
