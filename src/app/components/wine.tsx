@@ -1,319 +1,420 @@
-"use client";
+"use client"
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Star, ChevronLeft, ChevronRight, Award, Crown, Zap, TrendingUp, Wine } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight, Sparkles, Droplets, Cherry, Grape, Wine, Package, ShoppingCart, X, Thermometer, MapPin, ChefHat, User, ChevronDown } from "lucide-react";
+import { getWinesByCategory, getWineCountByCategory, WineProduct } from "./wineData";
 
-interface Wine {
-  id: number;
-  name: string;
-  variety: string;
-  vintage: number;
-  rating: number;
-  reviews: number;
-  badge: 'bestseller' | 'award' | 'limited' | 'trending';
-  volume: number;
-  description: string;
-}
-
-const FeaturedWinesSection: React.FC = () => {
+const WineCollectionSection: React.FC = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [itemsPerView, setItemsPerView] = useState(5);
+  const [selectedWine, setSelectedWine] = useState<WineProduct | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const featuredWines: Wine[] = [
-    {
-      id: 1,
-      name: "Mikulovská Královna",
-      variety: "Riesling",
-      vintage: 2023,
-      rating: 4.8,
-      reviews: 247,
-      badge: 'bestseller',
-      volume: 750,
-      description: "Výjimečné bílé víno s minerální strukturou a elegantním doznívání"
-    },
-    {
-      id: 2,
-      name: "Královský Vintage",
-      variety: "Pinot Noir",
-      vintage: 2021,
-      rating: 4.9,
-      reviews: 189,
-      badge: 'award',
-      volume: 750,
-      description: "Oceněné červené víno s prestižní medailí a sametovými taniny"
-    },
-    {
-      id: 3,
-      name: "Sunset Reserve",
-      variety: "Rosé Selection",
-      vintage: 2023,
-      rating: 4.7,
-      reviews: 156,
-      badge: 'limited',
-      volume: 750,
-      description: "Limitovaná edice našeho prémiového rosé z nejlepších vinic"
-    },
-    {
-      id: 4,
-      name: "Celebration Frizzante",
-      variety: "Chardonnay",
-      vintage: 2022,
-      rating: 4.7,
-      reviews: 203,
-      badge: 'trending',
-      volume: 750,
-      description: "Elegantní šumivé víno s přírodním perlením a jemnou chutí"
-    },
-    {
-      id: 5,
-      name: "Zlaté Rulandské",
-      variety: "Rulandské bílé",
-      vintage: 2022,
-      rating: 4.8,
-      reviews: 134,
-      badge: 'award',
-      volume: 750,
-      description: "Prémiové víno s bohatou chutí a komplexní strukturou"
-    },
-    {
-      id: 6,
-      name: "Mini Kolekce Set",
-      variety: "Degustační set",
-      vintage: 2023,
-      rating: 4.9,
-      reviews: 421,
-      badge: 'bestseller',
-      volume: 1875,
-      description: "Degustační set našich nejlepších vín v elegantním balení"
-    },
-    {
-      id: 7,
-      name: "Perla Moravy",
-      variety: "Sauvignon Blanc",
-      vintage: 2023,
-      rating: 4.6,
-      reviews: 98,
-      badge: 'trending',
-      volume: 750,
-      description: "Svěží víno s intenzivní ovocnou vůní a živou kyselinkou"
-    },
-    {
-      id: 8,
-      name: "Barrique Selection",
-      variety: "Cabernet Sauvignon",
-      vintage: 2019,
-      rating: 4.8,
-      reviews: 167,
-      badge: 'award',
-      volume: 750,
-      description: "Prémiové víno zrálé v francouzských dubových sudech"
-    }
-  ];
-
-  // Duplikace pro nekonečný loop
-  const infiniteWines = [...featuredWines, ...featuredWines, ...featuredWines];
-  const totalWines = featuredWines.length;
-
-  // Auto-play každé 3 sekundy
+  // Responzivní počet viditelných produktů
   useEffect(() => {
-    if (isAutoPlaying) {
-      const interval = setInterval(() => {
-        setCurrentIndex(prev => prev + 1);
-      }, 3000);
-      return () => clearInterval(interval);
-    }
-  }, [isAutoPlaying]);
+    const handleResize = () => {
+      if (typeof window === 'undefined') return;
+      
+      if (window.innerWidth < 640) {
+        setItemsPerView(1);
+      } else if (window.innerWidth < 768) {
+        setItemsPerView(2);
+      } else if (window.innerWidth < 1024) {
+        setItemsPerView(3);
+      } else if (window.innerWidth < 1280) {
+        setItemsPerView(4);
+      } else {
+        setItemsPerView(5);
+      }
+    };
 
-  // Reset pozice pro nekonečný loop
-  useEffect(() => {
-    if (currentIndex >= totalWines * 2) {
-      setTimeout(() => {
-        setCurrentIndex(totalWines);
-      }, 700);
-    } else if (currentIndex < totalWines) {
-      setTimeout(() => {
-        setCurrentIndex(totalWines);
-      }, 700);
-    }
-  }, [currentIndex, totalWines]);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-  const getBadgeConfig = (badge: Wine['badge']) => {
-    switch (badge) {
-      case 'bestseller':
-        return { icon: Crown, text: 'Bestseller' };
-      case 'award':
-        return { icon: Award, text: 'Oceněné' };
-      case 'limited':
-        return { icon: Zap, text: 'Limitované' };
-      case 'trending':
-        return { icon: TrendingUp, text: 'Trending' };
-    }
-  };
+  const filteredWines = getWinesByCategory(selectedCategory);
+  const maxIndex = Math.max(0, filteredWines.length - itemsPerView);
 
   const nextSlide = () => {
-    setIsAutoPlaying(false);
-    setCurrentIndex(prev => prev + 1);
+    setCurrentIndex(prev => Math.min(prev + 1, maxIndex));
   };
 
   const prevSlide = () => {
-    setIsAutoPlaying(false);
-    setCurrentIndex(prev => prev - 1);
+    setCurrentIndex(prev => Math.max(prev - 1, 0));
   };
 
-  const goToSlide = (index: number) => {
-    setIsAutoPlaying(false);
-    setCurrentIndex(totalWines + index);
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [selectedCategory]);
+
+  const getBadgeStyle = (badge?: string) => {
+    switch(badge) {
+      case 'bestseller': return { bg: '#ab8754', text: 'Bestseller' };
+      case 'award': return { bg: '#ab8754', text: 'Oceněné' };
+      case 'new': return { bg: '#10B981', text: 'Novinka' };
+      case 'limited': return { bg: '#E11D48', text: 'Limitované' };
+      default: return null;
+    }
+  };
+
+  const openModal = (wine: WineProduct) => {
+    setSelectedWine(wine);
+    setIsModalOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedWine(null);
+    document.body.style.overflow = 'unset';
+  };
+
+  const getDrynessLabel = (dryness?: string) => {
+    switch(dryness) {
+      case 'suche': return 'Suché';
+      case 'polosuche': return 'Polosuché';
+      case 'polosladke': return 'Polosladké';
+      case 'sladke': return 'Sladké';
+      default: return 'N/A';
+    }
+  };
+
+  const getQualityLabel = (quality?: string) => {
+    switch(quality) {
+      case 'kabinet': return 'Kabinet';
+      case 'pozdni-sber': return 'Pozdní sběr';
+      case 'vyber-z-hroznu': return 'Výběr z hroznů';
+      case 'vyber-z-bobuli': return 'Výběr z bobulí';
+      case 'slama': return 'Slámové víno';
+      case 'ledove': return 'Ledové víno';
+      default: return 'Standard';
+    }
   };
 
   return (
-    <section className="py-12 sm:py-16 lg:py-24 overflow-hidden" style={{ backgroundColor: "#1C1C1E" }}>
-      <div className="w-full">
-        
-        {/* Elegantní header */}
-        <div className="text-center mb-12 sm:mb-16 lg:mb-20 px-4 sm:px-6 lg:px-8">
-          <div className="space-y-4 sm:space-y-6">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-white tracking-wide">
-              <span style={{ color: "#ab8754" }}>Nejoblíbenější</span> vína
-            </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-400 font-light max-w-2xl mx-auto leading-relaxed">
-              Objevte naše nejcennější a nejlépe hodnocená vína z kolekce
-            </p>
-          </div>
-          
-          {/* Vinařský divider s hrozny */}
-          <div className="flex items-center justify-center mt-8 sm:mt-12">
-            <div className="w-16 sm:w-24 lg:w-32 h-px bg-gradient-to-r from-transparent to-white/20"></div>
-            <div className="mx-4 sm:mx-6 lg:mx-8 flex items-center space-x-2 sm:space-x-3">
-              <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full" style={{ backgroundColor: "#ab8754" }}></div>
-              <Wine className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" style={{ color: "#ab8754" }} />
-              <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full" style={{ backgroundColor: "#ab8754" }}></div>
-            </div>
-            <div className="w-16 sm:w-24 lg:w-32 h-px bg-gradient-to-l from-transparent to-white/20"></div>
-          </div>
+    <>
+      <section 
+        className="relative min-h-screen py-20 lg:py-28 overflow-hidden"
+        style={{ 
+          backgroundColor: "#fefbea"
+        }}
+      >
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl animate-pulse" 
+               style={{ background: `radial-gradient(circle, #ab875415, transparent)` }}></div>
+          <div className="absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl animate-pulse animation-delay-2000"
+               style={{ background: `radial-gradient(circle, #ab875410, transparent)` }}></div>
         </div>
-
-        {/* Slider container s šipkami */}
-        <div className="relative w-full">
+        
+        <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           
-          {/* Slider wrapper */}
-          <div className="relative h-[500px] sm:h-[550px] lg:h-[600px] flex items-center group/slider">
-            
-            {/* Levá šipka - pouze na hover */}
-            <button
-              onClick={prevSlide}
-              className="absolute left-2 sm:left-4 lg:left-6 z-20 w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 flex items-center justify-center bg-black/40 backdrop-blur-sm border border-white/20 rounded-full hover:border-white/40 hover:bg-black/60 transition-all duration-300 group opacity-0 group-hover/slider:opacity-100"
-            >
-              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white group-hover:text-white/80 transition-colors duration-300" />
-            </button>
+          {/* Header */}
+          <div className="text-center mb-16 px-4">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-3 mb-4">
+                <div className="h-px w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+                <Grape className="w-8 h-8" style={{ color: "#ab8754" }} />
+                <div className="h-px w-12 bg-gradient-to-l from-transparent via-gray-300 to-transparent"></div>
+              </div>
+              
+              <h2 className="text-5xl lg:text-7xl font-light text-gray-800">
+                Naše <span className="font-normal" style={{ color: "#ab8754" }}>kolekce</span>
+              </h2>
+              <p className="text-xl text-gray-600 font-light max-w-2xl mx-auto leading-relaxed">
+                Objevte naše nejcennější a nejlépe hodnocená vína
+              </p>
+            </div>
+          </div>
 
-            {/* Pravá šipka - pouze na hover */}
-            <button
-              onClick={nextSlide}
-              className="absolute right-2 sm:right-4 lg:right-6 z-20 w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 flex items-center justify-center bg-black/40 backdrop-blur-sm border border-white/20 rounded-full hover:border-white/40 hover:bg-black/60 transition-all duration-300 group opacity-0 group-hover/slider:opacity-100"
-            >
-              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white group-hover:text-white/80 transition-colors duration-300" />
-            </button>
+          {/* Kategorie */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className={`
+                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  ${selectedCategory === 'all' 
+                    ? 'text-white border-transparent shadow-lg' 
+                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
+                  }
+                `}
+                style={selectedCategory === 'all' ? { backgroundColor: '#ab8754' } : {}}
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Všechna vína</span>
+                <span className={`${selectedCategory === 'all' ? 'text-white/80' : 'text-gray-500'}`}>
+                  ({getWineCountByCategory('all')})
+                </span>
+              </button>
 
-            {/* Slider content */}
-            <div className="w-full overflow-hidden">
+              <button
+                onClick={() => setSelectedCategory('white')}
+                className={`
+                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  ${selectedCategory === 'white' 
+                    ? 'text-white border-transparent shadow-lg' 
+                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
+                  }
+                `}
+                style={selectedCategory === 'white' ? { backgroundColor: '#ab8754' } : {}}
+              >
+                <Droplets className="w-4 h-4" />
+                <span>Bílá</span>
+                <span className={`${selectedCategory === 'white' ? 'text-white/80' : 'text-gray-500'}`}>
+                  ({getWineCountByCategory('white')})
+                </span>
+              </button>
+
+              <button
+                onClick={() => setSelectedCategory('red')}
+                className={`
+                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  ${selectedCategory === 'red' 
+                    ? 'text-white border-transparent shadow-lg' 
+                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
+                  }
+                `}
+                style={selectedCategory === 'red' ? { backgroundColor: '#ab8754' } : {}}
+              >
+                <Cherry className="w-4 h-4" />
+                <span>Červená</span>
+                <span className={`${selectedCategory === 'red' ? 'text-white/80' : 'text-gray-500'}`}>
+                  ({getWineCountByCategory('red')})
+                </span>
+              </button>
+
+              <button
+                onClick={() => setSelectedCategory('rose')}
+                className={`
+                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  ${selectedCategory === 'rose' 
+                    ? 'text-white border-transparent shadow-lg' 
+                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
+                  }
+                `}
+                style={selectedCategory === 'rose' ? { backgroundColor: '#ab8754' } : {}}
+              >
+                <Grape className="w-4 h-4" />
+                <span>Růžová</span>
+                <span className={`${selectedCategory === 'rose' ? 'text-white/80' : 'text-gray-500'}`}>
+                  ({getWineCountByCategory('rose')})
+                </span>
+              </button>
+
+              <button
+                onClick={() => setSelectedCategory('sparkling')}
+                className={`
+                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  ${selectedCategory === 'sparkling' 
+                    ? 'text-white border-transparent shadow-lg' 
+                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
+                  }
+                `}
+                style={selectedCategory === 'sparkling' ? { backgroundColor: '#ab8754' } : {}}
+              >
+                <Wine className="w-4 h-4" />
+                <span>Perlivá</span>
+                <span className={`${selectedCategory === 'sparkling' ? 'text-white/80' : 'text-gray-500'}`}>
+                  ({getWineCountByCategory('sparkling')})
+                </span>
+              </button>
+
+              <button
+                onClick={() => setSelectedCategory('special')}
+                className={`
+                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  ${selectedCategory === 'special' 
+                    ? 'text-white border-transparent shadow-lg' 
+                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
+                  }
+                `}
+                style={selectedCategory === 'special' ? { backgroundColor: '#ab8754' } : {}}
+              >
+                <Package className="w-4 h-4" />
+                <span>Mimosa</span>
+                <span className={`${selectedCategory === 'special' ? 'text-white/80' : 'text-gray-500'}`}>
+                  ({getWineCountByCategory('special')})
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Products Slider */}
+          <div className="relative">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-light text-gray-800">
+                {selectedCategory === 'all' ? 'Všechna vína' : 
+                 selectedCategory === 'white' ? 'Bílá vína' :
+                 selectedCategory === 'red' ? 'Červená vína' :
+                 selectedCategory === 'rose' ? 'Růžová vína' :
+                 selectedCategory === 'sparkling' ? 'Perlivá vína' :
+                 'Speciální edice'}
+              </h3>
+              
+              <div className="flex items-center gap-3">
+                <span className="text-gray-600 text-sm font-medium">
+                  {filteredWines.length} produktů
+                </span>
+                
+                {/* Slider controls */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={prevSlide}
+                    disabled={currentIndex === 0}
+                    className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all
+                      ${currentIndex === 0 
+                        ? 'border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50' 
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white shadow-sm'}`}
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  
+                  <button
+                    onClick={nextSlide}
+                    disabled={currentIndex >= maxIndex}
+                    className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all
+                      ${currentIndex >= maxIndex 
+                        ? 'border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50' 
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white shadow-sm'}`}
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Slider container */}
+            <div className="overflow-hidden">
               <div 
-                className="flex transition-transform duration-700 ease-out"
+                className="flex transition-transform duration-500 ease-out"
                 style={{ 
-                  transform: `translateX(calc(-${currentIndex * 280}px + 50vw - 700px))`,
-                  width: `${infiniteWines.length * 280}px`
+                  gap: '24px',
+                  transform: `translateX(calc(-${currentIndex} * (${100 / itemsPerView}% + ${24 / itemsPerView}px)))`
                 }}
               >
-                {infiniteWines.map((wine, index) => {
-                  const badgeConfig = getBadgeConfig(wine.badge);
-                  const BadgeIcon = badgeConfig.icon;
+                {filteredWines.map((wine) => {
+                  const badge = getBadgeStyle(wine.badge);
                   
                   return (
-                    <div 
-                      key={`${wine.id}-${Math.floor(index / totalWines)}-${index}`} 
-                      className="flex-shrink-0 px-2 sm:px-3 lg:px-4"
-                      style={{ width: '280px' }}
+                    <div
+                      key={wine.id}
+                      className="flex-shrink-0 transition-all duration-500"
+                      style={{ 
+                        width: `calc((100% - ${24 * (itemsPerView - 1)}px) / ${itemsPerView})`
+                      }}
                     >
-                      
-                      {/* Luxusní minimalistická karta */}
-                      <div 
-                        className="group wine-card cursor-pointer select-none h-full hover:scale-105 transition-all duration-500"
-                        onClick={() => {
-                          // Zde můžeš přidat logiku pro přesměrování na detail produktu
-                          console.log(`Klik na víno: ${wine.name}`);
-                        }}
-                      >
+                      <div className="group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-[#ab8754]/50 transition-all duration-500 shadow-lg hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
                         
-                        {/* Obrázek produktu */}
-                        <div className="relative aspect-[3/4] bg-gradient-to-b from-white/5 to-white/10 rounded-xl lg:rounded-2xl mb-4 sm:mb-6 overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-500 hover:shadow-2xl hover:shadow-black/20">
+                        {/* Image Container */}
+                        <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden flex-shrink-0">
+                          <Image 
+                            src={wine.image}
+                            alt={wine.name}
+                            fill
+                            className="object-cover group-hover:scale-110 transition-transform duration-700 cursor-pointer"
+                            sizes={`(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw`}
+                            onClick={() => openModal(wine)}
+                          />
                           
-                          {/* Obrázek vína s hover zoom efektem */}
-                          <div className="absolute inset-0 flex items-center justify-center p-6 overflow-hidden">
-                            <Image 
-                              src="/vino.png" 
-                              alt={wine.name}
-                              width={400}
-                              height={600}
-                              className="w-full h-full object-contain group-hover:scale-125 transition-transform duration-500 ease-out"
-                              priority={false}
-                            />
-                          </div>
-                          
-                          {/* Jemný badge */}
-                          <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-10 group-hover:opacity-80 transition-opacity duration-300">
-                            <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-black/60 backdrop-blur-sm rounded-full border border-white/20">
-                              <BadgeIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" style={{ color: "#ab8754" }} />
-                              <span className="text-white text-xs font-medium">{badgeConfig.text}</span>
+                          {badge && (
+                            <div 
+                              className="absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg z-10"
+                              style={{ backgroundColor: badge.bg }}
+                            >
+                              {badge.text}
                             </div>
-                          </div>
+                          )}
 
-                          {/* Rating v rohu */}
-                          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-10 group-hover:opacity-80 transition-opacity duration-300">
-                            <div className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 bg-black/60 backdrop-blur-sm rounded-full border border-white/20">
-                              <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-yellow-400 fill-current" />
-                              <span className="text-white text-xs font-medium">{wine.rating}</span>
-                            </div>
-                          </div>
-
-                          {/* Jemný hover efekt - gradient overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        </div>
-
-                        {/* Čistý obsah */}
-                        <div className="space-y-3 sm:space-y-4">
-                          
-                          {/* Název */}
-                          <div className="text-center space-y-1 sm:space-y-2">
-                            <h3 className="text-white text-sm sm:text-base lg:text-lg font-medium group-hover:text-white/80 transition-colors duration-300 line-clamp-2">
-                              {wine.name}
-                            </h3>
-                            <p className="text-gray-400 text-xs sm:text-sm font-light">
-                              {wine.variety} • {wine.vintage}
-                            </p>
-                          </div>
-
-                          {/* Rating a recenze */}
-                          <div className="flex items-center justify-center gap-2 sm:gap-3">
-                            <div className="flex items-center gap-1">
-                              <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-current" />
-                              <span className="text-white text-xs sm:text-sm font-medium">{wine.rating}</span>
-                            </div>
-                            <span className="text-gray-500 text-xs sm:text-sm">({wine.reviews})</span>
-                          </div>
-
-                          {/* Popis */}
-                          <div className="text-center">
-                            <p className="text-gray-400 text-xs sm:text-sm leading-relaxed font-light line-clamp-2">
-                              {wine.description}
-                            </p>
-                          </div>
-
-                          {/* Jemný CTA link */}
-                          <div className="text-center pt-1 sm:pt-2">
-                            <button className="text-xs sm:text-sm font-medium transition-all duration-300 hover:text-white border-b border-transparent hover:border-white/30 pb-1 group/link cursor-pointer" style={{ color: "#ab8754" }}>
-                              <span className="group-hover/link:tracking-wide transition-all duration-300">
-                                Zobrazit detail →
-                              </span>
+                          {/* Quick view overlay */}
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10 pointer-events-none group-hover:pointer-events-auto">
+                            <button
+                              onClick={() => openModal(wine)}
+                              className="px-6 py-3 bg-white text-gray-900 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center gap-2 shadow-xl"
+                            >
+                              <Wine className="w-4 h-4" />
+                              Zobrazit produkt
                             </button>
+                          </div>
+                        </div>
+                        
+                        {/* Content */}
+                        <div className="p-5 flex flex-col flex-grow bg-white">
+                          {/* Rating */}
+                          <div className="flex items-center gap-1 mb-3">
+                            {[...Array(5)].map((_, i) => (
+                              <Star 
+                                key={i}
+                                className={`w-4 h-4 ${
+                                  i < Math.floor(wine.rating || 0) 
+                                    ? 'text-yellow-400 fill-current' 
+                                    : i < (wine.rating || 0)
+                                      ? 'text-yellow-400 fill-current opacity-50'
+                                      : 'text-gray-300'
+                                }`}
+                              />
+                            ))}
+                            <span className="text-gray-500 text-sm ml-2 font-medium">({wine.rating?.toFixed(1) || '4.5'})</span>
+                          </div>
+                          
+                          {/* Title */}
+                          <h3 className="text-gray-900 font-semibold text-sm mb-2 line-clamp-2 min-h-[3.5rem] cursor-pointer hover:text-[#ab8754] transition-colors" onClick={() => openModal(wine)}>
+                            {wine.name}
+                          </h3>
+                          
+                          {/* Details */}
+                          <div className="flex items-center justify-between mb-3">
+                            <p className="text-gray-600 text-sm">
+                              {wine.variety}
+                            </p>
+                            <span className="text-gray-500 text-xs font-medium px-2 py-1 bg-gray-100 rounded-full">
+                              {wine.vintage}
+                            </span>
+                          </div>
+                          
+                          {/* Volume badge */}
+                          {wine.volume && (
+                            <div className="mb-3">
+                              <span className="text-xs font-medium px-2 py-1 rounded-full" style={{ backgroundColor: "#ab875410", color: "#ab8754" }}>
+                                {wine.volume === 200 ? "Mini 200ml" : wine.volume === 375 ? "375ml" : wine.volume === 500 ? "500ml" : "750ml"}
+                              </span>
+                            </div>
+                          )}
+                          
+                          {/* Description */}
+                          <p className="text-gray-500 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
+                            {wine.description}
+                          </p>
+                          
+                          {/* Price & Button */}
+                          <div className="flex flex-col gap-3 pt-4 border-t border-gray-100 mt-auto">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-gray-500 text-xs mb-1">Cena</p>
+                                <p className="text-gray-900 font-bold text-2xl">
+                                  {wine.price} <span className="text-lg">Kč</span>
+                                </p>
+                              </div>
+                              
+                              {wine.quality && (
+                                <span className="text-xs font-medium text-gray-600 px-2 py-1 bg-gray-50 rounded-lg">
+                                  {getQualityLabel(wine.quality)}
+                                </span>
+                              )}
+                            </div>
+                            
+                            <a
+                              href={wine.shopUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full px-5 py-3 text-white rounded-full font-semibold text-sm transition-all hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2"
+                              style={{ backgroundColor: "#ab8754" }}
+                            >
+                              <ShoppingCart className="w-4 h-4" />
+                              Koupit na e-shopu
+                            </a>
                           </div>
                         </div>
                       </div>
@@ -322,59 +423,267 @@ const FeaturedWinesSection: React.FC = () => {
                 })}
               </div>
             </div>
+            
+            {/* Slider dots */}
+            {filteredWines.length > itemsPerView && (
+              <div className="flex justify-center mt-6 sm:mt-8 gap-1 sm:gap-2">
+                {Array.from({ length: Math.min(8, maxIndex + 1) }).map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentIndex(i)}
+                    className={`transition-all duration-300 rounded-full
+                      ${currentIndex === i 
+                        ? 'w-6 sm:w-8 h-1.5 sm:h-2' 
+                        : 'w-1.5 sm:w-2 h-1.5 sm:h-2'
+                      }`}
+                    style={{
+                      backgroundColor: currentIndex === i ? "#ab8754" : "rgba(171, 135, 84, 0.3)"
+                    }}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        </div>
 
-        {/* Elegantní indikátory */}
-        <div className="flex items-center justify-center gap-4 mt-12 sm:mt-16 px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-2">
-            {featuredWines.map((_, index) => (
-              <button
-                key={index}
-                className={`transition-all duration-300 rounded-full hover:scale-110 ${
-                  (currentIndex % totalWines) === index 
-                    ? "w-6 sm:w-8 h-2" 
-                    : "w-2 h-2 hover:w-3 sm:hover:w-4"
-                }`}
-                style={{
-                  backgroundColor: (currentIndex % totalWines) === index ? "#ab8754" : "rgba(255, 255, 255, 0.3)"
-                }}
-                onClick={() => goToSlide(index)}
-              />
-            ))}
-          </div>
-          
-          {/* Auto-play indikátor */}
-          <div className="ml-4 flex items-center gap-2">
-            <button
-              onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-              className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full border transition-all duration-300 flex items-center justify-center ${
-                isAutoPlaying 
-                  ? 'border-white/40 bg-white/10' 
-                  : 'border-white/20 hover:border-white/40'
-              }`}
+          {/* CTA Section */}
+          <div className="mt-20 text-center">
+            <a 
+              href="https://shop.miqueen.cz/vsechna-vina"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-10 py-4 text-white text-lg font-medium rounded-full transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl"
+              style={{ backgroundColor: "#ab8754" }}
             >
-              <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all duration-300 ${
-                isAutoPlaying ? 'bg-green-400' : 'bg-white/40'
-              }`}></div>
+              Zobrazit e-shop
+            </a>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Modal */}
+      {isModalOpen && selectedWine && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4" onClick={closeModal}>
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          
+          <div 
+            className="relative bg-white rounded-none sm:rounded-3xl w-full sm:max-w-5xl h-full sm:h-auto sm:max-h-[90vh] overflow-hidden shadow-2xl flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors shadow-lg"
+            >
+              <X className="w-5 h-5 text-gray-700" />
             </button>
-            <span className="text-gray-500 text-xs sm:text-sm font-light">
-              {isAutoPlaying ? 'Auto-play' : 'Pozastaveno'}
-            </span>
+
+            <div className="flex flex-col lg:flex-row h-full overflow-hidden">
+              {/* Image side - optimized for mobile */}
+              <div className="lg:w-2/5 relative bg-gradient-to-br from-gray-100 to-gray-50 flex-shrink-0">
+                <div className="relative h-[40vh] sm:h-[50vh] lg:h-full flex items-center justify-center p-6 lg:p-12">
+                  <div className="relative w-full h-full max-w-md mx-auto">
+                    <Image 
+                      src={selectedWine.image}
+                      alt={selectedWine.name}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 768px) 100vw, 40vw"
+                    />
+                  </div>
+                  
+                  {selectedWine.badge && (
+                    <div 
+                      className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg"
+                      style={{ backgroundColor: getBadgeStyle(selectedWine.badge)?.bg }}
+                    >
+                      {getBadgeStyle(selectedWine.badge)?.text}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Visual separator with scroll indicator for mobile */}
+                <div className="lg:hidden absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent flex items-end justify-center pb-2">
+                  <ChevronDown className="w-5 h-5 text-gray-400 animate-bounce" />
+                </div>
+              </div>
+
+              {/* Content side - scrollable */}
+              <div className="lg:w-3/5 flex-1 overflow-y-auto">
+                <div className="p-6 lg:p-10">
+                  {/* Header */}
+                  <div className="mb-6">
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+                      {selectedWine.name}
+                    </h2>
+                    <p className="text-lg sm:text-xl text-gray-600">{selectedWine.variety}</p>
+                    
+                    {/* Rating */}
+                    <div className="flex items-center gap-2 mt-4">
+                      <div className="flex items-center gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i}
+                            className={`w-4 sm:w-5 h-4 sm:h-5 ${
+                              i < Math.floor(selectedWine.rating || 0) 
+                                ? 'text-yellow-400 fill-current' 
+                                : i < (selectedWine.rating || 0)
+                                  ? 'text-yellow-400 fill-current opacity-50'
+                                  : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-gray-600 font-medium">({selectedWine.rating?.toFixed(1) || '4.5'})</span>
+                    </div>
+                  </div>
+
+                  {/* Price section */}
+                  <div className="bg-gradient-to-r from-[#ab875410] to-transparent p-4 sm:p-6 rounded-2xl mb-6">
+                    <p className="text-gray-600 mb-2">Cena</p>
+                    <p className="text-3xl sm:text-4xl font-bold text-gray-900">
+                      {selectedWine.price} <span className="text-xl sm:text-2xl">Kč</span>
+                    </p>
+                    {selectedWine.volume && (
+                      <p className="text-gray-600 mt-2">
+                        Objem: {selectedWine.volume}ml
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Popis</h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      {selectedWine.description}
+                    </p>
+                  </div>
+
+                  {/* Wine details grid */}
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
+                    <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
+                      <p className="text-gray-500 text-xs sm:text-sm mb-1">Ročník</p>
+                      <p className="text-gray-900 font-semibold text-sm sm:text-base">{selectedWine.vintage}</p>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
+                      <p className="text-gray-500 text-xs sm:text-sm mb-1">Alkohol</p>
+                      <p className="text-gray-900 font-semibold text-sm sm:text-base">{selectedWine.alcohol || 'N/A'}%</p>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
+                      <p className="text-gray-500 text-xs sm:text-sm mb-1">Kvalita</p>
+                      <p className="text-gray-900 font-semibold text-sm sm:text-base">{getQualityLabel(selectedWine.quality)}</p>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
+                      <p className="text-gray-500 text-xs sm:text-sm mb-1">Sladkost</p>
+                      <p className="text-gray-900 font-semibold text-sm sm:text-base">{getDrynessLabel(selectedWine.dryness)}</p>
+                    </div>
+                  </div>
+
+                  {/* Additional info */}
+                  <div className="space-y-4 mb-8">
+                    {selectedWine.region && (
+                      <div className="flex items-start gap-3">
+                        <MapPin className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-gray-500 text-xs sm:text-sm">Region</p>
+                          <p className="text-gray-900 text-sm sm:text-base">{selectedWine.region}</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {selectedWine.servingTemp && (
+                      <div className="flex items-start gap-3">
+                        <Thermometer className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-gray-500 text-xs sm:text-sm">Teplota servírování</p>
+                          <p className="text-gray-900 text-sm sm:text-base">{selectedWine.servingTemp}</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {selectedWine.foodPairing && selectedWine.foodPairing.length > 0 && (
+                      <div className="flex items-start gap-3">
+                        <ChefHat className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
+                        <div className="flex-1">
+                          <p className="text-gray-500 text-xs sm:text-sm mb-2">Doporučujeme k</p>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedWine.foodPairing.map((food, index) => (
+                              <span 
+                                key={index}
+                                className="px-2 sm:px-3 py-1 bg-[#ab875410] text-[#ab8754] rounded-full text-xs sm:text-sm font-medium"
+                              >
+                                {food}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {selectedWine.winemaker && (
+                      <div className="flex items-start gap-3">
+                        <User className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-gray-500 text-xs sm:text-sm">Vinařství</p>
+                          <p className="text-gray-900 text-sm sm:text-base">{selectedWine.winemaker}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {selectedWine.notes && (
+                    <div className="bg-[#ab875410] p-4 rounded-xl mb-8">
+                      <p className="text-[#ab8754] font-semibold mb-2 text-sm sm:text-base">Poznámka vinaře</p>
+                      <p className="text-gray-700 text-xs sm:text-sm">{selectedWine.notes}</p>
+                    </div>
+                  )}
+
+                  {/* CTA Button - fixed at bottom on mobile */}
+                  <div className="sticky bottom-0 left-0 right-0 bg-white pt-4 pb-safe">
+                    <a
+                      href={selectedWine.shopUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full px-6 py-4 bg-[#ab8754] text-white rounded-full font-semibold text-base sm:text-lg transition-all hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2"
+                    >
+                      <ShoppingCart className="w-5 h-5" />
+                      Koupit na e-shopu
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Minimalistické CTA */}
-        <div className="text-center mt-16 sm:mt-20 px-4 sm:px-6 lg:px-8">
-          <button className="group px-8 sm:px-10 lg:px-12 py-3 sm:py-4 text-white font-light text-sm sm:text-base lg:text-lg border border-white/20 rounded-full hover:border-white/40 hover:bg-white/5 transition-all duration-300 hover:shadow-lg hover:shadow-black/10">
-            <span className="group-hover:text-white/80 transition-colors duration-300 group-hover:tracking-wide">
-              Prozkoumat celou kolekci
-            </span>
-          </button>
-        </div>
-      </div>
+      )}
 
       <style jsx>{`
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 0.4;
+          }
+          50% {
+            opacity: 0.6;
+          }
+        }
+
+        .animate-pulse {
+          animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+
+        .line-clamp-1 {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;
@@ -382,16 +691,25 @@ const FeaturedWinesSection: React.FC = () => {
           overflow: hidden;
         }
         
-        .group:hover {
-          cursor: pointer;
+        .pb-safe {
+          padding-bottom: env(safe-area-inset-bottom, 1rem);
         }
         
-        .wine-card:hover {
-          transform: translateY(-8px);
+        @keyframes bounce {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+        }
+        
+        .animate-bounce {
+          animation: bounce 2s infinite;
         }
       `}</style>
-    </section>
+    </>
   );
 };
 
-export default FeaturedWinesSection;
+export default WineCollectionSection;

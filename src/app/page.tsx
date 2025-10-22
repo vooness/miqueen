@@ -6,17 +6,24 @@ import AboutWinerySection from './components/vinartsvi';
 import WineShowcase from './components/wine';
 import AdoptujVinohrad from './components/adoptuj';
 import Footer from './components/footer';
+import PromoBar from './components/promobar';
+
+
 
 export default function Home() {
   return (
     <main>
      
       <Navbar />
+      <PromoBar />
       <HeroSection />
-      <AboutWinerySection />
       <WineShowcase />
+      <AboutWinerySection />
+      
       <AdoptujVinohrad />
+     
       <Footer />
+      
     </main>
   );
 }

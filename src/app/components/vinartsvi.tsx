@@ -1,69 +1,135 @@
-"use client";
+"use client"
 import React from "react";
 import Image from "next/image";
-import { Award, Leaf, MapPin, Users, Calendar, Wine, Star, Crown, Trophy, Sparkles } from "lucide-react";
+import { Award, Leaf, MapPin, Users, Calendar, Wine, Star, Crown, Trophy, Sparkles, ChevronRight, Grape } from "lucide-react";
+import { motion } from "framer-motion";
 
-const AboutWinerySection: React.FC = () => {
-  // Možnost nastavit vlastní pozadí pro sekci s medailemi - změň URL nebo nech prázdné
-  const medalsBackgroundImageUrl = ""; // Zde můžeš vložit URL obrázku: "/images/vineyard-bg.jpg"
+const AboutWinerySection = () => {
+  const storyImageUrl = "/fotky/doprava_zdarma2.webp";
   
-  // Možnost nastavit obrázek nad textem příběhu - VLOŽ URL OBRÁZKU ZDE!
-  const storyImageUrl = "/ryzlik.jpg"; // Zde MUSÍŠ vložit URL obrázku!
+  const accentColor = "#ab8754";
+  const paperColor = "#fefbea";
+
+  const galleryPhotos = [
+    { src: "/fotky/fotka1.jpg", alt: "Vinařství MiQueen 1" },
+    { src: "/fotky/fotka2.jpg", alt: "Vinařství MiQueen 2" },
+    { src: "/fotky/fotka3.jpg", alt: "Vinařství MiQueen 3" },
+    { src: "/fotky/fotka4.jpg", alt: "Vinařství MiQueen 4" },
+    { src: "/fotky/fotka5.jpg", alt: "Vinařství MiQueen 5" },
+    { src: "/fotky/fotka6.jpg", alt: "Vinařství MiQueen 6" }
+  ];
 
   const achievements = [
     {
+      id: 1,
       title: "Zlatý pohár Česko Slovenska 2024",
       goldMedals: 2,
-      silverMedals: 4,
-      totalMedals: "2 hlavní zlaté + 4 zlaté medaile",
+      silverMedals: 0,
+      totalMedals: "2 velké zlaté + 4 zlaté medaile",
       year: "2024",
       type: "main",
-      icon: Crown
+      icon: Crown,
+      highlight: true,
+      image: "/medaile/loga_soutezi_shop_ostra5.webp"
     },
     {
-      title: "GRAND PRIX VINEX 2024", 
-      goldMedals: 1,
-      silverMedals: 6,
-      totalMedals: "1 zlatá + 6 stříbrných medailí",
-      year: "2024",
-      type: "grand",
-      icon: Trophy
-    },
-    {
-      title: "Jarovin 2023",
-      goldMedals: 2,
-      silverMedals: 0,
-      totalMedals: "2 zlaté medaile",
-      year: "2023",
-      type: "gold",
-      icon: Award
-    },
-    {
-      title: "Weinparade Poysdorf 2024",
+      id: 2,
+      title: "AWC Vienna 2024", 
       goldMedals: 2,
       silverMedals: 7,
-      totalMedals: "2 zlaté + 7 stříbrných medailí", 
+      totalMedals: "2 zlaté + 7 stříbrných medailí",
       year: "2024",
-      type: "international",
-      icon: Sparkles
+      type: "grand",
+      icon: Trophy,
+      image: "/medaile/awc_medaillen2024_visuals_all_gold.webp"
     },
     {
+      id: 3,
+      title: "AWC Vienna 2025",
+      goldMedals: 5,
+      silverMedals: 1,
+      totalMedals: "Titul Čtyřhvězdičkové vinařství + 5 zlatých + 1 stříbrná",
+      year: "2025",
+      type: "premium",
+      icon: Star,
+      image: "/medaile/awc_gold.webp"
+    },
+    {
+      id: 4,
       title: "GRAND PRIX VINEX 2024",
       goldMedals: 1,
       silverMedals: 6,
-      totalMedals: "1 zlatá + 6 stříbrných medailí",
+      totalMedals: "1 zlatá + 6 stříbrných medailí", 
       year: "2024",
-      type: "grand",
-      icon: Trophy
+      type: "international",
+      icon: Sparkles,
+      image: "/medaile/loga_soutezi_shop_ostra3.webp"
     },
     {
+      id: 5,
+      title: "Jarovin 2024",
+      goldMedals: 2,
+      silverMedals: 0,
+      totalMedals: "2 zlaté medaile",
+      year: "2024",
+      type: "gold",
+      icon: Award,
+      image: "/medaile/loga_soutezi_shop_ostra.webp"
+    },
+    {
+      id: 6,
+      title: "Jarovin 2025",
+      goldMedals: 1,
+      silverMedals: 1,
+      totalMedals: "1 zlatá + 1 stříbrná medaile",
+      year: "2025",
+      type: "main",
+      icon: Award,
+      image: "/medaile/medaile_jarovin_zlata.webp"
+    },
+    {
+      id: 7,
+      title: "Valtické vinné trhy 2024",
+      goldMedals: 3,
+      silverMedals: 0,
+      totalMedals: "3 zlaté medaile",
+      year: "2024",
+      type: "gold",
+      icon: Trophy,
+      image: "/medaile/loga_soutezi_shop_ostra2.webp"
+    },
+    {
+      id: 8,
+      title: "Valtické vinné trhy 2025",
+      goldMedals: 2,
+      silverMedals: 0,
+      totalMedals: "2 zlaté medaile",
+      year: "2025",
+      type: "gold",
+      icon: Trophy,
+      image: "/medaile/zlato_vvt.webp"
+    },
+    {
+      id: 9,
       title: "VINUM JUVENALE 2023",
       goldMedals: 2,
       silverMedals: 2,
       totalMedals: "2 zlaté + 2 stříbrné medaile",
       year: "2023",
       type: "youth",
-      icon: Award
+      icon: Award,
+      image: "/medaile/loga_soutezi_shop_ostra3.webp"
+    },
+    {
+      id: 10,
+      title: "Weinparade Poysdorf 2024",
+      goldMedals: 2,
+      silverMedals: 7,
+      totalMedals: "2 zlaté + 7 stříbrných medailí",
+      year: "2024",
+      type: "international",
+      icon: Wine,
+      image: "/medaile/loga_soutezi_shop_ostra4.webp"
     }
   ];
 
@@ -71,342 +137,484 @@ const AboutWinerySection: React.FC = () => {
     {
       icon: Leaf,
       title: "Ekologické hospodaření",
-      description: "32 hektarů vinic v plně ekologickém režimu"
+      description: "32 hektarů vinic v plně ekologickém režimu",
+      stat: "32 ha"
     },
     {
       icon: MapPin,
       title: "Mikulovský terroir",
-      description: "Jedinečné minerální podloží z jurského vápence"
+      description: "Jedinečné minerální podloží z jurského vápence",
+      stat: "Mikulov"
     },
     {
       icon: Users,
       title: "Rodinná tradice",
-      description: "Od roku 2006 s láskou k vínu a tradicím"
+      description: "Od roku 2006 s láskou k vínu a tradicím",
+      stat: "2006"
     },
     {
       icon: Wine,
       title: "30 000 lahví ročně",
-      description: "Prémiová kvalita v každé lahvi"
+      description: "Prémiová kvalita v každé lahvi",
+      stat: "30k+"
     }
   ];
 
-  // Spočítáme celkové počty medailí
   const totalGold = achievements.reduce((sum, achievement) => sum + achievement.goldMedals, 0);
   const totalSilver = achievements.reduce((sum, achievement) => sum + achievement.silverMedals, 0);
-  const totalCompetitions = achievements.length;
 
-  // Duplikujeme achievements pro nekonečný loop
-  const duplicatedAchievements = [...achievements, ...achievements];
+  const duplicatedAchievements = [...achievements, ...achievements, ...achievements];
 
   return (
-    <section className="py-16 sm:py-20 lg:py-28 relative overflow-hidden" style={{ backgroundColor: "#1C1C1E" }}>
+    <section 
+      className="relative overflow-hidden" 
+      style={{ 
+        backgroundColor: paperColor
+      }}
+    >
       
-      {/* Background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 -right-20 w-96 h-96 bg-gradient-to-l from-yellow-900/10 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-gradient-to-r from-amber-900/10 to-transparent rounded-full blur-3xl"></div>
+      {/* Top Border */}
+      <div className="relative w-full h-auto">
+        <Image 
+          src="/border.png"
+          alt=""
+          width={1920}
+          height={176}
+          className="w-full h-auto object-contain"
+        />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Header */}
-        <div className="text-center mb-16 sm:mb-20">
-          <div className="space-y-4 sm:space-y-6">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-white tracking-wide">
-              <span style={{ color: "#ab8754" }}>Náš</span> příběh
-            </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-400 font-light max-w-3xl mx-auto leading-relaxed">
-              Vinařství MiQueen v sobě snoubí moderní prvky s mnohaletou tradicí a zkušeností
-            </p>
-          </div>
-          
-          {/* Decorative divider */}
-          <div className="flex items-center justify-center mt-8 sm:mt-12">
-            <div className="w-16 sm:w-24 lg:w-32 h-px bg-gradient-to-r from-transparent to-white/20"></div>
-            <div className="mx-4 sm:mx-6 lg:mx-8 flex items-center space-x-2 sm:space-x-3">
-              <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full" style={{ backgroundColor: "#ab8754" }}></div>
-              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" style={{ color: "#ab8754" }} />
-              <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full" style={{ backgroundColor: "#ab8754" }}></div>
-            </div>
-            <div className="w-16 sm:w-24 lg:w-32 h-px bg-gradient-to-l from-transparent to-white/20"></div>
-          </div>
+      <div className="py-20 lg:py-32">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl animate-pulse" 
+               style={{ background: `radial-gradient(circle, ${accentColor}15, transparent)` }}></div>
+          <div className="absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl animate-pulse animation-delay-2000"
+               style={{ background: `radial-gradient(circle, ${accentColor}10, transparent)` }}></div>
         </div>
 
-        {/* Story section */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 mb-20 sm:mb-24">
+        {/* Header Section */}
+        <motion.div 
+          className="relative z-10 text-center mb-20 px-4"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="inline-flex items-center gap-3 mb-6">
+            <div className="h-px w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+            <Grape className="w-8 h-8" style={{ color: accentColor }} />
+            <div className="h-px w-12 bg-gradient-to-l from-transparent via-gray-300 to-transparent"></div>
+          </div>
           
-          {/* Story text with optional image */}
-          <div className="space-y-6 sm:space-y-8">
-            {/* Obrázek nad příběhem - pokud je nastaven */}
-            {storyImageUrl && (
-              <div className="relative overflow-hidden rounded-2xl lg:rounded-3xl shadow-2xl mb-8">
+          <h2 className="text-5xl lg:text-7xl font-light text-gray-800 mb-6">
+            Náš <span className="font-normal" style={{ color: accentColor }}>příběh</span>
+          </h2>
+          
+          <p className="text-xl text-gray-600 font-light max-w-3xl mx-auto leading-relaxed">
+            Vinařství MiQueen v sobě snoubí moderní prvky s mnohaletou tradicí a zkušeností
+          </p>
+        </motion.div>
+
+        {/* Main Content */}
+        <motion.div 
+          className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 mb-32"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+        >
+          <div className="grid lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-20">
+            
+            {/* Left Column - Story with Image */}
+            <motion.div 
+              className="space-y-8"
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6 }}
+            >
+              {/* Hero Image with Floating Badge */}
+              <div className="relative group overflow-hidden rounded-3xl shadow-2xl">
                 <Image 
                   src={storyImageUrl} 
-                  alt="Náš příběh - Vinařství MiQueen" 
-                  width={800}
-                  height={320}
-                  className="w-full h-64 sm:h-72 lg:h-80 object-cover"
-                  priority={false}
+                  alt="Vinařství MiQueen"
+                  width={900}
+                  height={600}
+                  className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-700"
                 />
-                {/* Overlay pro lepší kontrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                {/* Elegantní rámeček */}
-                <div className="absolute inset-0 rounded-2xl lg:rounded-3xl border border-white/10 pointer-events-none"></div>
-              </div>
-            )}
-
-            <div className="space-y-6 text-gray-300 leading-relaxed">
-              <p className="text-base sm:text-lg font-light">
-                Kolébkou všeho byla rodinná výroba vína, časem umocněna zkušenostmi ze srdce velké vinařské firmy. 
-                <span className="text-white font-medium"> Od roku 2006</span> jsme rostli s láskou k vínu a tradicím.
-              </p>
-              
-              <p className="text-base sm:text-lg font-light">
-                V roce <span className="text-white font-medium">2009</span> vznikla samostatná rodinná firma 
-                s výrobní kapacitou 30 000 lahví. Dnes je vinařství MiQueen 
-                <span className="font-medium" style={{ color: "#ab8754" }}> kompletně ekologicky hospodařící</span> 
-                na téměř 32 hektarech vinic.
-              </p>
-              
-              <p className="text-base sm:text-lg font-light">
-                Naše vína získávají typický mikulovský minerální charakter díky 
-                <span className="text-white font-medium"> minerálnímu podloží z jurského vápence s jíly</span> 
-                v lokalitě Za cihelnou.
-              </p>
-            </div>
-          </div>
-
-          {/* Highlights list - širší formát */}
-          <div className="space-y-4 self-start">
-            {highlights.map((highlight, index) => {
-              const IconComponent = highlight.icon;
-              return (
-                <div 
-                  key={index}
-                  className="group p-4 sm:p-5 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 hover:border-white/20 transition-all duration-500 hover:bg-white/10"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="p-3 rounded-full bg-white/10 border border-white/20 group-hover:border-white/30 transition-all duration-500 flex-shrink-0">
-                      <IconComponent className="w-5 h-5" style={{ color: "#ab8754" }} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-white text-base font-medium group-hover:text-white/80 transition-colors duration-300 mb-1">
-                        {highlight.title}
-                      </h3>
-                      <p className="text-gray-400 text-sm font-light leading-relaxed">
-                        {highlight.description}
-                      </p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                
+                {/* Floating badge */}
+                <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-md rounded-2xl p-4 border border-gray-200 shadow-xl">
+                  <div className="flex items-center gap-3">
+                    <Calendar className="w-5 h-5" style={{ color: accentColor }} />
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Od roku</p>
+                      <p className="text-gray-900 text-2xl font-bold">2006</p>
                     </div>
                   </div>
                 </div>
-              );
-            })}
-            
-            {/* CTA Button pod gridem */}
-            <div className="pt-6">
-              <button className="group px-8 sm:px-10 py-3 sm:py-4 text-white font-light text-sm sm:text-base border border-white/20 rounded-full hover:border-white/40 hover:bg-white/5 transition-all duration-300 hover:shadow-lg hover:shadow-black/10">
-                <span className="group-hover:text-white/80 transition-colors duration-300 group-hover:tracking-wide">
-                  Více v blogu vinařství
-                </span>
-              </button>
+              </div>
+
+              {/* Story Text */}
+              <div className="space-y-5 text-gray-700 max-w-4xl">
+                <p className="text-lg lg:text-xl leading-relaxed">
+                  Kolébkou všeho byla rodinná výroba vína, časem umocněna zkušenostmi ze srdce velké vinařské firmy. 
+                  <span className="text-gray-900 font-medium"> Od roku 2006</span> jsme rostli s láskou k vínu a tradicím.
+                </p>
+                
+                <p className="text-lg lg:text-xl leading-relaxed">
+                  V roce <span className="text-gray-900 font-medium">2009</span> vznikla samostatná rodinná firma 
+                  s výrobní kapacitou 30 000 lahví. Dnes je vinařství MiQueen 
+                  <span className="font-medium" style={{ color: accentColor }}> kompletně ekologicky hospodařící</span> na 
+                  téměř 32 hektarech vinic.
+                </p>
+                
+                <p className="text-lg lg:text-xl leading-relaxed">
+                  Naše vína získávají typický mikulovský minerální charakter díky 
+                  <span className="text-gray-900 font-medium"> minerálnímu podloží z jurského vápence s jíly</span> v 
+                  lokalitě Za cihelnou.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Right Column - Stats & CTA */}
+            <motion.div 
+              className="space-y-8 lg:sticky lg:top-8 lg:self-start"
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                {highlights.map((highlight, index) => {
+                  const IconComponent = highlight.icon;
+                  return (
+                    <motion.div 
+                      key={index}
+                      className="group relative bg-gradient-to-br from-white via-white to-gray-50 rounded-3xl p-6 border border-gray-100 hover:border-transparent hover:shadow-2xl transition-all duration-500 overflow-hidden"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: index * 0.1 }}
+                    >
+                      {/* Gradient overlay on hover */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                           style={{ 
+                             background: `linear-gradient(135deg, ${accentColor}15, transparent)`,
+                           }}></div>
+                      
+                      {/* Animated border */}
+                      <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                           style={{ 
+                             boxShadow: `0 0 0 1px ${accentColor}40`,
+                           }}></div>
+                      
+                      <div className="relative z-10">
+                        <div className="w-12 h-12 rounded-2xl mb-4 flex items-center justify-center transition-all duration-500 group-hover:scale-110"
+                             style={{ 
+                               background: `linear-gradient(135deg, ${accentColor}20, ${accentColor}10)`,
+                             }}>
+                          <IconComponent className="w-6 h-6" style={{ color: accentColor }} />
+                        </div>
+                        
+                        <div className="text-4xl font-bold mb-2 bg-gradient-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                          {highlight.stat}
+                        </div>
+                        
+                        <h3 className="text-gray-900 text-base font-semibold mb-2">
+                          {highlight.title}
+                        </h3>
+                        
+                        <p className="text-gray-600 text-sm leading-relaxed">
+                          {highlight.description}
+                        </p>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* CTA Card */}
+              <motion.div 
+                className="relative bg-white rounded-3xl p-8 border border-gray-100 shadow-lg overflow-hidden group hover:shadow-2xl transition-all duration-500"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                {/* Background pattern */}
+                <div className="absolute inset-0 opacity-5"
+                     style={{
+                       backgroundImage: `radial-gradient(circle at 2px 2px, ${accentColor} 1px, transparent 0)`,
+                       backgroundSize: '24px 24px'
+                     }}></div>
+                
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-gray-50/50"></div>
+                
+                <div className="relative z-10">
+                  <h3 className="text-2xl font-light text-gray-900 mb-3">
+                    Objevte naši filozofii
+                  </h3>
+                  <p className="text-gray-600 mb-6 leading-relaxed">
+                    Každé víno vypráví příběh našeho terroir a vášně pro vinařství.
+                  </p>
+                  <a 
+                    href="https://shop.miqueen.cz/blog-vinarstvi/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group/btn inline-flex items-center gap-2 px-8 py-4 text-white font-medium rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${accentColor}, ${accentColor}dd)`,
+                    }}
+                  >
+                    <span>Více v blogu vinařství</span>
+                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                  </a>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* PHOTO GALLERY SECTION - 3x2 Grid */}
+        <motion.div 
+          className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 mb-32"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {galleryPhotos.map((photo, index) => (
+              <motion.div
+                key={index}
+                className="photo-card group relative overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-700"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className="aspect-[4/3] relative overflow-hidden">
+                  <Image
+                    src={photo.src}
+                    alt={photo.alt}
+                    width={600}
+                    height={450}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  {/* Subtle overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+                
+                {/* Decorative border on hover */}
+                <div 
+                  className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{ 
+                    boxShadow: `inset 0 0 0 2px ${accentColor}40`,
+                  }}
+                ></div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Awards Section */}
+        <motion.div 
+          className="relative w-full overflow-hidden"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7 }}
+        >
+          {/* Section Header */}
+          <motion.div 
+            className="text-center mb-16 px-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="inline-flex items-center gap-3 mb-6">
+              <div className="h-px w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+              <Trophy className="w-8 h-8" style={{ color: accentColor }} />
+              <div className="h-px w-12 bg-gradient-to-l from-transparent via-gray-300 to-transparent"></div>
             </div>
-          </div>
-        </div>
+            
+            <h3 className="text-4xl lg:text-6xl font-light text-gray-800 mb-6">
+              Naše <span className="font-normal" style={{ color: accentColor }}>ocenění</span>
+            </h3>
+            
+            <p className="text-xl text-gray-600 font-light max-w-2xl mx-auto mb-8">
+              Na významných soutěžích získáváme krásná ocenění
+            </p>
 
-      </div>
-
-      {/* Awards section - KOMPLETNĚ mimo kontejner pro full width */}
-      <div className="relative w-full overflow-hidden">
-        {/* Pozadí s možností vlastního obrázku */}
-        {medalsBackgroundImageUrl && (
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div 
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50"
-              style={{ backgroundImage: `url(${medalsBackgroundImageUrl})` }}
-            ></div>
-            {/* Overlay pro zachování kontrastu */}
-            <div className="absolute inset-0 bg-black/30"></div>
-          </div>
-        )}
-
-        <div className="relative text-center py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-12 sm:mb-16">
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-light text-white mb-4 sm:mb-6">
-                <span style={{ color: "#ab8754" }}>Náš sklizenň</span> medailí
-              </h3>
-              <p className="text-base sm:text-lg text-gray-400 font-light max-w-2xl mx-auto">
-                Na významných soutěžích nejen v České republice získávají naše vína krásná ocenění
-              </p>
-
-              {/* Statistiky */}
-              <div className="flex justify-center items-center space-x-8 sm:space-x-12 mt-8">
-                <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-amber-400">{totalGold}</div>
-                  <div className="text-sm text-gray-400 font-light">Zlatých medailí</div>
+            {/* Stats Bar */}
+            <div className="flex justify-center">
+              <div className="inline-flex items-center bg-white/90 backdrop-blur-md rounded-full p-2 border border-gray-200 shadow-lg">
+                <div className="px-8 py-4 text-center">
+                  <div className="text-4xl font-bold text-amber-500">{totalGold}</div>
+                  <div className="text-sm text-gray-600 mt-1">Zlatých</div>
                 </div>
-                <div className="w-px h-12 bg-white/20"></div>
-                <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-gray-400">{totalSilver}</div>
-                  <div className="text-sm text-gray-400 font-light">Stříbrných medailí</div>
+                <div className="w-px h-16 bg-gray-200"></div>
+                <div className="px-8 py-4 text-center">
+                  <div className="text-4xl font-bold text-gray-400">{totalSilver}</div>
+                  <div className="text-sm text-gray-600 mt-1">Stříbrných</div>
                 </div>
-                <div className="w-px h-12 bg-white/20"></div>
-                <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold" style={{ color: "#ab8754" }}>{totalCompetitions}</div>
-                  <div className="text-sm text-gray-400 font-light">Soutěží</div>
+                <div className="w-px h-16 bg-gray-200"></div>
+                <div className="px-8 py-4 text-center">
+                  <div className="text-4xl font-bold" style={{ color: accentColor }}>{achievements.length}</div>
+                  <div className="text-sm text-gray-600 mt-1">Soutěží</div>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Awards slider - skutečně full width */}
-          <div className="awards-slider-container overflow-hidden relative py-4 w-full">
-            <div className="awards-slider flex space-x-4 sm:space-x-6 pl-4 sm:pl-6">
+          {/* Awards Slider Container */}
+          <motion.div 
+            className="awards-slider-container overflow-hidden relative py-8"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="awards-slider flex gap-6">
               {duplicatedAchievements.map((achievement, index) => {
-                const AchievementIcon = achievement.icon;
                 return (
                   <div 
-                    key={index}
-                    className="group relative p-4 sm:p-5 bg-white/5 backdrop-blur-sm rounded-lg lg:rounded-xl border border-white/10 hover:border-white/20 transition-all duration-700 hover:bg-white/10 hover:shadow-xl hover:shadow-black/20 hover:scale-105 cursor-pointer overflow-hidden flex-shrink-0 w-44 sm:w-72"
+                    key={`${achievement.id}-${index}`}
+                    className="award-card group relative flex-shrink-0 w-[320px] bg-white rounded-3xl border border-gray-200 hover:border-gray-300 transition-all duration-700 overflow-hidden shadow-lg hover:shadow-2xl"
+                    style={{ 
+                      borderColor: achievement.highlight ? `${accentColor}` : undefined
+                    }}
                   >
-                    
-                    {/* Background glow - amber-400 */}
-                    <div 
-                      className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700 blur-xl"
-                      style={{ backgroundColor: "#fbbf24" }}
-                    ></div>
-
-                    <div className="relative z-10 text-center space-y-3 sm:space-y-4">
-                      
-                      {/* Year badge */}
-                      <div className="absolute -top-2 -right-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full border border-white/20">
-                        <span className="text-white text-xs font-medium">{achievement.year}</span>
-                      </div>
-
-                      {/* Award icon with medals counter - menší velikost */}
-                      <div className="relative mx-auto w-14 h-14 sm:w-16 sm:h-16">
-                        
-                        {/* Main award circle */}
-                        <div 
-                          className="w-full h-full rounded-full bg-gradient-to-b from-amber-400/20 to-amber-600/30 border-2 border-amber-400/40 flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-700 shadow-lg"
-                        >
-                          <AchievementIcon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: "#ab8754" }} />
-                        </div>
-
-                        {/* Gold medals counter - menší */}
-                        {achievement.goldMedals > 0 && (
-                          <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg border-2 border-amber-300/50 group-hover:scale-125 transition-all duration-500">
-                            <span className="text-white text-xs font-bold">{achievement.goldMedals}</span>
-                          </div>
-                        )}
-
-                        {/* Silver medals counter - menší */}
-                        {achievement.silverMedals > 0 && (
-                          <div className="absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full flex items-center justify-center shadow-lg border-2 border-gray-200/50 group-hover:scale-125 transition-all duration-500 delay-100">
-                            <span className="text-white text-xs font-bold">{achievement.silverMedals}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <h4 className="text-white text-xs sm:text-sm font-medium leading-tight group-hover:text-white/90 transition-colors duration-300 min-h-[2rem] flex items-center justify-center px-1 sm:px-2">
-                          {achievement.title}
-                        </h4>
-                        
-                        <div className="space-y-2">
-                          <p className="text-xs font-medium transition-colors duration-300" style={{ color: "#ab8754" }}>
-                            {achievement.totalMedals}
-                          </p>
-                          
-                          {/* Medal breakdown visual - menší */}
-                          <div className="flex justify-center items-center gap-2">
-                            {achievement.goldMedals > 0 && (
-                              <div className="flex items-center gap-1">
-                                <div className="w-2 h-2 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 shadow-sm"></div>
-                                <span className="text-amber-400 text-xs font-medium">{achievement.goldMedals}</span>
-                              </div>
-                            )}
-                            {achievement.silverMedals > 0 && (
-                              <div className="flex items-center gap-1">
-                                <div className="w-2 h-2 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 shadow-sm"></div>
-                                <span className="text-gray-400 text-xs font-medium">{achievement.silverMedals}</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Stars - menší */}
-                      <div className="flex justify-center space-x-1 opacity-80 group-hover:opacity-100 transition-opacity duration-500">
-                        {[...Array(Math.min(5, achievement.goldMedals + Math.floor(achievement.silverMedals/2)))].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-amber-400 fill-current" 
-                            style={{ 
-                              animationDelay: `${i * 100}ms`,
-                              animation: 'twinkle 1s ease-in-out infinite alternate'
-                            }}
-                          />
-                        ))}
-                      </div>
+                    {/* Year badge */}
+                    <div className="absolute top-4 right-4 z-20 px-3 py-1 rounded-full"
+                         style={{ backgroundColor: `${accentColor}` }}>
+                      <span className="text-white text-xs font-bold">{achievement.year}</span>
                     </div>
 
-                    {/* Decorative corner elements - menší */}
-                    <div className="absolute top-0 left-0 w-4 h-4 sm:w-6 sm:h-6 border-l-2 border-t-2 border-white/20 rounded-tl-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="absolute bottom-0 right-0 w-4 h-4 sm:w-6 sm:h-6 border-r-2 border-b-2 border-white/20 rounded-br-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    {/* Background accent gradient */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                         style={{ background: `linear-gradient(135deg, ${accentColor}10, transparent)` }}></div>
+
+                    {/* Medal Image */}
+                    <div className="relative h-32 mb-6 flex items-center justify-center mt-8">
+                      {achievement.image && (
+                        <Image 
+                          src={achievement.image}
+                          alt={achievement.title}
+                          width={120}
+                          height={120}
+                          className="object-contain drop-shadow-2xl group-hover:scale-110 transition-transform duration-500 rounded-2xl"
+                        />
+                      )}
+                    </div>
+                    
+                    <div className="relative z-10 px-8 pb-8">
+                      {/* Title */}
+                      <h4 className="text-gray-900 text-lg font-medium mb-4 min-h-[3rem]">
+                        {achievement.title}
+                      </h4>
+
+                      {/* Medals */}
+                      <div className="flex items-center gap-4 mb-4">
+                        {achievement.goldMedals > 0 && (
+                          <div className="flex items-center gap-2">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-xl">
+                              <span className="text-white text-sm font-bold">{achievement.goldMedals}</span>
+                            </div>
+                            <span className="text-amber-600 text-sm font-medium">zlaté</span>
+                          </div>
+                        )}
+                        {achievement.silverMedals > 0 && (
+                          <div className="flex items-center gap-2">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center shadow-xl">
+                              <span className="text-white text-sm font-bold">{achievement.silverMedals}</span>
+                            </div>
+                            <span className="text-gray-600 text-sm font-medium">stříbrné</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Total medals text */}
+                      <p className="text-sm font-medium mb-4" style={{ color: accentColor }}>
+                        {achievement.totalMedals}
+                      </p>
+
+                      {/* Stars rating */}
+                      <div className="flex gap-1">
+                        {[...Array(5)].map((_, i) => {
+                          const totalStars = Math.min(5, Math.ceil((achievement.goldMedals + achievement.silverMedals) / 2));
+                          const isGold = i < achievement.goldMedals && achievement.goldMedals > 0;
+                          const isSilver = !isGold && i < totalStars;
+                          
+                          return (
+                            <Star 
+                              key={i} 
+                              className={`w-4 h-4 ${
+                                isGold 
+                                  ? 'text-amber-400 fill-current' 
+                                  : isSilver 
+                                    ? 'text-gray-300 fill-current'
+                                    : 'text-gray-300'
+                              }`}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 );
               })}
             </div>
-          </div>
+          </motion.div>
 
           {/* Final CTA */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mt-16 sm:mt-20">
-              <button 
-                className="group relative overflow-hidden px-8 sm:px-12 py-3 sm:py-4 text-white font-medium text-sm sm:text-base lg:text-lg transition-all duration-300 hover:shadow-xl hover:shadow-black/20 rounded-full"
-                style={{ backgroundColor: "#ab8754" }}
-              >
-                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <span className="relative group-hover:tracking-wide transition-all duration-300">
-                  Objevte oceněná vína
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
+          <motion.div 
+            className="text-center mt-20 px-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <a 
+              href="https://shop.miqueen.cz/vina/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-3 px-10 py-5 text-white text-lg font-medium rounded-full transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105"
+              style={{ backgroundColor: accentColor }}
+            >
+              <span>Objevte oceněná vína</span>
+              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </a>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Bottom Border */}
+      <div className="relative w-full">
+        <Image 
+          src="/border.png"
+          alt=""
+          width={1920}
+          height={176}
+          className="w-full h-auto"
+          style={{ display: 'block' }}
+        />
       </div>
 
       {/* CSS Animations */}
       <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes twinkle {
-          0% {
-            opacity: 0.5;
-            transform: scale(1);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1.1);
-          }
-        }
-
-        @keyframes float {
+        @keyframes pulse {
           0%, 100% {
-            transform: translateY(0px);
+            opacity: 0.4;
           }
           50% {
-            transform: translateY(-10px);
+            opacity: 0.6;
           }
         }
 
@@ -415,25 +623,44 @@ const AboutWinerySection: React.FC = () => {
             transform: translateX(0);
           }
           100% {
-            transform: translateX(-50%);
+            transform: translateX(-33.333%);
           }
         }
 
+        .animate-pulse {
+          animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+
+        /* Photo Gallery Animations */
+        .photo-card:hover {
+          transform: translateY(-8px);
+        }
+
         .awards-slider-container {
-          mask: linear-gradient(90deg, transparent, white 10%, white 90%, transparent);
-          -webkit-mask: linear-gradient(90deg, transparent, white 10%, white 90%, transparent);
+          mask: linear-gradient(90deg, transparent, white 5%, white 95%, transparent);
+          -webkit-mask: linear-gradient(90deg, transparent, white 5%, white 95%, transparent);
         }
 
         .awards-slider {
-          animation: slide 30s linear infinite;
-          width: calc(200%);
+          animation: slide 40s linear infinite;
+          width: fit-content;
         }
 
+        .awards-slider:hover {
+          animation-play-state: paused;
+        }
 
+        .award-card {
+          transform: translateY(0);
+          transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-        .achievement-card {
-          opacity: 0;
-          animation: fadeInUp 0.8s ease-out forwards;
+        .award-card:hover {
+          transform: translateY(-8px) scale(1.02);
         }
       `}</style>
     </section>

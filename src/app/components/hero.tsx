@@ -1,14 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Play, Award, MapPin, X } from "lucide-react";
+import { Play, MapPin, X } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface HeroSectionProps {
   useAnimation?: boolean;
 }
 
-/* ──────────────────────────────────────────
-   📱 Static data moved outside component
-────────────────────────────────────────── */
 const videos = [
   "/video/wine.webm",
   "/video/wine2.webm",
@@ -36,26 +34,12 @@ const slides = [
 ];
 
 const HeroSection: React.FC<HeroSectionProps> = ({
-  useAnimation = false, // default false so the video sequence is active
+  useAnimation = false,
 }) => {
-  /* ──────────────────────────────────────────
-     ❶ State for text slides
-  ────────────────────────────────────────── */
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  /* ──────────────────────────────────────────
-     ❂ State for background‐video carousel
-  ────────────────────────────────────────── */
   const [currentVideo, setCurrentVideo] = useState(0);
-
-  /* ──────────────────────────────────────────
-     ❸ State for modal film
-  ────────────────────────────────────────── */
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
-  /* ──────────────────────────────────────────
-     ➍ Timed transitions - now with proper dependencies
-  ────────────────────────────────────────── */
   useEffect(() => {
     const slideTimer = setInterval(
       () => setCurrentSlide((p) => (p + 1) % slides.length),
@@ -71,17 +55,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       clearInterval(slideTimer);
       clearInterval(videoTimer);
     };
-  }, []); // Now ESLint won't complain since slides/videos are static
+  }, []);
 
-  /* ──────────────────────────────────────────
-     ➏ Render
-  ────────────────────────────────────────── */
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 sm:pt-24">
-      {/* ═════════ BACKGROUND  ═════════ */}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16">
+      {/* BACKGROUND */}
       <div className="absolute inset-0 w-full h-full">
         {useAnimation ? (
-          /* Gradient animation fallback */
           <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-red-900 to-yellow-900">
             <div className="absolute inset-0 opacity-70">
               <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-600 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
@@ -90,7 +70,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
           </div>
         ) : (
-          /* Video carousel s vylepšeným pozadím */
           <div className="relative w-full h-full">
             {videos.map((src, idx) => (
               <video
@@ -99,8 +78,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                   idx === currentVideo ? "opacity-90" : "opacity-0"
                 }`}
                 style={{
-                  objectPosition: '50% 35%', // Posun videa níže pro lepší viditelnost
-                  transform: 'scale(1.05)' // Mírné zvětšení pro lepší pokrytí
+                  objectPosition: '50% 35%',
+                  transform: 'scale(1.05)'
                 }}
                 autoPlay
                 muted
@@ -111,107 +90,90 @@ const HeroSection: React.FC<HeroSectionProps> = ({
               </video>
             ))}
             
-            {/* Gradient přechody na krajích */}
             <div className="absolute inset-0 pointer-events-none">
-              {/* Horní gradient fade */}
               <div className="absolute top-0 left-0 right-0 h-32 sm:h-40 lg:h-48 bg-gradient-to-b from-black/80 via-black/40 to-transparent"></div>
-              
-              {/* Dolní gradient fade */}
               <div className="absolute bottom-0 left-0 right-0 h-32 sm:h-40 lg:h-48 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
-              
-              {/* Levý gradient fade */}
               <div className="absolute top-0 bottom-0 left-0 w-16 sm:w-24 lg:w-32 bg-gradient-to-r from-black/50 via-black/20 to-transparent"></div>
-              
-              {/* Pravý gradient fade */}
               <div className="absolute top-0 bottom-0 right-0 w-16 sm:w-24 lg:w-32 bg-gradient-to-l from-black/50 via-black/20 to-transparent"></div>
-              
-              {/* Centrální jemný overlay pro čitelnost */}
-              <div className="absolute inset-0 bg-black/25"></div>
+              <div className="absolute inset-0 bg-black/35"></div>
             </div>
           </div>
         )}
       </div>
 
-      {/* ═════════ FOREGROUND CONTENT  ═════════ */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+      {/* FOREGROUND CONTENT */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="text-center">
-          {/* ––– Award badge ––– */}
-          <div
-            className="inline-flex items-center space-x-2 bg-black/30 border border-amber-600/50 rounded-full px-4 sm:px-6 py-2 mb-6 sm:mb-8 backdrop-blur-sm"
-            style={{ borderColor: "#ab8754" }}
-          >
-            <Award
-              className="h-3 sm:h-4 w-3 sm:w-4 text-amber-400"
-              style={{ color: "#ab8754" }}
-            />
-            <span
-              className="text-amber-400 text-xs sm:text-sm font-medium tracking-wide"
-              style={{ color: "#ab8754" }}
-            >
-              VÍTĚZ WINE COMPETITION 2024
-            </span>
-          </div>
-
-          {/* ––– Title & stars ––– */}
-          <div className="space-y-6 sm:space-y-8 mb-12 sm:mb-16">
+          {/* Title & stars */}
+          <div className="space-y-4 sm:space-y-6 md:space-y-8 mb-8 sm:mb-12 md:mb-16">
             <div className="overflow-hidden">
-              <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold leading-none mb-4">
-                <span className="inline-block text-white">Mi</span>
-                <span
-                  className="inline-block text-amber-400"
-                  style={{ color: "#ab8754" }}
-                >
-                  Queen
+              {/* Hlavní nadpis s Framer Motion */}
+              <motion.h1 
+                className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight sm:leading-tight md:leading-none mb-3 sm:mb-4 px-2"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+              >
+                <span className="inline-block text-white">
+                  Mikulovská královna vín
                 </span>
-              </h1>
+              </motion.h1>
 
-               {/* ––– Text pod hvězdami ––– */}
-              <div className="mb-6">
-                <p className="text-gray-300 text-sm sm:text-base font-light tracking-wide">
-                  Každoročně oceňované ekologické vinařství
-                </p>
-              </div>
-              <div className="flex justify-center space-x-2 mb-6">
+              {/* Eco Badge s animací */}
+              <motion.div 
+                className="flex justify-center mb-4 sm:mb-6 px-4"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-green-900/30 to-emerald-900/30 backdrop-blur-sm border border-green-500/30 rounded-full px-3 sm:px-4 md:px-5 py-2 sm:py-2.5">
+                  <svg className="w-4 sm:w-5 h-4 sm:h-5 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-green-300 text-xs sm:text-sm font-medium">
+                    Každoročně oceňované ekologické vinařství
+                  </span>
+                </div>
+              </motion.div>
+              
+              {/* Stars s postupnou animací */}
+              <motion.div 
+                className="flex justify-center space-x-2 sm:space-x-3 mb-4 sm:mb-6"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
                 {[...Array(4)].map((_, i) => (
-                  <div
+                  <motion.div
                     key={i}
-                    className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400 star-glow text-2xl sm:text-3xl flex items-center justify-center"
-                    style={{ animationDelay: `${i * 0.5}s` }}
+                    className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-yellow-400 star-glow text-2xl sm:text-3xl md:text-4xl flex items-center justify-center"
+                    initial={{ opacity: 0, scale: 0 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ 
+                      duration: 0.4, 
+                      delay: 0.4 + (i * 0.1),
+                      type: "spring",
+                      stiffness: 200
+                    }}
                   >
                     ★
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
-              
-             
+              </motion.div>
             </div>
 
-            {/* ––– Decorative line ––– */}
-            <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-6 sm:mb-8">
-              <div
-                className="w-8 sm:w-16 h-px bg-gradient-to-r from-transparent to-amber-400"
-                style={{ background: "linear-gradient(to right, transparent, #ab8754)" }}
-              />
-              <div
-                className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-amber-400 rounded-full"
-                style={{ backgroundColor: "#ab8754" }}
-              />
-              <div
-                className="w-4 sm:w-8 h-px bg-amber-400"
-                style={{ backgroundColor: "#ab8754" }}
-              />
-              <div
-                className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-amber-400 rounded-full"
-                style={{ backgroundColor: "#ab8754" }}
-              />
-              <div
-                className="w-8 sm:w-16 h-px bg-gradient-to-l from-transparent to-amber-400"
-                style={{ background: "linear-gradient(to left, transparent, #ab8754)" }}
-              />
-            </div>
-
-            {/* ––– Rotating slide content ––– */}
-            <div className="h-36 sm:h-40 relative overflow-hidden px-4">
+            {/* Rotating slide content */}
+            <motion.div 
+              className="h-44 sm:h-48 md:h-40 lg:h-36 relative overflow-hidden px-4 sm:px-6"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.5 }}
+            >
               {slides.map((slide, index) => (
                 <div
                   key={index}
@@ -221,29 +183,31 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                       : "opacity-0 translate-y-8"
                   }`}
                 >
-                  <h2 className="text-xl sm:text-3xl md:text-4xl font-light text-white mb-2">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light text-white mb-2 sm:mb-3 leading-snug px-2">
                     {slide.title}
                   </h2>
+                  
                   <div
-                    className="text-amber-400 text-sm sm:text-lg font-medium tracking-[0.1em] sm:tracking-[0.2em] uppercase mb-2 sm:mb-4 whitespace-nowrap"
+                    className="text-amber-400 text-xs sm:text-sm md:text-base lg:text-lg font-medium tracking-wide sm:tracking-wider uppercase mb-2 sm:mb-3 md:mb-4"
                     style={{ color: "#ab8754" }}
                   >
                     {slide.subtitle}
                   </div>
-                  <p className="text-base sm:text-xl text-gray-200 font-light leading-relaxed max-w-3xl mx-auto">
+                  
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-200 font-light leading-relaxed max-w-3xl mx-auto px-2">
                     {slide.description}
                   </p>
                 </div>
               ))}
-            </div>
+            </motion.div>
 
-            {/* ––– Slide indicators ––– */}
-            <div className="flex justify-center space-x-2 mb-8">
+            {/* Slide indicators */}
+            <div className="flex justify-center space-x-2 sm:space-x-3 mb-6 sm:mb-8">
               {slides.map((_, index) => (
                 <button
                   key={index}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    index === currentSlide ? "w-6 sm:w-8" : "hover:bg-white/50"
+                  className={`h-2 sm:h-2.5 rounded-full transition-all duration-300 ${
+                    index === currentSlide ? "w-6 sm:w-8 md:w-10" : "w-2 sm:w-2.5 hover:bg-white/50"
                   }`}
                   style={{
                     backgroundColor:
@@ -257,65 +221,82 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
           </div>
 
-          {/* ––– CTA buttons ––– */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 sm:mb-16 px-4">
-            <button className="group relative overflow-hidden w-full sm:w-auto">
-              <div
-                className="absolute inset-0 bg-amber-600 rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"
-                style={{ backgroundColor: "#ab8754" }}
-              />
-              <div
-                className="relative bg-amber-600 hover:bg-amber-700 text-white px-8 sm:px-12 py-3 sm:py-4 rounded-full transition-all duration-300 font-medium text-base sm:text-lg tracking-wide shadow-2xl transform group-hover:scale-105 text-center whitespace-nowrap"
-                style={{ backgroundColor: "#ab8754" }}
-              >
-                Objevte kolekci
-              </div>
-            </button>
+          {/* CTA buttons s animací */}
+          <motion.div 
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-8 sm:mb-12 md:mb-16 px-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            <a 
+              href="/vsechna-nase-vina"
+              className="relative group px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 bg-white rounded-full overflow-hidden transition-all duration-300 w-full sm:w-auto sm:min-w-[200px] md:min-w-[220px] text-center block cursor-pointer"
+            >
+              <span className="relative z-10 text-black group-hover:text-white transition-colors duration-300 font-semibold text-sm sm:text-base">
+                Objevte naše vína
+              </span>
+              <div className="absolute -inset-1 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-bottom bg-[#ab8754]" />
+            </a>
+            
             <button
-              className="group relative overflow-hidden w-full sm:w-auto"
+              className="relative group px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 bg-white rounded-full overflow-hidden transition-all duration-300 w-full sm:w-auto sm:min-w-[200px] md:min-w-[220px] cursor-pointer"
               onClick={() => setIsVideoPlaying(true)}
             >
-              <div className="absolute inset-0 border-2 border-white/30 rounded-full group-hover:border-white/50 transition-all duration-300"></div>
-              <div className="relative flex items-center justify-center space-x-3 text-gray-200 hover:text-white transition-colors duration-300 py-3 px-8 sm:px-12 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-sm">
-                <div className="relative">
-                  <div className="w-6 h-6 border border-current rounded-full flex items-center justify-center">
-                    <Play className="h-3 w-3 ml-0.5" />
-                  </div>
-                </div>
-                <span className="text-base sm:text-lg font-medium whitespace-nowrap">
-                  Příběh vinařství
-                </span>
-              </div>
+              <span className="relative z-10 text-black group-hover:text-white transition-colors duration-300 font-semibold text-sm sm:text-base flex items-center justify-center gap-2">
+                <Play className="h-4 w-4 fill-current" />
+                Přehrát video
+              </span>
+              <div className="absolute -inset-1 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-bottom bg-[#ab8754]" />
             </button>
-          </div>
+          </motion.div>
 
-          {/* ––– Location badge ––– */}
-          <div className="inline-flex items-center space-x-2 text-gray-300 text-sm">
-            <MapPin className="h-4 w-4" />
-            <span>Mikulov, Moravskoslezský kraj</span>
-          </div>
+          {/* Location badge s animací */}
+          <motion.div 
+            className="inline-flex items-center space-x-2 bg-black/20 backdrop-blur-sm border border-white/20 rounded-full px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 mx-4"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+          >
+            <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-amber-400 flex-shrink-0" style={{ color: "#ab8754" }} />
+            <span className="text-gray-200 text-xs sm:text-sm md:text-base font-medium whitespace-nowrap">
+              Mikulov, jižní Morava
+            </span>
+          </motion.div>
         </div>
       </div>
 
-      {/* ═════════ MODAL VIDEO PLAYER ═════════ */}
+      {/* MODAL VIDEO PLAYER */}
       {isVideoPlaying && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative max-w-4xl w-full aspect-video bg-gray-900 rounded-lg sm:rounded-2xl overflow-hidden">
+        <motion.div 
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <motion.div 
+            className="relative max-w-4xl w-full aspect-video bg-gray-900 rounded-lg sm:rounded-2xl overflow-hidden"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
+          >
             <button
               onClick={() => setIsVideoPlaying(false)}
-              className="absolute top-2 sm:top-4 right-2 sm:right-4 text-white/70 hover:text-white z-10 p-2 bg-black/30 rounded-full"
+              className="absolute top-2 sm:top-4 right-2 sm:right-4 text-white/70 hover:text-white z-10 p-2 bg-black/30 rounded-full cursor-pointer"
             >
               <X className="w-5 sm:w-6 h-5 sm:h-6" />
             </button>
             <video className="w-full h-full" controls autoPlay>
-              {/* You can also switch this to wine2/wine3 if preferred */}
-              <source src="/video/wine.webm" type="video/webm" />
+              <source src="/video/adoptuj-vinohrad.webm" type="video/webm" />
             </video>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
 
-      {/* ═════════ LOCAL STYLES ═════════ */}
+      {/* LOCAL STYLES */}
       <style jsx>{`
         .animation-delay-200 {
           animation-delay: 2s;

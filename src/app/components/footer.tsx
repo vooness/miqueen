@@ -1,124 +1,75 @@
+"use client";
+
 import React from 'react';
-import { Wine, MapPin, Phone, Clock, Facebook, Instagram, Youtube, Award, Heart } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Phone, Mail, Instagram, Facebook, ArrowRight } from 'lucide-react';
 
 const Footer = () => {
-  const wineCategories = [
-    'Vína bílá',
-    'Vína červená', 
-    'Vína růžová a klaret',
-    'Frizzante',
-    'MiQueen mini',
-    'Limitované edice'
-  ];
-
-  const quickLinks = [
-    'Degustační programy',
-    'Vinařské prohlídky',
-    'Firemní události',
-    'Svatební balíčky',
-    'Wine Club',
-    'Gift Cards'
-  ];
-
   return (
-    <footer className="relative text-white overflow-hidden" style={{ backgroundColor: '#ab8754' }}>
+    <footer className="relative bg-gradient-to-b from-stone-950 to-black">
+      {/* Top decorative border - matches your wood theme */}
+      <div className="h-px bg-gradient-to-r from-transparent via-amber-700/40 to-transparent" />
       
-      {/* Vlnitá maska nahoře */}
-      <div className="absolute top-0 left-0 w-full overflow-hidden leading-none transform rotate-180">
-        <svg 
-          className="relative block w-full h-20" 
-          data-name="Layer 1" 
-          xmlns="http://www.w3.org/2000/svg" 
-          viewBox="0 0 1200 120" 
-          preserveAspectRatio="none"
-        >
-          <path 
-            d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" 
-            fill="#1C1C1E"
-          ></path>
-        </svg>
-      </div>
-
-      {/* Background elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white rounded-full filter blur-3xl opacity-5"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-black rounded-full filter blur-3xl opacity-10"></div>
-      </div>
-
-      <div className="relative">
-        {/* Main footer content */}
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-20">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="px-6 lg:px-12 py-16">
+        <div className="max-w-7xl mx-auto">
+          
+          {/* Main Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
             
-            {/* Brand section */}
-            <div className="lg:col-span-2">
-              <div className="flex items-center space-x-3 mb-8">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-white rounded-full blur-lg opacity-30"></div>
-                  <div className="relative bg-white p-3 rounded-full shadow-xl">
-                    <Wine className="h-8 w-8" style={{ color: '#ab8754' }} />
-                  </div>
-                </div>
-                <div>
-                  <span className="text-3xl font-bold text-white">
-                    MiQueen
-                  </span>
-                  <div className="text-sm text-white/80 font-light tracking-[0.2em] uppercase">
-                    Mikulov Estate
-                  </div>
-                </div>
+            {/* Brand */}
+            <div>
+              <div className="mb-6">
+                <Image 
+                  src="/logo-white.png" 
+                  alt="MiQueen" 
+                  width={160}
+                  height={64}
+                  className="h-16 w-auto"
+                />
               </div>
               
-              <p className="text-white/80 mb-8 leading-relaxed text-lg max-w-md">
-                Rodinné vinařství s desetiletou tradicí. Pěstujeme prémiová vína 
-                na svazích Pálavy s respektem k terroir a vinařskému řemeslu.
+              <p className="text-stone-400 text-sm leading-relaxed mb-6">
+                Prémiové moravské vinařství s rodinnou tradicí. 
+                Vytváříme vína s charakterem a příběhem již od roku 2015.
               </p>
 
-              {/* Awards */}
-              <div className="flex items-center space-x-4 mb-8">
-                <div className="flex items-center space-x-2 bg-white/20 border border-white/30 rounded-full px-4 py-2 backdrop-blur-sm">
-                  <Award className="h-4 w-4 text-white" />
-                  <span className="text-white text-sm font-medium">Wine Awards 2024</span>
-                </div>
-              </div>
-
-              {/* Social media */}
-              <div className="flex space-x-6">
-                {[
-                  { icon: Facebook, href: '#', label: 'Facebook' },
-                  { icon: Instagram, href: '#', label: 'Instagram' },
-                  { icon: Youtube, href: '#', label: 'YouTube' }
-                ].map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.href}
-                    className="group relative"
-                    aria-label={social.label}
-                  >
-                    <div className="absolute inset-0 bg-white rounded-full blur opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                    <div className="relative text-white/70 hover:text-white transition-colors duration-300 p-3">
-                      <social.icon className="h-6 w-6" />
-                    </div>
-                  </a>
-                ))}
-              </div>
+              {/* CTA matching your site button */}
+              <Link 
+                href="/vsechna-nase-vina" 
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium text-white transition-all group"
+                style={{ 
+                  backgroundColor: '#ab8754',
+                  boxShadow: '0 2px 8px rgba(171, 135, 84, 0.3)'
+                }}
+              >
+                Objevte naše vína
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
             </div>
 
-            {/* Wine Collections */}
+            {/* Navigation Links */}
             <div>
-              <h3 className="text-white font-semibold mb-8 text-lg tracking-wide">
-                Naše kolekce
+              <h3 className="font-medium mb-6 text-sm uppercase tracking-[0.15em]" style={{ color: '#d4a574' }}>
+                Navigace
               </h3>
-              <ul className="space-y-4">
-                {wineCategories.map((category, index) => (
-                  <li key={index}>
-                    <a 
-                      href={`#${category.toLowerCase().replace(/\s+/g, '-')}`}
-                      className="text-white/70 hover:text-white transition-colors duration-300 group flex items-center"
+              <ul className="space-y-3">
+                {[
+                  { label: 'Adoptuj vinohrad', href: '/adoptuj-vinohrad' },
+                  { label: 'Všechna vína', href: '/vsechna-nase-vina' },
+                  { label: 'Akční nabídka', href: '/akcni-nabidka' },
+                  { label: 'MiQueen mini', href: '/miqueen-mini' }
+                ].map((item) => (
+                  <li key={item.href}>
+                    <Link 
+                      href={item.href} 
+                      className="text-stone-500 hover:text-stone-300 text-sm transition-colors duration-200 flex items-center group"
                     >
-                      <span className="w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-4 mr-0 group-hover:mr-3"></span>
-                      {category}
-                    </a>
+                      <span className="w-0 h-px mr-0 group-hover:w-3 group-hover:mr-2 transition-all duration-300" 
+                        style={{ backgroundColor: '#ab8754' }}
+                      />
+                      {item.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -126,115 +77,147 @@ const Footer = () => {
 
             {/* Services */}
             <div>
-              <h3 className="text-white font-semibold mb-8 text-lg tracking-wide">
-                Služby & Zážitky
+              <h3 className="font-medium mb-6 text-sm uppercase tracking-[0.15em]" style={{ color: '#d4a574' }}>
+                Služby
               </h3>
-              <ul className="space-y-4">
-                {quickLinks.map((link, index) => (
-                  <li key={index}>
-                    <a 
-                      href={`#${link.toLowerCase().replace(/\s+/g, '-')}`}
-                      className="text-white/70 hover:text-white transition-colors duration-300 group flex items-center"
+              <ul className="space-y-3">
+                {[
+                  { label: 'Poukazy', href: '/poukazy' },
+                  { label: 'Pro firmy', href: '/pro-firmy' },
+                  { label: 'Degustace', href: '/degustace' },
+                  { label: 'Kontakty', href: '/kontakty' }
+                ].map((item) => (
+                  <li key={item.href}>
+                    <Link 
+                      href={item.href} 
+                      className="text-stone-500 hover:text-stone-300 text-sm transition-colors duration-200 flex items-center group"
                     >
-                      <span className="w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-4 mr-0 group-hover:mr-3"></span>
-                      {link}
-                    </a>
+                      <span className="w-0 h-px mr-0 group-hover:w-3 group-hover:mr-2 transition-all duration-300" 
+                        style={{ backgroundColor: '#ab8754' }}
+                      />
+                      {item.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
+
+            {/* Contact */}
+            <div>
+              <h3 className="font-medium mb-6 text-sm uppercase tracking-[0.15em]" style={{ color: '#d4a574' }}>
+                Spojte se s námi
+              </h3>
+              <ul className="space-y-3">
+                <li>
+                  <a href="tel:+420731610344" className="text-stone-500 hover:text-stone-300 text-sm transition-colors duration-200 flex items-center gap-2">
+                    <Phone className="w-3.5 h-3.5" style={{ color: '#ab8754' }} />
+                    +420 731 610 344
+                  </a>
+                </li>
+                <li>
+                  <a href="mailto:info@miqueen.cz" className="text-stone-500 hover:text-stone-300 text-sm transition-colors duration-200 flex items-center gap-2">
+                    <Mail className="w-3.5 h-3.5" style={{ color: '#ab8754' }} />
+                    info@miqueen.cz
+                  </a>
+                </li>
+                <li className="text-stone-500 text-sm">
+                  Za Valama 938, 696 15 Čejkovice
+                </li>
+                <li className="text-stone-600 text-xs pt-3 space-y-0.5">
+                  <div>Po-Pá: 9:00-18:00</div>
+                  <div>So: 10:00-16:00</div>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          {/* Contact section */}
-          <div className="mt-16 pt-12 border-t border-white/20">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              
-              {/* Address */}
-              <div className="group">
-                <div className="flex items-start space-x-4">
-                  <div className="mt-1 p-3 bg-white/20 rounded-xl group-hover:bg-white/30 transition-colors duration-300 backdrop-blur-sm">
-                    <MapPin className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-white font-medium mb-2">Adresa vinařství</h4>
-                    <p className="text-white/70 leading-relaxed">
-                      Vinařství MiQueen<br />
-                      Mikulov 692 01<br />
-                      Česká republika
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Contact */}
-              <div className="group">
-                <div className="flex items-start space-x-4">
-                  <div className="mt-1 p-3 bg-white/20 rounded-xl group-hover:bg-white/30 transition-colors duration-300 backdrop-blur-sm">
-                    <Phone className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-white font-medium mb-2">Kontakt</h4>
-                    <p className="text-white/70 mb-1">+420 XXX XXX XXX</p>
-                    <a 
-                      href="mailto:info@miqueen.cz" 
-                      className="text-white hover:text-white/80 transition-colors duration-300"
-                    >
-                      info@miqueen.cz
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              {/* Opening hours */}
-              <div className="group">
-                <div className="flex items-start space-x-4">
-                  <div className="mt-1 p-3 bg-white/20 rounded-xl group-hover:bg-white/30 transition-colors duration-300 backdrop-blur-sm">
-                    <Clock className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-white font-medium mb-2">Otevírací doba</h4>
-                    <div className="text-white/70 space-y-1 text-sm">
-                      <div>Po - Pá: 9:00 - 18:00</div>
-                      <div>So: 10:00 - 16:00</div>
-                      <div>Ne: Po domluvě</div>
-                    </div>
+          {/* Partner Logo Section */}
+          <div className="mb-8 pb-8 border-b border-stone-900/50">
+            <div className="flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-stone-600 text-xs uppercase tracking-wider mb-4">
+                  Partner vinařství
+                </p>
+                <div className="flex items-center justify-center">
+                  <div className="relative px-6 py-4 rounded-xl bg-stone-900/30 backdrop-blur-sm border border-stone-800/50 hover:border-[#ab8754]/30 transition-all duration-300">
+                    <Image 
+                      src="/new-logo.svg" 
+                      alt="Partner Logo" 
+                      width={140}
+                      height={50}
+                      className="h-12 w-auto opacity-70 hover:opacity-100 transition-opacity duration-300"
+                    />
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Bottom bar */}
-        <div className="border-t border-white/20 bg-black/10 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
-            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-              
-              <div className="flex items-center space-x-2 text-white/60 text-sm">
-                <span>© 2025 MiQueen Vinařství.</span>
-                <Heart className="h-4 w-4 text-red-400" />
-                <span>Vytvořeno s láskou v Mikulově.</span>
+          {/* Bottom section */}
+          <div className="pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="flex items-center gap-6">
+                <p className="text-stone-600 text-xs">
+                  © 2025 MiQueen. Všechna práva vyhrazena.
+                </p>
+                
+                {/* Social icons */}
+                <div className="flex items-center gap-1">
+                  <a
+                    href="https://www.facebook.com/vinarstvi.miqueen/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
+                    style={{ 
+                      backgroundColor: 'rgba(171, 135, 84, 0.1)',
+                      borderColor: 'rgba(171, 135, 84, 0.2)',
+                      borderWidth: '1px'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(171, 135, 84, 0.2)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(171, 135, 84, 0.1)';
+                    }}
+                  >
+                    <Facebook className="w-3.5 h-3.5" style={{ color: '#d4a574' }} />
+                  </a>
+                  
+                  <a
+                    href="https://www.instagram.com/vinarstvi.miqueen/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
+                    style={{ 
+                      backgroundColor: 'rgba(171, 135, 84, 0.1)',
+                      borderColor: 'rgba(171, 135, 84, 0.2)',
+                      borderWidth: '1px'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(171, 135, 84, 0.2)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(171, 135, 84, 0.1)';
+                    }}
+                  >
+                    <Instagram className="w-3.5 h-3.5" style={{ color: '#d4a574' }} />
+                  </a>
+                </div>
               </div>
 
-              <div className="flex space-x-8 text-sm">
-                <a 
-                  href="#privacy" 
-                  className="text-white/60 hover:text-white transition-colors duration-300"
-                >
-                  Ochrana osobních údajů
-                </a>
-                <a 
-                  href="#terms" 
-                  className="text-white/60 hover:text-white transition-colors duration-300"
-                >
-                  Obchodní podmínky
-                </a>
-                <a 
-                  href="#cookies" 
-                  className="text-white/60 hover:text-white transition-colors duration-300"
-                >
+              {/* Legal */}
+              <div className="flex items-center gap-5 text-xs">
+                <Link href="/zasady-ochrany-osobnich-udaju" className="text-stone-600 hover:text-stone-400 transition-colors">
+                  Ochrana údajů
+                </Link>
+                <span className="text-stone-700">·</span>
+                <Link href="/obchodni-podminky" className="text-stone-600 hover:text-stone-400 transition-colors">
+                  Podmínky
+                </Link>
+                <span className="text-stone-700">·</span>
+                <Link href="/cookies" className="text-stone-600 hover:text-stone-400 transition-colors">
                   Cookies
-                </a>
+                </Link>
               </div>
             </div>
           </div>
