@@ -40,8 +40,11 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   const [currentVideo, setCurrentVideo] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [loadedVideos, setLoadedVideos] = useState<Set<number>>(new Set([0]));
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const prefersReducedMotion = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isInView, setIsInView] = useState(false);
 
   // Detekce mobilního zařízení
   useEffect(() => {
@@ -54,8 +57,41 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Intersection Observer pro lazy loading
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Inteligentní preload následujícího videa
+  useEffect(() => {
+    if (!isInView || useAnimation) return;
+
+    const nextVideo = (currentVideo + 1) % videos.length;
+    
+    // Načti následující video jen pokud ještě není načtené
+    if (!loadedVideos.has(nextVideo)) {
+      const timer = setTimeout(() => {
+        setLoadedVideos(prev => new Set(prev).add(nextVideo));
+      }, 1000); // Počká 1s než začne načítat další video
+      
+      return () => clearTimeout(timer);
+    }
+  }, [currentVideo, isInView, useAnimation, loadedVideos]);
+
   // Optimalizované časovače s cleanup
   useEffect(() => {
+    if (!isInView) return;
+
     const slideInterval = isMobile ? 10000 : 8000;
     const videoInterval = isMobile ? 10000 : 8000;
 
@@ -73,43 +109,41 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       clearInterval(slideTimer);
       clearInterval(videoTimer);
     };
-  }, [isMobile]);
+  }, [isMobile, isInView]);
 
-  // Preload pouze aktuálního a následujícího videa
+  // Optimalizované přehrávání videí
   useEffect(() => {
-    if (useAnimation || isMobile) return;
+    if (useAnimation || !isInView) return;
 
     const currentRef = videoRefs.current[currentVideo];
-    const nextVideo = (currentVideo + 1) % videos.length;
-    const nextRef = videoRefs.current[nextVideo];
-
-    if (currentRef) {
-      currentRef.play().catch(() => {});
+    
+    if (currentRef && loadedVideos.has(currentVideo)) {
+      // Použij requestAnimationFrame pro plynulejší přehrávání
+      requestAnimationFrame(() => {
+        currentRef.play().catch(() => {});
+      });
     }
 
-    if (nextRef && nextRef.readyState < 3) {
-      nextRef.load();
-    }
-
+    // Pozastaví ostatní videa
     videoRefs.current.forEach((ref, idx) => {
-      if (ref && idx !== currentVideo && idx !== nextVideo) {
+      if (ref && idx !== currentVideo && ref.readyState >= 2) {
         ref.pause();
       }
     });
-  }, [currentVideo, useAnimation, isMobile]);
+  }, [currentVideo, useAnimation, isInView, loadedVideos]);
 
-  // Memoizované animační varianty
+  // Zjednodušené animace pro mobily
   const fadeInUp = useMemo(() => 
-    prefersReducedMotion 
+    prefersReducedMotion || isMobile
       ? { opacity: 1, y: 0 }
       : { opacity: 1, y: 0 }
-  , [prefersReducedMotion]);
+  , [prefersReducedMotion, isMobile]);
 
   const initialState = useMemo(() => 
-    prefersReducedMotion 
+    prefersReducedMotion || isMobile
       ? { opacity: 1, y: 0 }
       : { opacity: 0, y: 30 }
-  , [prefersReducedMotion]);
+  , [prefersReducedMotion, isMobile]);
 
   const closeModal = useCallback(() => {
     setIsVideoPlaying(false);
@@ -119,8 +153,40 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     setCurrentSlide(index);
   }, []);
 
+  // Komponenta pro video s lazy loadingem
+  const VideoElement = useCallback(({ src, idx }: { src: string; idx: number }) => {
+    const shouldLoad = loadedVideos.has(idx);
+    const isActive = idx === currentVideo;
+    
+    return (
+      <video
+        key={src}
+        ref={(el) => { videoRefs.current[idx] = el; }}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
+          isActive ? "opacity-90" : "opacity-0"
+        }`}
+        style={{
+          objectPosition: '50% 35%',
+          transform: 'scale(1.05)',
+          willChange: isActive ? 'opacity' : 'auto'
+        }}
+        autoPlay={idx === 0 && isInView}
+        muted
+        loop
+        playsInline
+        preload={shouldLoad ? "auto" : "none"}
+        poster={isMobile ? `/video/wine${idx + 1}-poster.jpg` : undefined}
+      >
+        {shouldLoad && <source src={src} type="video/webm" />}
+      </video>
+    );
+  }, [loadedVideos, currentVideo, isInView, isMobile]);
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16">
+    <section 
+      ref={sectionRef}
+      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16"
+    >
       {/* BACKGROUND */}
       <div className="absolute inset-0 w-full h-full">
         {useAnimation ? (
@@ -134,26 +200,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         ) : (
           <div className="relative w-full h-full">
             {videos.map((src, idx) => (
-              <video
-                key={src}
-                ref={(el) => { videoRefs.current[idx] = el; }}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
-                  idx === currentVideo ? "opacity-90" : "opacity-0"
-                }`}
-                style={{
-                  objectPosition: '50% 35%',
-                  transform: 'scale(1.05)',
-                  willChange: idx === currentVideo || idx === (currentVideo + 1) % videos.length ? 'opacity' : 'auto'
-                }}
-                autoPlay={idx === 0}
-                muted
-                loop
-                playsInline
-                preload={idx === 0 ? "auto" : "none"}
-                poster={isMobile ? `/video/wine${idx + 1}-poster.jpg` : undefined}
-              >
-                <source src={src} type="video/webm" />
-              </video>
+              <VideoElement key={src} src={src} idx={idx} />
             ))}
             
             <div className="absolute inset-0 pointer-events-none">
@@ -177,42 +224,45 @@ const HeroSection: React.FC<HeroSectionProps> = ({
           {/* Title & stars */}
           <div className="space-y-4 sm:space-y-6 md:space-y-8 mb-6 sm:mb-8 md:mb-12">
             <div className="overflow-hidden">
-              {/* Hlavní nadpis s Framer Motion */}
-              <motion.h1 
-                className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight sm:leading-tight md:leading-none mb-3 sm:mb-4 px-2"
-                initial={initialState}
-                whileInView={fadeInUp}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: "easeOut" }}
-              >
-                <span className="inline-block text-white">
-                  Mikulovská královna vín
-                </span>
-              </motion.h1>
-
-              {/* Eco Badge s animací */}
-              <motion.div 
-                className="flex justify-center mb-4 sm:mb-6 px-4"
-                initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.9 }}
-                whileInView={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: 0.2 }}
-              >
-                <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-green-900/30 to-emerald-900/30 backdrop-blur-sm border border-green-500/30 rounded-full px-3 sm:px-4 md:px-5 py-2 sm:py-2.5">
-                  <svg className="w-4 sm:w-5 h-4 sm:h-5 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-green-300 text-xs sm:text-sm font-medium">
-                    Každoročně oceňované ekologické vinařství
+              {/* Hlavní nadpis - méně animací na mobilu */}
+              {isMobile ? (
+                <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight sm:leading-tight md:leading-none mb-3 sm:mb-4 px-2">
+                  <span className="inline-block text-white">
+                    Mikulovská královna vín
                   </span>
-                </div>
-              </motion.div>
-              
-              {/* Stars s postupnou animací */}
+                </h1>
+              ) : (
+                <motion.h1 
+                  className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight sm:leading-tight md:leading-none mb-3 sm:mb-4 px-2"
+                  initial={initialState}
+                  whileInView={fadeInUp}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: "easeOut" }}
+                >
+                  <span className="inline-block text-white">
+                    Mikulovská královna vín
+                  </span>
+                </motion.h1>
+              )}
+            </div>
+
+            {/* Stars - statické na mobilu */}
+            {isMobile ? (
+              <div className="flex justify-center items-center space-x-1 sm:space-x-2 mb-4 sm:mb-6 md:mb-8">
+                {[...Array(4)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-yellow-400 text-2xl sm:text-3xl md:text-4xl flex items-center justify-center"
+                  >
+                    ★
+                  </div>
+                ))}
+              </div>
+            ) : (
               <motion.div 
-                className="flex justify-center space-x-2 sm:space-x-3 mb-4 sm:mb-6"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
+                className="flex justify-center items-center space-x-1 sm:space-x-2 mb-4 sm:mb-6 md:mb-8"
+                initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+                whileInView={prefersReducedMotion ? { opacity: 1 } : { opacity: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: 0.3 }}
               >
@@ -234,15 +284,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                   </motion.div>
                 ))}
               </motion.div>
-            </div>
+            )}
 
-            {/* Rotating slide content - ZMENŠENÁ VÝŠKA */}
+            {/* Rotating slide content */}
             <motion.div 
               className="h-32 sm:h-36 md:h-32 lg:h-28 relative overflow-hidden px-4 sm:px-6"
               initial={initialState}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.7, delay: 0.5 }}
+              transition={{ duration: prefersReducedMotion || isMobile ? 0 : 0.7, delay: 0.5 }}
             >
               {slides.map((slide, index) => (
                 <div
@@ -272,7 +322,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
               ))}
             </motion.div>
 
-            {/* Slide indicators - ZMENŠENÝ MARGIN */}
+            {/* Slide indicators */}
             <div className="flex justify-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
               {slides.map((_, index) => (
                 <button
@@ -293,13 +343,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
           </div>
 
-          {/* CTA buttons s animací - ZMENŠENÝ MARGIN */}
+          {/* CTA buttons */}
           <motion.div 
             className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-6 sm:mb-8 md:mb-10 px-4"
-            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
-            whileInView={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            initial={prefersReducedMotion || isMobile ? { opacity: 1 } : { opacity: 0, y: 20 }}
+            whileInView={prefersReducedMotion || isMobile ? { opacity: 1 } : { opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: 0.6 }}
+            transition={{ duration: prefersReducedMotion || isMobile ? 0 : 0.6, delay: 0.6 }}
           >
             <a 
               href="/vsechna-nase-vina"
@@ -324,13 +374,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             </button>
           </motion.div>
 
-          {/* Location badge s animací */}
+          {/* Location badge */}
           <motion.div 
             className="inline-flex items-center space-x-2 bg-black/20 backdrop-blur-sm border border-white/20 rounded-full px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 mx-4"
-            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.9 }}
-            whileInView={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+            initial={prefersReducedMotion || isMobile ? { opacity: 1 } : { opacity: 0, scale: 0.9 }}
+            whileInView={prefersReducedMotion || isMobile ? { opacity: 1 } : { opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: 0.7 }}
+            transition={{ duration: prefersReducedMotion || isMobile ? 0 : 0.5, delay: 0.7 }}
           >
             <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-amber-400 flex-shrink-0" style={{ color: "#ab8754" }} />
             <span className="text-gray-200 text-xs sm:text-sm md:text-base font-medium whitespace-nowrap">
@@ -340,7 +390,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         </div>
       </div>
 
-      {/* MODAL VIDEO PLAYER */}
+      {/* MODAL VIDEO PLAYER - načte se až když se klikne */}
       {isVideoPlaying && (
         <motion.div 
           className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
@@ -391,14 +441,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({
           }
         }
         .star-glow {
-          animation: starGlow 2s ease-in-out infinite;
+          animation: ${isMobile ? 'none' : 'starGlow 2s ease-in-out infinite'};
+          opacity: ${isMobile ? '1' : 'inherit'};
         }
-        ${isMobile ? `
-          .star-glow {
-            animation: none;
-            opacity: 1;
-          }
-        ` : ''}
       `}</style>
     </section>
   );

@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Wine, Heart, ShoppingBag, Star, Eye, ShoppingCart, X, Thermometer, MapPin, ChefHat, User, ChevronDown } from "lucide-react";
-import { motion, Variants } from "framer-motion";
+import { Wine, Heart, ShoppingBag, Star, ShoppingCart, X, Thermometer, MapPin, ChefHat, User, ChevronDown } from "lucide-react";
+import { motion, Variants, useReducedMotion } from "framer-motion";
 
 interface MiniWine {
   id: number;
@@ -32,6 +32,15 @@ const MiQueenMiniPage = () => {
   
   const [selectedWine, setSelectedWine] = useState<MiniWine | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const miniWines: MiniWine[] = [
     {
@@ -129,7 +138,7 @@ const MiQueenMiniPage = () => {
       badge: 'tip',
       dryness: 'Polosuché',
       alcohol: 8,
-      volume: 200, // MIMOSA mini má 200 ml
+      volume: 200,
       region: 'Znojemská podoblast',
       servingTemp: '4-6°C',
       foodPairing: ['Brunch', 'Aperitiv', 'Ovocné saláty'],
@@ -182,12 +191,13 @@ const MiQueenMiniPage = () => {
     document.body.style.overflow = 'unset';
   };
 
+  // Zjednodušené animace pro mobil a reduced motion
   const fadeInUp: Variants = {
-    hidden: { opacity: 0, y: 40 },
+    hidden: { opacity: 0, y: prefersReducedMotion ? 0 : 40 },
     visible: { 
       opacity: 1, 
       y: 0,
-      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+      transition: { duration: prefersReducedMotion ? 0.2 : 0.6, ease: [0.22, 1, 0.36, 1] }
     }
   };
 
@@ -196,7 +206,7 @@ const MiQueenMiniPage = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15
+        staggerChildren: prefersReducedMotion ? 0 : 0.15
       }
     }
   };
@@ -205,49 +215,52 @@ const MiQueenMiniPage = () => {
     <>
       <div className="min-h-screen" style={{ backgroundColor: paperColor }}>
         
-        <section className="relative overflow-hidden py-16 lg:py-20">
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl" 
-                 style={{ background: `radial-gradient(circle, ${accentColor}15, transparent)`, animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}></div>
-            <div className="absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl"
-                 style={{ background: `radial-gradient(circle, ${accentColor}10, transparent)`, animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite 2s' }}></div>
-          </div>
+        <section className="relative overflow-hidden py-12 md:py-16 lg:py-20">
+          {/* Background animations - pouze na desktopu */}
+          {!isMobile && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl" 
+                   style={{ background: `radial-gradient(circle, ${accentColor}15, transparent)`, animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}></div>
+              <div className="absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl"
+                   style={{ background: `radial-gradient(circle, ${accentColor}10, transparent)`, animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite 2s' }}></div>
+            </div>
+          )}
 
-          <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+          <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 mt-12 md:mt-16">
             {/* Header */}
             <motion.div 
-              className="text-center mb-12 px-4"
+              className="text-center mb-10 md:mb-12 px-4"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
               variants={staggerContainer}
             >
               <motion.div 
-                className="inline-flex items-center gap-3 mb-4"
+                className="inline-flex items-center gap-2 md:gap-3 mb-3 md:mb-4"
                 variants={fadeInUp}
               >
-                <div className="h-px w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-                <Wine className="w-8 h-8" style={{ color: accentColor }} />
-                <div className="h-px w-12 bg-gradient-to-l from-transparent via-gray-300 to-transparent"></div>
+                <div className="h-px w-8 md:w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+                <Wine className="w-6 h-6 md:w-8 md:h-8" style={{ color: accentColor }} />
+                <div className="h-px w-8 md:w-12 bg-gradient-to-l from-transparent via-gray-300 to-transparent"></div>
               </motion.div>
               
               <motion.h1 
-                className="text-5xl lg:text-7xl font-light text-gray-800 mb-3"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-light text-gray-800 mb-2 md:mb-3"
                 variants={fadeInUp}
               >
                 MiQueen <span style={{ color: accentColor }}>mini</span>
               </motion.h1>
               <motion.p 
-                className="text-lg text-gray-600 max-w-2xl mx-auto"
+                className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto"
                 variants={fadeInUp}
               >
                 Kvalitní víno v kabelkovém formátu 187-200ml
               </motion.p>
             </motion.div>
 
-            {/* Benefits Grid */}
+            {/* Benefits Grid - optimalizováno pro mobil */}
             <motion.div 
-              className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10 md:mb-12"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
@@ -259,18 +272,19 @@ const MiQueenMiniPage = () => {
                   <motion.div
                     key={index}
                     variants={fadeInUp}
-                    whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                    className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-[#ab8754] hover:shadow-lg transition-all duration-300 text-center"
+                    whileHover={!isMobile ? { y: -8, transition: { duration: 0.3 } } : {}}
+                    whileTap={isMobile ? { scale: 0.98 } : {}}
+                    className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 border border-gray-200 hover:border-[#ab8754] hover:shadow-lg transition-all duration-300 text-center touch-manipulation"
                   >
-                    <div className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: `${accentColor}20` }}>
-                      <IconComponent className="w-6 h-6" style={{ color: accentColor }} />
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full mx-auto mb-3 md:mb-4 flex items-center justify-center" style={{ backgroundColor: `${accentColor}20` }}>
+                      <IconComponent className="w-5 h-5 md:w-6 md:h-6" style={{ color: accentColor }} />
                     </div>
                     
-                    <h3 className="text-base font-bold text-gray-900 mb-2">
+                    <h3 className="text-sm md:text-base font-bold text-gray-900 mb-1.5 md:mb-2">
                       {benefit.title}
                     </h3>
                     
-                    <p className="text-gray-600 text-sm leading-relaxed">
+                    <p className="text-gray-600 text-xs md:text-sm leading-relaxed">
                       {benefit.description}
                     </p>
                   </motion.div>
@@ -280,255 +294,232 @@ const MiQueenMiniPage = () => {
 
             {/* Products Section Header */}
             <motion.div 
-              className="text-center mb-10"
+              className="mb-8 text-center"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeInUp}
             >
-              <h2 className="text-3xl lg:text-4xl font-light text-gray-800 mb-2">
-                Zobrazeno <span style={{ color: accentColor }}>5</span> z celkem <span style={{ color: accentColor }}>5</span> vín
-              </h2>
+              <p className="text-gray-600 text-base md:text-lg">
+                Zobrazeno <span className="font-semibold text-xl md:text-2xl" style={{ color: accentColor }}>{miniWines.length}</span> z celkem <span className="font-semibold" style={{ color: accentColor }}>{miniWines.length}</span> vín
+              </p>
             </motion.div>
 
-            {/* Products Grid */}
-            <motion.div 
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={staggerContainer}
-            >
-              {miniWines.map((wine) => {
+            {/* Products Grid - PODLE WINEGRIDPAGE */}
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-6 lg:gap-8">
+              {miniWines.map((wine, index) => {
                 const badge = getBadgeStyle(wine.badge);
                 
                 return (
                   <motion.div
                     key={wine.id}
                     variants={fadeInUp}
-                    whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                    className="group bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-[#ab8754] hover:shadow-xl transition-all duration-300"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.05 }}
+                    whileHover={!isMobile ? { y: -8, transition: { duration: 0.3 } } : {}}
+                    whileTap={isMobile ? { scale: 0.98 } : {}}
+                    className="group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-[#ab8754]/50 transition-all duration-500 shadow-lg hover:shadow-2xl touch-manipulation"
                   >
                     {/* Image Container */}
-                    <div className="relative aspect-[3/4] bg-white overflow-hidden">
+                    <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
                       <Image
                         src={wine.image}
                         alt={wine.name}
                         fill
-                        className="object-cover object-center group-hover:scale-105 transition-transform duration-500 cursor-pointer"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        className="object-cover group-hover:scale-110 transition-transform duration-700 cursor-pointer"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         onClick={() => openModal(wine)}
+                        loading="lazy"
+                        quality={isMobile ? 75 : 90}
                       />
                       
                       {badge && (
                         <div 
-                          className="absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-md z-10"
+                          className="absolute top-2 sm:top-3 left-2 sm:left-3 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold text-white z-10 shadow-lg"
                           style={{ backgroundColor: badge.bg }}
                         >
                           {badge.text}
                         </div>
                       )}
 
-                      <div className="absolute top-3 right-3 z-10">
-                        <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-white border border-gray-200 text-gray-700 shadow-sm">
-                          {wine.volume}ml
-                        </span>
-                      </div>
-
-                      {/* Hover Quick View */}
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
-                        <button
-                          onClick={() => openModal(wine)}
-                          className="px-6 py-3 bg-white text-gray-900 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-all flex items-center gap-2 shadow-xl"
-                        >
-                          <Eye className="w-4 h-4" />
-                          Rychlý náhled
-                        </button>
-                      </div>
+                      {/* Quick view overlay - pouze desktop */}
+                      {!isMobile && (
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <button 
+                            onClick={() => openModal(wine)}
+                            className="hidden sm:flex px-6 py-3 bg-white text-gray-900 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all transform hover:scale-105 items-center gap-2 shadow-xl"
+                          >
+                            <Wine className="w-4 h-4" />
+                            Zobrazit produkt
+                          </button>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Content */}
-                    <div className="p-4">
+                    {/* Content - kompaktnější na mobilu */}
+                    <div className="p-3 sm:p-5">
                       {/* Rating */}
-                      <div className="flex items-center gap-0.5 mb-2">
+                      <div className="flex items-center gap-0.5 sm:gap-1 mb-2 sm:mb-3">
                         {[...Array(5)].map((_, i) => (
                           <Star 
                             key={i}
-                            className={`w-4 h-4 ${
+                            className={`w-3 h-3 sm:w-4 sm:h-4 ${
                               i < Math.floor(wine.rating) 
                                 ? 'text-yellow-400 fill-yellow-400' 
                                 : 'text-gray-300'
                             }`}
                           />
                         ))}
-                        <span className="text-gray-600 text-sm ml-1">({wine.rating.toFixed(1)})</span>
+                        <span className="text-gray-500 text-[10px] sm:text-sm ml-1 sm:ml-2 font-medium">({wine.rating.toFixed(1)})</span>
                       </div>
 
                       {/* Title */}
-                      <h3 className="text-gray-900 font-semibold text-base mb-2 line-clamp-2 min-h-[3rem] cursor-pointer hover:text-[#ab8754] transition-colors" onClick={() => openModal(wine)}>
+                      <h3 className="text-gray-900 font-semibold text-xs sm:text-lg mb-1 sm:mb-2 line-clamp-2 min-h-[2rem] sm:min-h-[3.5rem] cursor-pointer hover:text-[#ab8754] transition-colors" onClick={() => openModal(wine)}>
                         {wine.name}
                       </h3>
                       
-                      {/* Details Row */}
-                      <div className="flex items-center justify-between mb-2 text-sm">
-                        <p className="text-gray-600">{wine.variety}</p>
-                        <span className="text-gray-500">{wine.vintage}</span>
+                      {/* Details */}
+                      <div className="flex items-center justify-between mb-2 sm:mb-3">
+                        <p className="text-gray-600 text-[10px] sm:text-sm line-clamp-1">
+                          {wine.variety}
+                        </p>
+                        <span className="text-gray-500 text-[9px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded-full">
+                          {wine.vintage}
+                        </span>
                       </div>
-
-                      {/* Volume Badge */}
-                      <div className="mb-3">
-                        <span className="inline-block text-xs font-medium px-2 py-1 rounded" style={{ backgroundColor: "#ab875415", color: "#ab8754" }}>
+                      
+                      {/* Volume badge */}
+                      <div className="mb-2 sm:mb-3">
+                        <span className="text-[9px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full" style={{ backgroundColor: "#ab875410", color: "#ab8754" }}>
                           Mini {wine.volume}ml
                         </span>
                       </div>
                       
-                      {/* Description */}
-                      <p className="text-gray-600 text-sm mb-3 line-clamp-2 min-h-[2.5rem]">
+                      {/* Description - skrytý na mobilu */}
+                      <p className="hidden sm:block text-gray-500 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
                         {wine.description}
                       </p>
                       
-                      {/* Price Section */}
-                      <div className="border-t border-gray-100 pt-3 mb-3">
-                        <div className="flex items-end justify-between">
+                      {/* Price & Button */}
+                      <div className="flex flex-col gap-2 sm:gap-3 pt-2 sm:pt-4 border-t border-gray-100">
+                        <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-gray-500 text-xs mb-0.5">Cena</p>
-                            <p className="text-gray-900 font-bold text-2xl">
-                              {wine.price} <span className="text-lg">Kč</span>
+                            <p className="text-gray-500 text-[9px] sm:text-xs mb-0.5 sm:mb-1">Cena</p>
+                            <p className="text-gray-900 font-bold text-lg sm:text-2xl">
+                              {wine.price} <span className="text-sm sm:text-lg">Kč</span>
                             </p>
                           </div>
                           
+                          {/* Mobile: Just circle with cart icon */}
+                          <a
+                            href={wine.shopUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="sm:hidden w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-95"
+                            style={{ backgroundColor: "#ab8754" }}
+                          >
+                            <ShoppingCart className="w-4 h-4 text-white" />
+                          </a>
+                          
+                          {/* Desktop: Quality badge */}
                           {wine.quality && (
-                            <span className="text-xs font-medium text-gray-600 px-2 py-1 bg-gray-50 rounded">
+                            <span className="hidden sm:inline-block text-xs font-medium text-gray-600 px-2 py-1 bg-gray-50 rounded-lg">
                               {wine.quality}
                             </span>
                           )}
                         </div>
+                        
+                        {/* Desktop: Full button */}
+                        <a
+                          href={wine.shopUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hidden sm:flex w-full px-5 py-3 text-white rounded-full font-semibold text-sm transition-all hover:shadow-lg hover:scale-105 items-center justify-center gap-2"
+                          style={{ backgroundColor: "#ab8754" }}
+                        >
+                          <ShoppingCart className="w-4 h-4" />
+                          Koupit na e-shopu
+                        </a>
                       </div>
-                      
-                      {/* Button */}
-                      <a
-                        href={wine.shopUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block w-full py-2.5 text-white text-center rounded-lg font-semibold text-sm transition-all hover:opacity-90"
-                        style={{ backgroundColor: accentColor }}
-                      >
-                        Koupit v e-shopu
-                      </a>
                     </div>
                   </motion.div>
                 );
               })}
-            </motion.div>
-
-            {/* Bottom CTA */}
-            <motion.div 
-              className="mt-20 text-center"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-            >
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 lg:p-12 border border-gray-200 shadow-xl max-w-4xl mx-auto">
-                <Heart className="w-12 h-12 mx-auto mb-4" style={{ color: accentColor }} />
-                
-                <h3 className="text-3xl lg:text-4xl font-light text-gray-800 mb-4">
-                  Vytvoř si <span style={{ color: accentColor }}>vlastní set</span>
-                </h3>
-                
-                <p className="text-gray-600 mb-6 text-lg max-w-2xl mx-auto">
-                  Vyber si své oblíbené mini lahvičky a poskládej si degustační set přesně podle svých představ
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <a
-                    href="https://shop.miqueen.cz/mini-miqueen/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-8 py-4 text-white rounded-full font-medium text-lg transition-all hover:scale-105 shadow-lg"
-                    style={{ backgroundColor: accentColor }}
-                  >
-                    Zobrazit mini kolekci
-                  </a>
-                  
-                  <a
-                    href="https://shop.miqueen.cz/vsechna-vina/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-8 py-4 bg-white text-gray-700 rounded-full font-medium text-lg border-2 border-gray-300 transition-all hover:border-gray-400 hover:shadow-lg"
-                  >
-                    Všechna vína
-                  </a>
-                </div>
-              </div>
-            </motion.div>
+            </div>
           </div>
         </section>
       </div>
 
-      {/* Modal */}
+      {/* Modal - optimalizováno pro mobil */}
       {isModalOpen && selectedWine && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4" onClick={closeModal}>
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-          
-          <div 
-            className="relative bg-white rounded-none sm:rounded-3xl w-full sm:max-w-5xl h-full sm:h-auto sm:max-h-[90vh] overflow-hidden shadow-2xl flex flex-col"
-            onClick={(e) => e.stopPropagation()}
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end md:items-center justify-center p-0 md:p-4 overflow-hidden">
+          <motion.div 
+            className="relative bg-white w-full md:w-full md:max-w-6xl h-[90vh] md:h-auto md:max-h-[90vh] md:rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+            initial={{ opacity: 0, y: isMobile ? 100 : 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: isMobile ? 100 : 50 }}
+            transition={{ duration: 0.3 }}
           >
-            {/* Close button */}
+            {/* Close Button */}
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors shadow-lg"
+              className="absolute top-3 right-3 md:top-4 md:right-4 z-50 w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-all active:scale-90 touch-manipulation"
             >
-              <X className="w-5 h-5 text-gray-700" />
+              <X className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
             </button>
 
             <div className="flex flex-col lg:flex-row h-full overflow-hidden">
               {/* Image side */}
-              <div className="lg:w-2/5 relative bg-gradient-to-br from-gray-100 to-gray-50 flex-shrink-0">
-                <div className="relative h-[40vh] sm:h-[50vh] lg:h-full flex items-center justify-center p-6 lg:p-12">
-                  <div className="relative w-full h-full max-w-md mx-auto">
-                    <Image 
-                      src={selectedWine.image}
-                      alt={selectedWine.name}
-                      fill
-                      className="object-contain"
-                      sizes="(max-width: 768px) 100vw, 40vw"
-                    />
-                  </div>
-                  
-                  {selectedWine.badge && (
-                    <div 
-                      className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg"
-                      style={{ backgroundColor: getBadgeStyle(selectedWine.badge)?.bg }}
-                    >
-                      {getBadgeStyle(selectedWine.badge)?.text}
-                    </div>
-                  )}
+              <div className="lg:w-2/5 relative bg-gradient-to-br from-gray-50 to-white flex items-center justify-center p-4 md:p-8 lg:p-12 flex-shrink-0">
+                <div className="relative w-full max-w-sm aspect-[3/4]">
+                  <Image
+                    src={selectedWine.image}
+                    alt={selectedWine.name}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 1024px) 100vw, 40vw"
+                    quality={isMobile ? 80 : 95}
+                    priority
+                  />
                 </div>
                 
-                <div className="lg:hidden absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent flex items-end justify-center pb-2">
-                  <ChevronDown className="w-5 h-5 text-gray-400 animate-bounce" />
-                </div>
+                {/* Badge */}
+                {selectedWine.badge && (
+                  <div 
+                    className="absolute top-4 md:top-6 left-4 md:left-6 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-bold text-white shadow-lg z-20"
+                    style={{ backgroundColor: getBadgeStyle(selectedWine.badge)?.bg }}
+                  >
+                    {getBadgeStyle(selectedWine.badge)?.text}
+                  </div>
+                )}
+                
+                {/* Scroll indicator - pouze mobil */}
+                {isMobile && (
+                  <div className="lg:hidden absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent flex items-end justify-center pb-2">
+                    <ChevronDown className="w-5 h-5 text-gray-400 animate-bounce" />
+                  </div>
+                )}
               </div>
 
               {/* Content side */}
               <div className="lg:w-3/5 flex-1 overflow-y-auto">
-                <div className="p-6 lg:p-10">
+                <div className="p-5 md:p-6 lg:p-10">
                   {/* Header */}
-                  <div className="mb-6">
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+                  <div className="mb-5 md:mb-6">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
                       {selectedWine.name}
                     </h2>
-                    <p className="text-lg sm:text-xl text-gray-600">{selectedWine.variety}</p>
+                    <p className="text-base md:text-lg lg:text-xl text-gray-600">{selectedWine.variety}</p>
                     
                     {/* Rating */}
-                    <div className="flex items-center gap-2 mt-4">
+                    <div className="flex items-center gap-2 mt-3 md:mt-4">
                       <div className="flex items-center gap-1">
                         {[...Array(5)].map((_, i) => (
                           <Star 
                             key={i}
-                            className={`w-4 sm:w-5 h-4 sm:h-5 ${
+                            className={`w-4 md:w-5 h-4 md:h-5 ${
                               i < Math.floor(selectedWine.rating) 
                                 ? 'text-yellow-400 fill-current' 
                                 : 'text-gray-300'
@@ -536,84 +527,84 @@ const MiQueenMiniPage = () => {
                           />
                         ))}
                       </div>
-                      <span className="text-gray-600 font-medium">({selectedWine.rating.toFixed(1)})</span>
+                      <span className="text-gray-600 font-medium text-sm md:text-base">({selectedWine.rating.toFixed(1)})</span>
                     </div>
                   </div>
 
                   {/* Price section */}
-                  <div className="bg-gradient-to-r from-[#ab875410] to-transparent p-4 sm:p-6 rounded-2xl mb-6">
-                    <p className="text-gray-600 mb-2">Cena</p>
-                    <p className="text-3xl sm:text-4xl font-bold text-gray-900">
-                      {selectedWine.price} <span className="text-xl sm:text-2xl">Kč</span>
+                  <div className="bg-gradient-to-r from-[#ab875410] to-transparent p-4 md:p-6 rounded-xl md:rounded-2xl mb-5 md:mb-6">
+                    <p className="text-gray-600 text-sm md:text-base mb-1 md:mb-2">Cena</p>
+                    <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">
+                      {selectedWine.price} <span className="text-lg md:text-xl lg:text-2xl">Kč</span>
                     </p>
-                    <p className="text-gray-600 mt-2">
+                    <p className="text-gray-600 text-sm md:text-base mt-1 md:mt-2">
                       Objem: {selectedWine.volume}ml
                     </p>
                   </div>
 
                   {/* Description */}
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Popis</h3>
-                    <p className="text-gray-600 leading-relaxed">
+                  <div className="mb-5 md:mb-6">
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 md:mb-3">Popis</h3>
+                    <p className="text-gray-600 text-sm md:text-base leading-relaxed">
                       {selectedWine.description}
                     </p>
                   </div>
 
                   {/* Wine details grid */}
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
-                    <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
-                      <p className="text-gray-500 text-xs sm:text-sm mb-1">Ročník</p>
-                      <p className="text-gray-900 font-semibold text-sm sm:text-base">{selectedWine.vintage}</p>
+                  <div className="grid grid-cols-2 gap-2.5 md:gap-3 lg:gap-4 mb-5 md:mb-6">
+                    <div className="bg-gray-50 p-3 md:p-4 rounded-lg md:rounded-xl">
+                      <p className="text-gray-500 text-xs md:text-sm mb-1">Ročník</p>
+                      <p className="text-gray-900 font-semibold text-sm md:text-base">{selectedWine.vintage}</p>
                     </div>
                     
-                    <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
-                      <p className="text-gray-500 text-xs sm:text-sm mb-1">Alkohol</p>
-                      <p className="text-gray-900 font-semibold text-sm sm:text-base">{selectedWine.alcohol}%</p>
+                    <div className="bg-gray-50 p-3 md:p-4 rounded-lg md:rounded-xl">
+                      <p className="text-gray-500 text-xs md:text-sm mb-1">Alkohol</p>
+                      <p className="text-gray-900 font-semibold text-sm md:text-base">{selectedWine.alcohol}%</p>
                     </div>
                     
-                    <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
-                      <p className="text-gray-500 text-xs sm:text-sm mb-1">Kvalita</p>
-                      <p className="text-gray-900 font-semibold text-sm sm:text-base">{selectedWine.quality}</p>
+                    <div className="bg-gray-50 p-3 md:p-4 rounded-lg md:rounded-xl">
+                      <p className="text-gray-500 text-xs md:text-sm mb-1">Kvalita</p>
+                      <p className="text-gray-900 font-semibold text-sm md:text-base">{selectedWine.quality}</p>
                     </div>
                     
-                    <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
-                      <p className="text-gray-500 text-xs sm:text-sm mb-1">Sladkost</p>
-                      <p className="text-gray-900 font-semibold text-sm sm:text-base">{selectedWine.dryness}</p>
+                    <div className="bg-gray-50 p-3 md:p-4 rounded-lg md:rounded-xl">
+                      <p className="text-gray-500 text-xs md:text-sm mb-1">Sladkost</p>
+                      <p className="text-gray-900 font-semibold text-sm md:text-base">{selectedWine.dryness}</p>
                     </div>
                   </div>
 
                   {/* Additional info */}
-                  <div className="space-y-4 mb-8">
+                  <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
                     {selectedWine.region && (
-                      <div className="flex items-start gap-3">
-                        <MapPin className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
+                      <div className="flex items-start gap-2.5 md:gap-3">
+                        <MapPin className="w-4 h-4 md:w-5 md:h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-gray-500 text-xs sm:text-sm">Region</p>
-                          <p className="text-gray-900 text-sm sm:text-base">{selectedWine.region}</p>
+                          <p className="text-gray-500 text-xs md:text-sm">Region</p>
+                          <p className="text-gray-900 text-sm md:text-base">{selectedWine.region}</p>
                         </div>
                       </div>
                     )}
                     
                     {selectedWine.servingTemp && (
-                      <div className="flex items-start gap-3">
-                        <Thermometer className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
+                      <div className="flex items-start gap-2.5 md:gap-3">
+                        <Thermometer className="w-4 h-4 md:w-5 md:h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-gray-500 text-xs sm:text-sm">Teplota servírování</p>
-                          <p className="text-gray-900 text-sm sm:text-base">{selectedWine.servingTemp}</p>
+                          <p className="text-gray-500 text-xs md:text-sm">Teplota servírování</p>
+                          <p className="text-gray-900 text-sm md:text-base">{selectedWine.servingTemp}</p>
                         </div>
                       </div>
                     )}
                     
                     {selectedWine.foodPairing && selectedWine.foodPairing.length > 0 && (
-                      <div className="flex items-start gap-3">
-                        <ChefHat className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
+                      <div className="flex items-start gap-2.5 md:gap-3">
+                        <ChefHat className="w-4 h-4 md:w-5 md:h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
                         <div className="flex-1">
-                          <p className="text-gray-500 text-xs sm:text-sm mb-2">Doporučujeme k</p>
-                          <div className="flex flex-wrap gap-2">
+                          <p className="text-gray-500 text-xs md:text-sm mb-2">Doporučujeme k</p>
+                          <div className="flex flex-wrap gap-1.5 md:gap-2">
                             {selectedWine.foodPairing.map((food, index) => (
                               <span 
                                 key={index}
-                                className="px-2 sm:px-3 py-1 bg-[#ab875410] text-[#ab8754] rounded-full text-xs sm:text-sm font-medium"
+                                className="px-2 md:px-3 py-0.5 md:py-1 bg-[#ab875410] text-[#ab8754] rounded-full text-xs md:text-sm font-medium"
                               >
                                 {food}
                               </span>
@@ -624,39 +615,39 @@ const MiQueenMiniPage = () => {
                     )}
                     
                     {selectedWine.winemaker && (
-                      <div className="flex items-start gap-3">
-                        <User className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
+                      <div className="flex items-start gap-2.5 md:gap-3">
+                        <User className="w-4 h-4 md:w-5 md:h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-gray-500 text-xs sm:text-sm">Vinařství</p>
-                          <p className="text-gray-900 text-sm sm:text-base">{selectedWine.winemaker}</p>
+                          <p className="text-gray-500 text-xs md:text-sm">Vinařství</p>
+                          <p className="text-gray-900 text-sm md:text-base">{selectedWine.winemaker}</p>
                         </div>
                       </div>
                     )}
                   </div>
 
                   {selectedWine.notes && (
-                    <div className="bg-[#ab875410] p-4 rounded-xl mb-8">
-                      <p className="text-[#ab8754] font-semibold mb-2 text-sm sm:text-base">Poznámka vinaře</p>
-                      <p className="text-gray-700 text-xs sm:text-sm">{selectedWine.notes}</p>
+                    <div className="bg-[#ab875410] p-3 md:p-4 rounded-lg md:rounded-xl mb-6 md:mb-8">
+                      <p className="text-[#ab8754] font-semibold mb-1.5 md:mb-2 text-sm md:text-base">Poznámka vinaře</p>
+                      <p className="text-gray-700 text-xs md:text-sm">{selectedWine.notes}</p>
                     </div>
                   )}
 
                   {/* CTA Button */}
-                  <div className="sticky bottom-0 left-0 right-0 bg-white pt-4 pb-safe">
+                  <div className="sticky bottom-0 left-0 right-0 bg-white pt-3 md:pt-4 pb-safe">
                     <a
                       href={selectedWine.shopUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full px-6 py-4 bg-[#ab8754] text-white rounded-full font-semibold text-base sm:text-lg transition-all hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2"
+                      className="w-full px-5 md:px-6 py-3 md:py-4 bg-[#ab8754] text-white rounded-full font-semibold text-sm md:text-base lg:text-lg transition-all hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 touch-manipulation"
                     >
-                      <ShoppingCart className="w-5 h-5" />
+                      <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
                       Koupit na e-shopu
                     </a>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
 
@@ -684,6 +675,24 @@ const MiQueenMiniPage = () => {
         
         .animate-bounce {
           animation: bounce 2s infinite;
+        }
+
+        /* Touch optimizations */
+        * {
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .touch-manipulation {
+          touch-action: manipulation;
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
         }
       `}</style>
     </>

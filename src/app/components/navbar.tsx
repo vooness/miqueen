@@ -18,7 +18,7 @@ interface NavItem {
   icon?: string;
 }
 
-// Přesuneme data mimo komponentu pro lepší performance
+// Data mimo komponentu pro lepší performance
 const NAV_ITEMS: NavItem[] = [
   { label: 'Adoptuj vinohrad', href: '/adoptuj-vinohrad', icon: '🍇' },
   { label: 'Všechna vína', href: '/vsechna-nase-vina' },
@@ -123,7 +123,7 @@ const Navbar = () => {
     return breadcrumbItems;
   }, [pathname]);
 
-  // Memoizované inline styly
+  // Memoizované inline styly - BEZ BLUR, SE SVG POZADÍM
   const navbarStyle = useMemo(() => ({
     backgroundImage: 'url(/bgnav1.svg)',
     backgroundSize: 'cover',
@@ -136,10 +136,10 @@ const Navbar = () => {
 
   return (
     <>
-      {/* MODERNÍ NAVBAR VE TVARU KAPKY */}
+      {/* NAVBAR SE SVG POZADÍM, BEZ BLUR */}
       <nav className="fixed top-4 lg:top-6 left-1/2 transform -translate-x-1/2 w-[95%] max-w-[1600px] z-50">
         <div 
-          className="backdrop-blur-md shadow-xl relative overflow-visible"
+          className="shadow-xl relative overflow-visible"
           style={navbarStyle}
         >
           <div className="flex items-center justify-between px-6 lg:px-10 py-2 lg:py-3">
@@ -198,61 +198,48 @@ const Navbar = () => {
             {/* E-shop button - VPRAVO */}
             <div className="hidden lg:block">
               <Link 
-                href="https://shop.miqueen.cz" 
-                className="relative group inline-block touch-manipulation"
+                href="https://shop.miqueen.cz"
+                className="relative group overflow-hidden touch-manipulation"
                 prefetch={false}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <div className="relative px-6 py-2 bg-white rounded-full overflow-hidden transition-all duration-300">
-                  <span className="relative z-10 flex items-center space-x-2 font-semibold text-[15px] tracking-wide text-black group-hover:text-white transition-colors duration-300">
-                    <ShoppingBag className="h-4 w-4" aria-hidden="true" />
-                    <span>E-shop</span>
-                  </span>
-                  <div 
-                    className="absolute -inset-1 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-bottom"
-                    style={{ backgroundColor: BRAND_COLOR }}
-                  />
+                <div 
+                  className="text-white px-8 py-2.5 rounded-full transition-all duration-300 shadow-lg hover:shadow-2xl font-semibold text-base tracking-wide flex items-center space-x-2 hover:scale-105"
+                  style={{ background: `linear-gradient(135deg, ${BRAND_COLOR}, #c49a5e)` }}
+                >
+                  <ShoppingBag className="h-5 w-5" aria-hidden="true" />
+                  <span>E-shop</span>
                 </div>
               </Link>
             </div>
 
-            {/* Mobile menu button */}
+            {/* Mobile Menu Button */}
             <button 
               onClick={toggleMobileMenu}
-              className="lg:hidden text-gray-700 hover:text-amber-600 transition-all duration-300 p-2 relative touch-manipulation"
-              aria-label={isMobileMenuOpen ? "Zavřít menu" : "Otevřít menu"}
+              className="lg:hidden text-gray-700 hover:text-amber-700 transition-colors duration-200 p-2 touch-manipulation"
+              aria-label="Otevřít menu"
               aria-expanded={isMobileMenuOpen}
             >
-              <div className="w-6 h-6 flex flex-col justify-center items-center">
-                <span 
-                  className={`block w-6 h-0.5 bg-current transition-all duration-300 ${
-                    isMobileMenuOpen ? 'rotate-45 translate-y-0.5' : ''
-                  }`}
-                  style={{ willChange: isMobileMenuOpen ? 'transform' : 'auto' }}
-                />
-                <span 
-                  className={`block w-6 h-0.5 bg-current mt-1 transition-all duration-300 ${
-                    isMobileMenuOpen ? 'opacity-0' : ''
-                  }`}
-                  style={{ willChange: isMobileMenuOpen ? 'opacity' : 'auto' }}
-                />
-                <span 
-                  className={`block w-6 h-0.5 bg-current mt-1 transition-all duration-300 ${
-                    isMobileMenuOpen ? '-rotate-45 -translate-y-2.5' : ''
-                  }`}
-                  style={{ willChange: isMobileMenuOpen ? 'transform' : 'auto' }}
-                />
+              <div className="w-6 h-5 flex flex-col justify-between">
+                <span className={`block h-0.5 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+                <span className={`block h-0.5 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
+                <span className={`block h-0.5 bg-current transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
               </div>
             </button>
           </div>
         </div>
       </nav>
 
-      {/* BREADCRUMBS - POD NAVBAREM */}
+      {/* BREADCRUMBS - ČISTÉ BÍLÉ POZADÍ BEZ BLUR/SHADOW, ZAROVNANÉ POD LOGEM */}
       {breadcrumbs && (
         <div className="fixed top-[76px] lg:top-[100px] left-1/2 transform -translate-x-1/2 w-[95%] max-w-[1600px] z-40">
-          <div className="bg-gradient-to-b from-amber-50/30 to-transparent backdrop-blur-sm rounded-2xl px-6 lg:px-10 py-2">
+          <div 
+            className="inline-block rounded-full px-4 lg:px-6 py-2 ml-6 lg:ml-10"
+            style={{
+              backgroundColor: 'white',
+            }}
+          >
             <nav aria-label="Breadcrumb" className="flex items-center space-x-1.5 text-[11px] lg:text-xs">
               {breadcrumbs.map((item, index) => (
                 <React.Fragment key={item.href}>
@@ -294,25 +281,28 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* MOBILE MENU - OPTIMALIZOVANÉ */}
+      {/* MOBILE MENU - BEZ BLUR EFEKTŮ */}
       {isMobileMenuOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop - BEZ BLUR */}
           <div 
-            className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm transition-opacity duration-500 lg:hidden"
+            className="fixed inset-0 z-40 bg-black/70 transition-opacity duration-300 lg:hidden"
             onClick={closeMobileMenu}
             role="button"
             aria-label="Zavřít menu"
             style={{ touchAction: 'none' }}
           />
 
-          {/* Menu Panel */}
+          {/* Menu Panel - BEZ BLUR */}
           <div 
-            className="fixed top-0 right-0 h-full w-full max-w-sm z-50 bg-white/98 backdrop-blur-xl border-l border-amber-600/20 shadow-2xl transform transition-transform duration-500 ease-out lg:hidden"
-            style={{ willChange: 'transform' }}
+            className="fixed top-0 right-0 h-full w-full max-w-sm z-50 border-l border-amber-600/20 shadow-2xl transform transition-transform duration-300 ease-out lg:hidden"
+            style={{ 
+              backgroundColor: 'rgba(255, 255, 255, 0.98)', // Solid pozadí místo blur
+              willChange: 'transform'
+            }}
           >
             
-            {/* Header - KOMPAKTNĚJŠÍ */}
+            {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-amber-600/20">
               <Link 
                 href="/" 
@@ -341,14 +331,14 @@ const Navbar = () => {
               </button>
             </div>
 
-            {/* Navigation - KOMPAKTNĚJŠÍ MEZERY */}
+            {/* Navigation - OPTIMALIZOVANÉ PRO MOBIL */}
             <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
               <nav className="p-3 space-y-1">
                 {NAV_ITEMS.map((item) => (
                   <div key={item.href} className="group">
                     <Link 
                       href={item.href}
-                      className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-300 hover:bg-amber-50 text-gray-700 font-medium text-[15px] tracking-wide touch-manipulation active:scale-98"
+                      className="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors duration-200 hover:bg-amber-50 active:bg-amber-100 text-gray-700 font-medium text-[15px] tracking-wide touch-manipulation"
                       onClick={closeMobileMenu}
                       prefetch={true}
                     >
@@ -368,7 +358,7 @@ const Navbar = () => {
                 ))}
               </nav>
 
-              {/* CTA Button - KOMPAKTNĚJŠÍ */}
+              {/* CTA Button */}
               <div className="p-3 pt-2">
                 <Link 
                   href="https://shop.miqueen.cz"
@@ -379,11 +369,7 @@ const Navbar = () => {
                   rel="noopener noreferrer"
                 >
                   <div 
-                    className="absolute inset-0 rounded-2xl blur-md opacity-50 group-hover:opacity-80 transition-all duration-300"
-                    style={{ background: `linear-gradient(135deg, ${BRAND_COLOR}, #c49a5e)` }}
-                  />
-                  <div 
-                    className="relative text-white p-3 rounded-2xl transition-all duration-300 font-semibold text-base tracking-wide flex items-center justify-center space-x-2 shadow-xl hover:shadow-2xl transform active:scale-95" 
+                    className="text-white p-3 rounded-2xl transition-all duration-200 font-semibold text-base tracking-wide flex items-center justify-center space-x-2 shadow-xl active:shadow-lg active:scale-95" 
                     style={{ background: `linear-gradient(135deg, ${BRAND_COLOR}, #c49a5e)` }}
                   >
                     <ShoppingBag className="h-5 w-5" aria-hidden="true" />
@@ -393,7 +379,7 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* Footer - KOMPAKTNĚJŠÍ */}
+            {/* Footer */}
             <div className="border-t border-amber-600/20 p-4">
               <div className="text-center mb-3">
                 <div 
@@ -407,7 +393,7 @@ const Navbar = () => {
                     href="https://www.facebook.com/vinarstvi.miqueen/" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="text-gray-600 hover:text-amber-600 transition-colors duration-200 touch-manipulation p-2"
+                    className="text-gray-600 hover:text-amber-600 active:scale-95 transition-all duration-200 touch-manipulation p-2"
                     aria-label="Facebook"
                   >
                     <Facebook className="h-5 w-5" />
@@ -416,14 +402,14 @@ const Navbar = () => {
                     href="https://www.instagram.com/vinarstvi.miqueen/" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="text-gray-600 hover:text-amber-600 transition-colors duration-200 touch-manipulation p-2"
+                    className="text-gray-600 hover:text-amber-600 active:scale-95 transition-all duration-200 touch-manipulation p-2"
                     aria-label="Instagram"
                   >
                     <Instagram className="h-5 w-5" />
                   </a>
                   <a 
                     href="mailto:info@miqueen.cz" 
-                    className="text-gray-600 hover:text-amber-600 transition-colors duration-200 touch-manipulation p-2"
+                    className="text-gray-600 hover:text-amber-600 active:scale-95 transition-all duration-200 touch-manipulation p-2"
                     aria-label="Email"
                   >
                     <Mail className="h-5 w-5" />

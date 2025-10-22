@@ -1,31 +1,37 @@
 "use client"
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Star, ChevronLeft, ChevronRight, Sparkles, Droplets, Cherry, Grape, Wine, Package, ShoppingCart, X, Thermometer, MapPin, ChefHat, User, ChevronDown } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight, Sparkles, Droplets, Cherry, Grape, Wine, Package, ShoppingCart, X, Thermometer, MapPin, ChefHat, User } from "lucide-react";
 import { getWinesByCategory, getWineCountByCategory, WineProduct } from "./wineData";
 
 const WineCollectionSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(5);
+  const [gap, setGap] = useState(24);
   const [selectedWine, setSelectedWine] = useState<WineProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Responzivní počet viditelných produktů
+  // Responzivní počet viditelných produktů - ZMĚNA: 2 na mobilu
   useEffect(() => {
     const handleResize = () => {
       if (typeof window === 'undefined') return;
       
       if (window.innerWidth < 640) {
-        setItemsPerView(1);
+        setItemsPerView(2); // ZMĚNA Z 1 NA 2
+        setGap(12); // Menší mezera na mobilu
       } else if (window.innerWidth < 768) {
         setItemsPerView(2);
+        setGap(24);
       } else if (window.innerWidth < 1024) {
         setItemsPerView(3);
+        setGap(24);
       } else if (window.innerWidth < 1280) {
         setItemsPerView(4);
+        setGap(24);
       } else {
         setItemsPerView(5);
+        setGap(24);
       }
     };
 
@@ -131,11 +137,11 @@ const WineCollectionSection: React.FC = () => {
 
           {/* Kategorie */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2 sm:gap-3">
               <button
                 onClick={() => setSelectedCategory('all')}
                 className={`
-                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
                   ${selectedCategory === 'all' 
                     ? 'text-white border-transparent shadow-lg' 
                     : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
@@ -143,9 +149,9 @@ const WineCollectionSection: React.FC = () => {
                 `}
                 style={selectedCategory === 'all' ? { backgroundColor: '#ab8754' } : {}}
               >
-                <Sparkles className="w-4 h-4" />
-                <span>Všechna vína</span>
-                <span className={`${selectedCategory === 'all' ? 'text-white/80' : 'text-gray-500'}`}>
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="whitespace-nowrap">Všechna vína</span>
+                <span className={`${selectedCategory === 'all' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
                   ({getWineCountByCategory('all')})
                 </span>
               </button>
@@ -153,7 +159,7 @@ const WineCollectionSection: React.FC = () => {
               <button
                 onClick={() => setSelectedCategory('white')}
                 className={`
-                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
                   ${selectedCategory === 'white' 
                     ? 'text-white border-transparent shadow-lg' 
                     : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
@@ -161,9 +167,9 @@ const WineCollectionSection: React.FC = () => {
                 `}
                 style={selectedCategory === 'white' ? { backgroundColor: '#ab8754' } : {}}
               >
-                <Droplets className="w-4 h-4" />
+                <Droplets className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Bílá</span>
-                <span className={`${selectedCategory === 'white' ? 'text-white/80' : 'text-gray-500'}`}>
+                <span className={`${selectedCategory === 'white' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
                   ({getWineCountByCategory('white')})
                 </span>
               </button>
@@ -171,7 +177,7 @@ const WineCollectionSection: React.FC = () => {
               <button
                 onClick={() => setSelectedCategory('red')}
                 className={`
-                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
                   ${selectedCategory === 'red' 
                     ? 'text-white border-transparent shadow-lg' 
                     : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
@@ -179,9 +185,9 @@ const WineCollectionSection: React.FC = () => {
                 `}
                 style={selectedCategory === 'red' ? { backgroundColor: '#ab8754' } : {}}
               >
-                <Cherry className="w-4 h-4" />
+                <Cherry className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Červená</span>
-                <span className={`${selectedCategory === 'red' ? 'text-white/80' : 'text-gray-500'}`}>
+                <span className={`${selectedCategory === 'red' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
                   ({getWineCountByCategory('red')})
                 </span>
               </button>
@@ -189,7 +195,7 @@ const WineCollectionSection: React.FC = () => {
               <button
                 onClick={() => setSelectedCategory('rose')}
                 className={`
-                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
                   ${selectedCategory === 'rose' 
                     ? 'text-white border-transparent shadow-lg' 
                     : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
@@ -197,9 +203,9 @@ const WineCollectionSection: React.FC = () => {
                 `}
                 style={selectedCategory === 'rose' ? { backgroundColor: '#ab8754' } : {}}
               >
-                <Grape className="w-4 h-4" />
+                <Grape className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Růžová</span>
-                <span className={`${selectedCategory === 'rose' ? 'text-white/80' : 'text-gray-500'}`}>
+                <span className={`${selectedCategory === 'rose' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
                   ({getWineCountByCategory('rose')})
                 </span>
               </button>
@@ -207,7 +213,7 @@ const WineCollectionSection: React.FC = () => {
               <button
                 onClick={() => setSelectedCategory('sparkling')}
                 className={`
-                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
                   ${selectedCategory === 'sparkling' 
                     ? 'text-white border-transparent shadow-lg' 
                     : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
@@ -215,9 +221,9 @@ const WineCollectionSection: React.FC = () => {
                 `}
                 style={selectedCategory === 'sparkling' ? { backgroundColor: '#ab8754' } : {}}
               >
-                <Wine className="w-4 h-4" />
+                <Wine className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Perlivá</span>
-                <span className={`${selectedCategory === 'sparkling' ? 'text-white/80' : 'text-gray-500'}`}>
+                <span className={`${selectedCategory === 'sparkling' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
                   ({getWineCountByCategory('sparkling')})
                 </span>
               </button>
@@ -225,7 +231,7 @@ const WineCollectionSection: React.FC = () => {
               <button
                 onClick={() => setSelectedCategory('special')}
                 className={`
-                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
                   ${selectedCategory === 'special' 
                     ? 'text-white border-transparent shadow-lg' 
                     : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
@@ -233,9 +239,9 @@ const WineCollectionSection: React.FC = () => {
                 `}
                 style={selectedCategory === 'special' ? { backgroundColor: '#ab8754' } : {}}
               >
-                <Package className="w-4 h-4" />
+                <Package className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Mimosa</span>
-                <span className={`${selectedCategory === 'special' ? 'text-white/80' : 'text-gray-500'}`}>
+                <span className={`${selectedCategory === 'special' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
                   ({getWineCountByCategory('special')})
                 </span>
               </button>
@@ -254,12 +260,12 @@ const WineCollectionSection: React.FC = () => {
                  'Speciální edice'}
               </h3>
               
-              <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-3">
                 <span className="text-gray-600 text-sm font-medium">
                   {filteredWines.length} produktů
                 </span>
                 
-                {/* Slider controls */}
+                {/* Slider controls - desktop */}
                 <div className="flex gap-2">
                   <button
                     onClick={prevSlide}
@@ -286,141 +292,187 @@ const WineCollectionSection: React.FC = () => {
               </div>
             </div>
 
-            {/* Slider container */}
-            <div className="overflow-hidden">
-              <div 
-                className="flex transition-transform duration-500 ease-out"
-                style={{ 
-                  gap: '24px',
-                  transform: `translateX(calc(-${currentIndex} * (${100 / itemsPerView}% + ${24 / itemsPerView}px)))`
-                }}
+            {/* Slider container with mobile arrows on sides */}
+            <div className="relative">
+              {/* Mobile arrows - positioned on middle edge with golden background */}
+              <button
+                onClick={prevSlide}
+                disabled={currentIndex === 0}
+                className={`
+                  sm:hidden absolute -left-4 top-1/2 -translate-y-1/2 z-10
+                  w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-lg
+                  ${currentIndex === 0 
+                    ? 'opacity-30 cursor-not-allowed' 
+                    : 'active:scale-95'}
+                `}
+                style={{ backgroundColor: currentIndex === 0 ? '#d1d5db' : '#ab8754' }}
               >
-                {filteredWines.map((wine) => {
-                  const badge = getBadgeStyle(wine.badge);
-                  
-                  return (
-                    <div
-                      key={wine.id}
-                      className="flex-shrink-0 transition-all duration-500"
-                      style={{ 
-                        width: `calc((100% - ${24 * (itemsPerView - 1)}px) / ${itemsPerView})`
-                      }}
-                    >
-                      <div className="group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-[#ab8754]/50 transition-all duration-500 shadow-lg hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
-                        
-                        {/* Image Container */}
-                        <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden flex-shrink-0">
-                          <Image 
-                            src={wine.image}
-                            alt={wine.name}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-700 cursor-pointer"
-                            sizes={`(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw`}
-                            onClick={() => openModal(wine)}
-                          />
-                          
-                          {badge && (
-                            <div 
-                              className="absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg z-10"
-                              style={{ backgroundColor: badge.bg }}
-                            >
-                              {badge.text}
-                            </div>
-                          )}
+                <ChevronLeft className="w-4 h-4 text-white" />
+              </button>
+              
+              <button
+                onClick={nextSlide}
+                disabled={currentIndex >= maxIndex}
+                className={`
+                  sm:hidden absolute -right-4 top-1/2 -translate-y-1/2 z-10
+                  w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-lg
+                  ${currentIndex >= maxIndex 
+                    ? 'opacity-30 cursor-not-allowed' 
+                    : 'active:scale-95'}
+                `}
+                style={{ backgroundColor: currentIndex >= maxIndex ? '#d1d5db' : '#ab8754' }}
+              >
+                <ChevronRight className="w-4 h-4 text-white" />
+              </button>
 
-                          {/* Quick view overlay */}
-                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10 pointer-events-none group-hover:pointer-events-auto">
-                            <button
+              <div className="overflow-hidden px-0 sm:px-0">
+                <div 
+                  className="flex transition-transform duration-500 ease-out"
+                  style={{ 
+                    gap: `${gap}px`,
+                    transform: `translateX(calc(-${currentIndex} * (${100 / itemsPerView}% + ${gap / itemsPerView}px)))`
+                  }}
+                >
+                  {filteredWines.map((wine) => {
+                    const badge = getBadgeStyle(wine.badge);
+                    
+                    return (
+                      <div
+                        key={wine.id}
+                        className="flex-shrink-0 transition-all duration-500"
+                        style={{ 
+                          width: `calc((100% - ${gap * (itemsPerView - 1)}px) / ${itemsPerView})`
+                        }}
+                      >
+                        <div className="group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-[#ab8754]/50 transition-all duration-500 shadow-lg hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
+                          
+                          {/* Image Container */}
+                          <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden flex-shrink-0">
+                            <Image 
+                              src={wine.image}
+                              alt={wine.name}
+                              fill
+                              className="object-cover group-hover:scale-110 transition-transform duration-700 cursor-pointer"
+                              sizes={`(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw`}
                               onClick={() => openModal(wine)}
-                              className="px-6 py-3 bg-white text-gray-900 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center gap-2 shadow-xl"
-                            >
-                              <Wine className="w-4 h-4" />
-                              Zobrazit produkt
-                            </button>
-                          </div>
-                        </div>
-                        
-                        {/* Content */}
-                        <div className="p-5 flex flex-col flex-grow bg-white">
-                          {/* Rating */}
-                          <div className="flex items-center gap-1 mb-3">
-                            {[...Array(5)].map((_, i) => (
-                              <Star 
-                                key={i}
-                                className={`w-4 h-4 ${
-                                  i < Math.floor(wine.rating || 0) 
-                                    ? 'text-yellow-400 fill-current' 
-                                    : i < (wine.rating || 0)
-                                      ? 'text-yellow-400 fill-current opacity-50'
-                                      : 'text-gray-300'
-                                }`}
-                              />
-                            ))}
-                            <span className="text-gray-500 text-sm ml-2 font-medium">({wine.rating?.toFixed(1) || '4.5'})</span>
-                          </div>
-                          
-                          {/* Title */}
-                          <h3 className="text-gray-900 font-semibold text-sm mb-2 line-clamp-2 min-h-[3.5rem] cursor-pointer hover:text-[#ab8754] transition-colors" onClick={() => openModal(wine)}>
-                            {wine.name}
-                          </h3>
-                          
-                          {/* Details */}
-                          <div className="flex items-center justify-between mb-3">
-                            <p className="text-gray-600 text-sm">
-                              {wine.variety}
-                            </p>
-                            <span className="text-gray-500 text-xs font-medium px-2 py-1 bg-gray-100 rounded-full">
-                              {wine.vintage}
-                            </span>
-                          </div>
-                          
-                          {/* Volume badge */}
-                          {wine.volume && (
-                            <div className="mb-3">
-                              <span className="text-xs font-medium px-2 py-1 rounded-full" style={{ backgroundColor: "#ab875410", color: "#ab8754" }}>
-                                {wine.volume === 200 ? "Mini 200ml" : wine.volume === 375 ? "375ml" : wine.volume === 500 ? "500ml" : "750ml"}
-                              </span>
-                            </div>
-                          )}
-                          
-                          {/* Description */}
-                          <p className="text-gray-500 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
-                            {wine.description}
-                          </p>
-                          
-                          {/* Price & Button */}
-                          <div className="flex flex-col gap-3 pt-4 border-t border-gray-100 mt-auto">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="text-gray-500 text-xs mb-1">Cena</p>
-                                <p className="text-gray-900 font-bold text-2xl">
-                                  {wine.price} <span className="text-lg">Kč</span>
-                                </p>
+                            />
+                            
+                            {badge && (
+                              <div 
+                                className="absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg z-10"
+                                style={{ backgroundColor: badge.bg }}
+                              >
+                                {badge.text}
                               </div>
-                              
-                              {wine.quality && (
-                                <span className="text-xs font-medium text-gray-600 px-2 py-1 bg-gray-50 rounded-lg">
-                                  {getQualityLabel(wine.quality)}
-                                </span>
-                              )}
+                            )}
+
+                            {/* Quick view overlay */}
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10 pointer-events-none group-hover:pointer-events-auto">
+                              <button
+                                onClick={() => openModal(wine)}
+                                className="px-6 py-3 bg-white text-gray-900 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center gap-2 shadow-xl"
+                              >
+                                <Wine className="w-4 h-4" />
+                                Zobrazit produkt
+                              </button>
+                            </div>
+                          </div>
+                          
+                          {/* Content */}
+                          <div className="p-3 sm:p-5 flex flex-col flex-grow bg-white">
+                            {/* Rating */}
+                            <div className="flex items-center gap-0.5 sm:gap-1 mb-2 sm:mb-3">
+                              {[...Array(5)].map((_, i) => (
+                                <Star 
+                                  key={i}
+                                  className={`w-3 h-3 sm:w-4 sm:h-4 ${
+                                    i < Math.floor(wine.rating || 0) 
+                                      ? 'text-yellow-400 fill-current' 
+                                      : i < (wine.rating || 0)
+                                        ? 'text-yellow-400 fill-current opacity-50'
+                                        : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                              <span className="text-gray-500 text-[10px] sm:text-sm ml-1 sm:ml-2 font-medium">({wine.rating?.toFixed(1) || '4.5'})</span>
                             </div>
                             
-                            <a
-                              href={wine.shopUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-full px-5 py-3 text-white rounded-full font-semibold text-sm transition-all hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2"
-                              style={{ backgroundColor: "#ab8754" }}
-                            >
-                              <ShoppingCart className="w-4 h-4" />
-                              Koupit na e-shopu
-                            </a>
+                            {/* Title */}
+                            <h3 className="text-gray-900 font-semibold text-xs sm:text-sm mb-1 sm:mb-2 line-clamp-2 min-h-[2rem] sm:min-h-[3.5rem] cursor-pointer hover:text-[#ab8754] transition-colors" onClick={() => openModal(wine)}>
+                              {wine.name}
+                            </h3>
+                            
+                            {/* Details */}
+                            <div className="flex items-center justify-between mb-2 sm:mb-3">
+                              <p className="text-gray-600 text-[10px] sm:text-sm line-clamp-1">
+                                {wine.variety}
+                              </p>
+                              <span className="text-gray-500 text-[9px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded-full">
+                                {wine.vintage}
+                              </span>
+                            </div>
+                            
+                            {/* Volume badge */}
+                            {wine.volume && (
+                              <div className="mb-2 sm:mb-3">
+                                <span className="text-[9px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full" style={{ backgroundColor: "#ab875410", color: "#ab8754" }}>
+                                  {wine.volume === 200 ? "Mini 200ml" : wine.volume === 375 ? "375ml" : wine.volume === 500 ? "500ml" : "750ml"}
+                                </span>
+                              </div>
+                            )}
+                            
+                            {/* Description - hidden on mobile */}
+                            <p className="hidden sm:block text-gray-500 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
+                              {wine.description}
+                            </p>
+                            
+                            {/* Price & Button */}
+                            <div className="flex flex-col gap-2 sm:gap-3 pt-2 sm:pt-4 border-t border-gray-100 mt-auto">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="text-gray-500 text-[9px] sm:text-xs mb-0.5 sm:mb-1">Cena</p>
+                                  <p className="text-gray-900 font-bold text-lg sm:text-2xl">
+                                    {wine.price} <span className="text-sm sm:text-lg">Kč</span>
+                                  </p>
+                                </div>
+                                
+                                {/* Mobile: Just circle with cart icon */}
+                                <a
+                                  href={wine.shopUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="sm:hidden w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-95"
+                                  style={{ backgroundColor: "#ab8754" }}
+                                >
+                                  <ShoppingCart className="w-4 h-4 text-white" />
+                                </a>
+                                
+                                {/* Desktop: Quality badge */}
+                                {wine.quality && (
+                                  <span className="hidden sm:inline-block text-xs font-medium text-gray-600 px-2 py-1 bg-gray-50 rounded-lg">
+                                    {getQualityLabel(wine.quality)}
+                                  </span>
+                                )}
+                              </div>
+                              
+                              {/* Desktop: Full button */}
+                              <a
+                                href={wine.shopUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hidden sm:flex w-full px-5 py-3 text-white rounded-full font-semibold text-sm transition-all hover:shadow-lg hover:scale-105 items-center justify-center gap-2"
+                                style={{ backgroundColor: "#ab8754" }}
+                              >
+                                <ShoppingCart className="w-4 h-4" />
+                                Koupit na e-shopu
+                              </a>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
             
@@ -431,102 +483,83 @@ const WineCollectionSection: React.FC = () => {
                   <button
                     key={i}
                     onClick={() => setCurrentIndex(i)}
-                    className={`transition-all duration-300 rounded-full
-                      ${currentIndex === i 
-                        ? 'w-6 sm:w-8 h-1.5 sm:h-2' 
-                        : 'w-1.5 sm:w-2 h-1.5 sm:h-2'
-                      }`}
-                    style={{
-                      backgroundColor: currentIndex === i ? "#ab8754" : "rgba(171, 135, 84, 0.3)"
-                    }}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      currentIndex === i 
+                        ? 'w-8 opacity-100' 
+                        : 'w-2 opacity-40 hover:opacity-70'
+                    }`}
+                    style={{ backgroundColor: "#ab8754" }}
+                    aria-label={`Přejít na slide ${i + 1}`}
                   />
                 ))}
               </div>
             )}
           </div>
-
-          {/* CTA Section */}
-          <div className="mt-20 text-center">
-            <a 
-              href="https://shop.miqueen.cz/vsechna-vina"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block px-10 py-4 text-white text-lg font-medium rounded-full transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl"
-              style={{ backgroundColor: "#ab8754" }}
-            >
-              Zobrazit e-shop
-            </a>
-          </div>
-
         </div>
       </section>
 
-      {/* Modal */}
+      {/* Modal - nezměněn */}
       {isModalOpen && selectedWine && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4" onClick={closeModal}>
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-          
-          <div 
-            className="relative bg-white rounded-none sm:rounded-3xl w-full sm:max-w-5xl h-full sm:h-auto sm:max-h-[90vh] overflow-hidden shadow-2xl flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close button */}
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors shadow-lg"
+        <div 
+          className="fixed inset-0 z-50 overflow-y-auto"
+          onClick={closeModal}
+        >
+          <div className="min-h-screen px-4 flex items-center justify-center">
+            <div 
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+            />
+            
+            <div 
+              className="relative bg-white rounded-3xl max-w-5xl w-full mx-auto shadow-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
             >
-              <X className="w-5 h-5 text-gray-700" />
-            </button>
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-lg"
+              >
+                <X className="w-5 h-5 text-gray-600" />
+              </button>
 
-            <div className="flex flex-col lg:flex-row h-full overflow-hidden">
-              {/* Image side - optimized for mobile */}
-              <div className="lg:w-2/5 relative bg-gradient-to-br from-gray-100 to-gray-50 flex-shrink-0">
-                <div className="relative h-[40vh] sm:h-[50vh] lg:h-full flex items-center justify-center p-6 lg:p-12">
-                  <div className="relative w-full h-full max-w-md mx-auto">
-                    <Image 
-                      src={selectedWine.image}
-                      alt={selectedWine.name}
-                      fill
-                      className="object-contain"
-                      sizes="(max-width: 768px) 100vw, 40vw"
-                    />
-                  </div>
-                  
+              <div className="grid md:grid-cols-2 gap-0">
+                <div className="relative bg-gradient-to-br from-gray-50 to-white p-8 sm:p-12 flex items-center justify-center border-r border-gray-100">
                   {selectedWine.badge && (
                     <div 
-                      className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg"
+                      className="absolute top-6 left-6 px-4 py-2 rounded-full text-white text-sm font-semibold shadow-lg z-10"
                       style={{ backgroundColor: getBadgeStyle(selectedWine.badge)?.bg }}
                     >
                       {getBadgeStyle(selectedWine.badge)?.text}
                     </div>
                   )}
+                  
+                  <div className="relative w-full max-w-sm">
+                    <Image
+                      src={selectedWine.image}
+                      alt={selectedWine.name}
+                      width={400}
+                      height={800}
+                      className="w-full h-auto object-contain"
+                      priority
+                    />
+                  </div>
                 </div>
-                
-                {/* Visual separator with scroll indicator for mobile */}
-                <div className="lg:hidden absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent flex items-end justify-center pb-2">
-                  <ChevronDown className="w-5 h-5 text-gray-400 animate-bounce" />
-                </div>
-              </div>
 
-              {/* Content side - scrollable */}
-              <div className="lg:w-3/5 flex-1 overflow-y-auto">
-                <div className="p-6 lg:p-10">
-                  {/* Header */}
+                <div className="p-6 sm:p-8 lg:p-12 overflow-y-scroll max-h-[80vh] custom-scrollbar">
                   <div className="mb-6">
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+                    <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
                       {selectedWine.name}
                     </h2>
-                    <p className="text-lg sm:text-xl text-gray-600">{selectedWine.variety}</p>
+                    <p className="text-lg text-gray-600 mb-4">
+                      {selectedWine.grapeVariety}
+                    </p>
                     
-                    {/* Rating */}
-                    <div className="flex items-center gap-2 mt-4">
-                      <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-3">
+                      <div className="flex gap-1">
                         {[...Array(5)].map((_, i) => (
-                          <Star 
+                          <Star
                             key={i}
-                            className={`w-4 sm:w-5 h-4 sm:h-5 ${
-                              i < Math.floor(selectedWine.rating || 0) 
-                                ? 'text-yellow-400 fill-current' 
+                            className={`w-5 h-5 ${
+                              i < Math.floor(selectedWine.rating || 0)
+                                ? 'text-yellow-400 fill-current'
                                 : i < (selectedWine.rating || 0)
                                   ? 'text-yellow-400 fill-current opacity-50'
                                   : 'text-gray-300'
@@ -538,7 +571,6 @@ const WineCollectionSection: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Price section */}
                   <div className="bg-gradient-to-r from-[#ab875410] to-transparent p-4 sm:p-6 rounded-2xl mb-6">
                     <p className="text-gray-600 mb-2">Cena</p>
                     <p className="text-3xl sm:text-4xl font-bold text-gray-900">
@@ -551,7 +583,6 @@ const WineCollectionSection: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Description */}
                   <div className="mb-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-3">Popis</h3>
                     <p className="text-gray-600 leading-relaxed">
@@ -559,7 +590,6 @@ const WineCollectionSection: React.FC = () => {
                     </p>
                   </div>
 
-                  {/* Wine details grid */}
                   <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
                     <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
                       <p className="text-gray-500 text-xs sm:text-sm mb-1">Ročník</p>
@@ -582,7 +612,6 @@ const WineCollectionSection: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Additional info */}
                   <div className="space-y-4 mb-8">
                     {selectedWine.region && (
                       <div className="flex items-start gap-3">
@@ -641,7 +670,6 @@ const WineCollectionSection: React.FC = () => {
                     </div>
                   )}
 
-                  {/* CTA Button - fixed at bottom on mobile */}
                   <div className="sticky bottom-0 left-0 right-0 bg-white pt-4 pb-safe">
                     <a
                       href={selectedWine.shopUrl}
@@ -706,6 +734,31 @@ const WineCollectionSection: React.FC = () => {
         
         .animate-bounce {
           animation: bounce 2s infinite;
+        }
+
+        /* Custom scrollbar for modal */
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #ab8754;
+          border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #8b6d44;
+        }
+
+        /* Firefox scrollbar */
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #ab8754 #f1f1f1;
         }
       `}</style>
     </>

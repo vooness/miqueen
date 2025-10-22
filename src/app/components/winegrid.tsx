@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { Star, ShoppingCart, Sparkles, Droplets, Cherry, Grape, Wine, Package, ExternalLink, X, Thermometer, MapPin, ChefHat, User, ChevronDown } from "lucide-react";
+import { Star, ShoppingCart, Sparkles, Droplets, Cherry, Grape, Wine, Package, ExternalLink, X, Thermometer, MapPin, ChefHat, User } from "lucide-react";
 import { getWinesByCategory, getWineCountByCategory, WineProduct } from "./wineData";
 import { motion, useInView } from "framer-motion";
 
@@ -18,13 +18,11 @@ const WineGridPage: React.FC = () => {
       case 'award': return { bg: '#FFD700', text: 'Oceněné' };
       case 'new': return { bg: '#10B981', text: 'Novinka' };
       case 'limited': return { bg: '#E11D48', text: 'Limitované' };
+      case 'tip': return { bg: '#ab8754', text: 'Tip' };
       default: return null;
     }
   };
 
-  const formatPrice = (price: number): string => {
-    return `${price} Kč`;
-  };
 
   const openModal = (wine: WineProduct) => {
     setSelectedWine(wine);
@@ -56,6 +54,7 @@ const WineGridPage: React.FC = () => {
       case 'vyber-z-bobuli': return 'Výběr z bobulí';
       case 'slama': return 'Slámové víno';
       case 'ledove': return 'Ledové víno';
+      case 'moravske-zemske': return 'Moravské zemské';
       default: return 'Standard';
     }
   };
@@ -114,14 +113,14 @@ const WineGridPage: React.FC = () => {
             </div>
           </AnimatedSection>
 
-          {/* Kategorie Filter */}
+          {/* Kategorie Filter - kompaktnější na mobilu */}
           <AnimatedSection delay={0.2}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-              <div className="flex flex-wrap justify-center gap-3">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2 sm:gap-3">
               <button
                 onClick={() => setSelectedCategory('all')}
                 className={`
-                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
                   ${selectedCategory === 'all' 
                     ? 'text-white border-transparent shadow-lg' 
                     : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
@@ -129,9 +128,9 @@ const WineGridPage: React.FC = () => {
                 `}
                 style={selectedCategory === 'all' ? { backgroundColor: '#ab8754' } : {}}
               >
-                <Sparkles className="w-4 h-4" />
-                <span>Všechna vína</span>
-                <span className={`${selectedCategory === 'all' ? 'text-white/80' : 'text-gray-500'}`}>
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="whitespace-nowrap">Všechna vína</span>
+                <span className={`${selectedCategory === 'all' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
                   ({getWineCountByCategory('all')})
                 </span>
               </button>
@@ -139,7 +138,7 @@ const WineGridPage: React.FC = () => {
               <button
                 onClick={() => setSelectedCategory('white')}
                 className={`
-                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
                   ${selectedCategory === 'white' 
                     ? 'text-white border-transparent shadow-lg' 
                     : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
@@ -147,9 +146,9 @@ const WineGridPage: React.FC = () => {
                 `}
                 style={selectedCategory === 'white' ? { backgroundColor: '#ab8754' } : {}}
               >
-                <Droplets className="w-4 h-4" />
+                <Droplets className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Bílá</span>
-                <span className={`${selectedCategory === 'white' ? 'text-white/80' : 'text-gray-500'}`}>
+                <span className={`${selectedCategory === 'white' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
                   ({getWineCountByCategory('white')})
                 </span>
               </button>
@@ -157,7 +156,7 @@ const WineGridPage: React.FC = () => {
               <button
                 onClick={() => setSelectedCategory('red')}
                 className={`
-                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
                   ${selectedCategory === 'red' 
                     ? 'text-white border-transparent shadow-lg' 
                     : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
@@ -165,9 +164,9 @@ const WineGridPage: React.FC = () => {
                 `}
                 style={selectedCategory === 'red' ? { backgroundColor: '#ab8754' } : {}}
               >
-                <Cherry className="w-4 h-4" />
+                <Cherry className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Červená</span>
-                <span className={`${selectedCategory === 'red' ? 'text-white/80' : 'text-gray-500'}`}>
+                <span className={`${selectedCategory === 'red' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
                   ({getWineCountByCategory('red')})
                 </span>
               </button>
@@ -175,7 +174,7 @@ const WineGridPage: React.FC = () => {
               <button
                 onClick={() => setSelectedCategory('rose')}
                 className={`
-                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
                   ${selectedCategory === 'rose' 
                     ? 'text-white border-transparent shadow-lg' 
                     : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
@@ -183,9 +182,9 @@ const WineGridPage: React.FC = () => {
                 `}
                 style={selectedCategory === 'rose' ? { backgroundColor: '#ab8754' } : {}}
               >
-                <Grape className="w-4 h-4" />
+                <Grape className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Růžová</span>
-                <span className={`${selectedCategory === 'rose' ? 'text-white/80' : 'text-gray-500'}`}>
+                <span className={`${selectedCategory === 'rose' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
                   ({getWineCountByCategory('rose')})
                 </span>
               </button>
@@ -193,7 +192,7 @@ const WineGridPage: React.FC = () => {
               <button
                 onClick={() => setSelectedCategory('sparkling')}
                 className={`
-                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
                   ${selectedCategory === 'sparkling' 
                     ? 'text-white border-transparent shadow-lg' 
                     : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
@@ -201,9 +200,9 @@ const WineGridPage: React.FC = () => {
                 `}
                 style={selectedCategory === 'sparkling' ? { backgroundColor: '#ab8754' } : {}}
               >
-                <Wine className="w-4 h-4" />
+                <Wine className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Perlivá</span>
-                <span className={`${selectedCategory === 'sparkling' ? 'text-white/80' : 'text-gray-500'}`}>
+                <span className={`${selectedCategory === 'sparkling' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
                   ({getWineCountByCategory('sparkling')})
                 </span>
               </button>
@@ -211,7 +210,7 @@ const WineGridPage: React.FC = () => {
               <button
                 onClick={() => setSelectedCategory('special')}
                 className={`
-                  flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 font-medium
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
                   ${selectedCategory === 'special' 
                     ? 'text-white border-transparent shadow-lg' 
                     : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
@@ -219,9 +218,9 @@ const WineGridPage: React.FC = () => {
                 `}
                 style={selectedCategory === 'special' ? { backgroundColor: '#ab8754' } : {}}
               >
-                <Package className="w-4 h-4" />
+                <Package className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Mimosa</span>
-                <span className={`${selectedCategory === 'special' ? 'text-white/80' : 'text-gray-500'}`}>
+                <span className={`${selectedCategory === 'special' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
                   ({getWineCountByCategory('special')})
                 </span>
               </button>
@@ -236,8 +235,8 @@ const WineGridPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Wine Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 lg:gap-8">
+          {/* Wine Grid - UPRAVENO: 2 sloupce na mobilu, menší mezery */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-6 lg:gap-8">
             {filteredWines.map((wine, index) => {
               const badge = getBadgeStyle(wine.badge);
               
@@ -253,24 +252,24 @@ const WineGridPage: React.FC = () => {
                       alt={wine.name}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-700 cursor-pointer"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       onClick={() => openModal(wine)}
                     />
                     
                     {badge && (
                       <div 
-                        className="absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-semibold text-white z-10 shadow-lg"
+                        className="absolute top-2 sm:top-3 left-2 sm:left-3 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold text-white z-10 shadow-lg"
                         style={{ backgroundColor: badge.bg }}
                       >
                         {badge.text}
                       </div>
                     )}
 
-                    {/* Quick view overlay - fixed to be clickable */}
+                    {/* Quick view overlay */}
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                       <button 
                         onClick={() => openModal(wine)}
-                        className="px-6 py-3 bg-white text-gray-900 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center gap-2 shadow-xl"
+                        className="hidden sm:flex px-6 py-3 bg-white text-gray-900 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all transform hover:scale-105 items-center gap-2 shadow-xl"
                       >
                         <Wine className="w-4 h-4" />
                         Zobrazit produkt
@@ -278,14 +277,14 @@ const WineGridPage: React.FC = () => {
                     </div>
                   </div>
                   
-                  {/* Content */}
-                  <div className="p-5">
+                  {/* Content - UPRAVENO: kompaktnější na mobilu */}
+                  <div className="p-3 sm:p-5">
                     {/* Rating */}
-                    <div className="flex items-center gap-1 mb-3">
+                    <div className="flex items-center gap-0.5 sm:gap-1 mb-2 sm:mb-3">
                       {[...Array(5)].map((_, i) => (
                         <Star 
                           key={i}
-                          className={`w-4 h-4 ${
+                          className={`w-3 h-3 sm:w-4 sm:h-4 ${
                             i < Math.floor(wine.rating || 0) 
                               ? 'text-yellow-400 fill-current' 
                               : i < (wine.rating || 0) 
@@ -294,60 +293,73 @@ const WineGridPage: React.FC = () => {
                           }`}
                         />
                       ))}
-                      <span className="text-gray-500 text-sm ml-2 font-medium">({wine.rating?.toFixed(1) || '4.5'})</span>
+                      <span className="text-gray-500 text-[10px] sm:text-sm ml-1 sm:ml-2 font-medium">({wine.rating?.toFixed(1) || '4.5'})</span>
                     </div>
                     
                     {/* Title */}
-                    <h3 className="text-gray-900 font-semibold text-lg mb-2 line-clamp-2 min-h-[3.5rem] cursor-pointer hover:text-[#ab8754] transition-colors" onClick={() => openModal(wine)}>
+                    <h3 className="text-gray-900 font-semibold text-xs sm:text-lg mb-1 sm:mb-2 line-clamp-2 min-h-[2rem] sm:min-h-[3.5rem] cursor-pointer hover:text-[#ab8754] transition-colors" onClick={() => openModal(wine)}>
                       {wine.name}
                     </h3>
                     
                     {/* Details */}
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="text-gray-600 text-sm">
+                    <div className="flex items-center justify-between mb-2 sm:mb-3">
+                      <p className="text-gray-600 text-[10px] sm:text-sm line-clamp-1">
                         {wine.variety}
                       </p>
-                      <span className="text-gray-500 text-xs font-medium px-2 py-1 bg-gray-100 rounded-full">
+                      <span className="text-gray-500 text-[9px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded-full">
                         {wine.vintage}
                       </span>
                     </div>
                     
                     {/* Volume badge */}
                     {wine.volume && (
-                      <div className="mb-3">
-                        <span className="text-xs font-medium px-2 py-1 rounded-full" style={{ backgroundColor: "#ab875410", color: "#ab8754" }}>
-                          {wine.volume === 200 ? "Mini 200ml" : wine.volume === 375 ? "375ml" : wine.volume === 500 ? "500ml" : "750ml"}
+                      <div className="mb-2 sm:mb-3">
+                        <span className="text-[9px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full" style={{ backgroundColor: "#ab875410", color: "#ab8754" }}>
+                          {wine.volume === 200 ? "Mini 200ml" : wine.volume === 187 ? "187ml" : wine.volume === 375 ? "375ml" : wine.volume === 500 ? "500ml" : "750ml"}
                         </span>
                       </div>
                     )}
                     
-                    {/* Description */}
-                    <p className="text-gray-500 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
+                    {/* Description - skrytý na mobilu */}
+                    <p className="hidden sm:block text-gray-500 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
                       {wine.description}
                     </p>
                     
                     {/* Price & Button */}
-                    <div className="flex flex-col gap-3 pt-4 border-t border-gray-100">
+                    <div className="flex flex-col gap-2 sm:gap-3 pt-2 sm:pt-4 border-t border-gray-100">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-gray-500 text-xs mb-1">Cena</p>
-                          <p className="text-gray-900 font-bold text-2xl">
-                            {formatPrice(wine.price)}
+                          <p className="text-gray-500 text-[9px] sm:text-xs mb-0.5 sm:mb-1">Cena</p>
+                          <p className="text-gray-900 font-bold text-lg sm:text-2xl">
+                            {wine.price} <span className="text-sm sm:text-lg">Kč</span>
                           </p>
                         </div>
                         
+                        {/* Mobile: Just circle with cart icon */}
+                        <a
+                          href={wine.shopUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="sm:hidden w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-95"
+                          style={{ backgroundColor: "#ab8754" }}
+                        >
+                          <ShoppingCart className="w-4 h-4 text-white" />
+                        </a>
+                        
+                        {/* Desktop: Quality badge */}
                         {wine.quality && (
-                          <span className="text-xs font-medium text-gray-600 px-2 py-1 bg-gray-50 rounded-lg">
+                          <span className="hidden sm:inline-block text-xs font-medium text-gray-600 px-2 py-1 bg-gray-50 rounded-lg">
                             {getQualityLabel(wine.quality)}
                           </span>
                         )}
                       </div>
                       
+                      {/* Desktop: Full button */}
                       <a
                         href={wine.shopUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full px-5 py-3 text-white rounded-full font-semibold text-sm transition-all hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2"
+                        className="hidden sm:flex w-full px-5 py-3 text-white rounded-full font-semibold text-sm transition-all hover:shadow-lg hover:scale-105 items-center justify-center gap-2"
                         style={{ backgroundColor: "#ab8754" }}
                       >
                         <ShoppingCart className="w-4 h-4" />
@@ -409,7 +421,7 @@ const WineGridPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Modal */}
+      {/* Modal - s viditelným scrollbarem */}
       {isModalOpen && selectedWine && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4" onClick={closeModal}>
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
@@ -431,7 +443,7 @@ const WineGridPage: React.FC = () => {
             </button>
 
             <div className="flex flex-col lg:flex-row h-full overflow-hidden">
-              {/* Image side - optimized for mobile */}
+              {/* Image side */}
               <div className="lg:w-2/5 relative bg-gradient-to-br from-gray-100 to-gray-50 flex-shrink-0">
                 <div className="relative h-[40vh] sm:h-[50vh] lg:h-full flex items-center justify-center p-6 lg:p-12">
                   <div className="relative w-full h-full max-w-md mx-auto">
@@ -453,32 +465,29 @@ const WineGridPage: React.FC = () => {
                     </div>
                   )}
                 </div>
-                
-                {/* Visual separator with scroll indicator for mobile */}
-                <div className="lg:hidden absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent flex items-end justify-center pb-2">
-                  <ChevronDown className="w-5 h-5 text-gray-400 animate-bounce" />
-                </div>
               </div>
 
-              {/* Content side - scrollable */}
-              <div className="lg:w-3/5 flex-1 overflow-y-auto">
-                <div className="p-6 lg:p-10">
+              {/* Details side - s viditelným scrollbarem */}
+              <div className="lg:w-3/5 overflow-y-scroll custom-scrollbar flex-1">
+                <div className="p-6 sm:p-8 lg:p-12">
                   {/* Header */}
                   <div className="mb-6">
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+                    <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
                       {selectedWine.name}
                     </h2>
-                    <p className="text-lg sm:text-xl text-gray-600">{selectedWine.variety}</p>
+                    <p className="text-lg text-gray-600 mb-4">
+                      {selectedWine.grapeVariety}
+                    </p>
                     
                     {/* Rating */}
-                    <div className="flex items-center gap-2 mt-4">
-                      <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-3">
+                      <div className="flex gap-1">
                         {[...Array(5)].map((_, i) => (
-                          <Star 
+                          <Star
                             key={i}
-                            className={`w-4 sm:w-5 h-4 sm:h-5 ${
-                              i < Math.floor(selectedWine.rating || 0) 
-                                ? 'text-yellow-400 fill-current' 
+                            className={`w-5 h-5 ${
+                              i < Math.floor(selectedWine.rating || 0)
+                                ? 'text-yellow-400 fill-current'
                                 : i < (selectedWine.rating || 0)
                                   ? 'text-yellow-400 fill-current opacity-50'
                                   : 'text-gray-300'
@@ -593,7 +602,7 @@ const WineGridPage: React.FC = () => {
                     </div>
                   )}
 
-                  {/* CTA Button - fixed at bottom on mobile */}
+                  {/* CTA Button */}
                   <div className="sticky bottom-0 left-0 right-0 bg-white pt-4 pb-safe">
                     <a
                       href={selectedWine.shopUrl}
@@ -630,6 +639,12 @@ const WineGridPage: React.FC = () => {
           animation-delay: 2s;
         }
 
+        .line-clamp-1 {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;
@@ -640,18 +655,30 @@ const WineGridPage: React.FC = () => {
         .pb-safe {
           padding-bottom: env(safe-area-inset-bottom, 1rem);
         }
-        
-        @keyframes bounce {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
+
+        /* Custom scrollbar for modal */
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
         }
-        
-        .animate-bounce {
-          animation: bounce 2s infinite;
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #ab8754;
+          border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #8b6d44;
+        }
+
+        /* Firefox scrollbar */
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #ab8754 #f1f1f1;
         }
       `}</style>
     </>
