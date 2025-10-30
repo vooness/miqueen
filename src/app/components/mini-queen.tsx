@@ -1,36 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Wine, Heart, ShoppingBag, Star, ShoppingCart, X, Thermometer, MapPin, ChefHat, User, ChevronDown } from "lucide-react";
+import { Wine, Heart, ShoppingBag, Star, ShoppingCart, X, Thermometer, MapPin, ChefHat, User, ChevronDown, Gift } from "lucide-react";
 import { motion, Variants, useReducedMotion } from "framer-motion";
-
-interface MiniWine {
-  id: number;
-  name: string;
-  variety: string;
-  vintage: number;
-  price: number;
-  rating: number;
-  description: string;
-  image: string;
-  shopUrl: string;
-  badge?: 'new' | 'bestseller' | 'tip';
-  quality?: string;
-  dryness?: string;
-  alcohol?: number;
-  volume: number;
-  region?: string;
-  servingTemp?: string;
-  foodPairing?: string[];
-  winemaker?: string;
-  notes?: string;
-}
+import { wines, WineProduct } from "./wineData";
 
 const MiQueenMiniPage = () => {
   const accentColor = "#ab8754";
   const paperColor = "#fefbea";
   
-  const [selectedWine, setSelectedWine] = useState<MiniWine | null>(null);
+  const [selectedWine, setSelectedWine] = useState<WineProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const prefersReducedMotion = useReducedMotion();
@@ -42,110 +21,23 @@ const MiQueenMiniPage = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const miniWines: MiniWine[] = [
-    {
-      id: 1,
-      name: "Pinot Noir 2022 mini",
-      variety: "Pinot Noir",
-      vintage: 2022,
-      price: 69,
-      rating: 4.8,
-      description: "Nádherné víno cihlovo-rubínové barvy. Ve vůni nalezneme marmeládové a borůvkové tóny. Chuť je výrazně mnohovrstvá s tóny lesního ovoce, sušených brusinek, hořké čokolády s nekončícím závěrem.",
-      image: "https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/detail/120_pn22-mini.png?67b889e5",
-      shopUrl: "https://shop.miqueen.cz/pinot-noir-2022-mini--vyber-z-hroznu---suche-1-ks/",
-      badge: 'bestseller',
-      quality: 'Výběr z hroznů',
-      dryness: 'Suché',
-      alcohol: 15.5,
-      volume: 187,
-      region: 'Mikulovská podoblast, Perná',
-      servingTemp: '16-18°C',
-      foodPairing: ['Degustace', 'Předkrmy', 'Tapas'],
-      winemaker: 'MiQueen Winery',
-      notes: 'Mini verze našeho oceňovaného Pinot Noir. Balení po 24ks.'
-    },
-    {
-      id: 2,
-      name: "Rulandské šedé 2023 mini",
-      variety: "Rulandské šedé",
-      vintage: 2023,
-      price: 69,
-      rating: 4.5,
-      description: "Nádherné víno jemně narůžovělé barvy. Vůně je svěží s jemným chlebovinkovým aroma. Chuť je plná, harmonická s příjemnými minerálními tóny v závěru. Převládají zde tóny gdoulí a zralých meruněk.",
-      image: "https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/detail/87_rs23-mini.png?6647a134",
-      shopUrl: "https://shop.miqueen.cz/rulandske-sede-2023-2/",
-      quality: 'Výběr z hroznů',
-      dryness: 'Polosladké',
-      alcohol: 13.5,
-      volume: 187,
-      region: 'Mikulovská podoblast, Mikulov',
-      servingTemp: '8-10°C',
-      foodPairing: ['Předkrmy', 'Lehké saláty', 'Sushi'],
-      winemaker: 'MiQueen Winery',
-      notes: 'Ideální velikost pro ochutnávku nebo dárek. Balení po 24ks.'
-    },
-    {
-      id: 3,
-      name: "Ryzlink vlašský 2023 mini",
-      variety: "Ryzlink vlašský",
-      vintage: 2023,
-      price: 69,
-      rating: 4.5,
-      description: "Nádherné víno žluto-zlatavé barvy vás zaujme příjemnou vůní červeného grepu a sušených bylinek. Chuť je výrazně minerální s velmi dlouhou a plnou dochutí.",
-      image: "https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/detail/81_rv23-mini.png?6647880c",
-      shopUrl: "https://shop.miqueen.cz/ryzlink-vlassky-2023-2/",
-      quality: 'Pozdní sběr',
-      dryness: 'Suché',
-      alcohol: 12,
-      volume: 187,
-      region: 'Mikulovská podoblast',
-      servingTemp: '10-12°C',
-      foodPairing: ['Aperitiv', 'Lehké předkrmy'],
-      winemaker: 'MiQueen Winery',
-      notes: 'Perfektní na ochutnávku. Balení po 24ks.'
-    },
-    {
-      id: 4,
-      name: "Ryzlink vlašský Frizzante 2023 mini",
-      variety: "Ryzlink vlašský",
-      vintage: 2023,
-      price: 79,
-      rating: 4.6,
-      description: "Nádherné víno žluto-zlatavé barvy vás zaujme příjemnou vůní červeného grepu a sušených bylinek. Chuť je výrazně minerální s velmi dlouhou, plnou dochutí a lehounkou hořkostí v závěru.",
-      image: "https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/detail/102-1_friz-mini2.png?683ac153",
-      shopUrl: "https://shop.miqueen.cz/frizzante-ryzlink-vlassky-2023-mini-moravske-zemske-polosuche-1-ks/",
-      badge: 'new',
-      quality: 'Moravské zemské',
-      dryness: 'Polosuché',
-      alcohol: 11,
-      volume: 187,
-      region: 'Mikulovská podoblast',
-      servingTemp: '6-8°C',
-      foodPairing: ['Aperitiv', 'Tapas'],
-      winemaker: 'MiQueen Winery',
-      notes: 'Vyrobeno metodou Charmat s jemným perlením. Balení po 24ks.'
-    },
-    {
-      id: 5,
-      name: "MIMOSA mini",
-      variety: "Sauvignon Frizzante + 100% pomerančová šťáva",
-      vintage: 2024,
-      price: 89,
-      rating: 4.7,
-      description: "MIMOSA v kombinaci suchého Sauvignonu Frizzante a 100% pomerančové šťávy má svěží, lehce citrusovou chuť s výraznou kyselinkou. Vínová složka dodává suchý, minerální charakter.",
-      image: "https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/159_navrh-bez-nazvu--43.png?6889cfcc",
-      shopUrl: "https://shop.miqueen.cz/mimosa-mini/",
-      badge: 'tip',
-      dryness: 'Polosuché',
-      alcohol: 8,
-      volume: 200,
-      region: 'Znojemská podoblast',
-      servingTemp: '4-6°C',
-      foodPairing: ['Brunch', 'Aperitiv', 'Ovocné saláty'],
-      winemaker: 'MiQueen Winery',
-      notes: 'Inovativní koktejl kombinující kvalitní víno s přírodní ovocnou šťávou.'
-    }
-  ];
+  // ============= NAČÍTÁNÍ DAT Z DATABÁZE =============
+  // Filtrování pouze mini vín a setů z kompletní databáze
+  const miniWines: WineProduct[] = wines.filter(wine => {
+    // Načíst mini vína (ID 1-10) a sety (ID 38-39)
+    // Mini vína: objem < 250ml nebo obsahuje "mini" v názvu
+    // Sety: kategorie 'set' nebo ID 38-39
+    const isMiniVolume = wine.volume && wine.volume < 250;
+    const isMiniName = wine.name.toLowerCase().includes('mini');
+    const isSet = wine.category === 'set' || wine.id === 38 || wine.id === 39;
+    
+    return isMiniVolume || isMiniName || isSet;
+  }).sort((a, b) => {
+    // Řazení: nejdřív jednotlivá mini vína, pak sety
+    if ((a.category === 'set') && (b.category !== 'set')) return 1;
+    if ((a.category !== 'set') && (b.category === 'set')) return -1;
+    return a.id - b.id;
+  });
 
   const benefits = [
     {
@@ -161,7 +53,7 @@ const MiQueenMiniPage = () => {
     {
       icon: Heart,
       title: "Skvělý dárek",
-      description: "Originální darování možnost pro každou příležitost. Vytvoř si vlastní dárkovou sadu z mini lahviček."
+      description: "Originální dárková možnost pro každou příležitost. Vytvoř si vlastní dárkovou sadu z mini lahviček."
     },
     {
       icon: Star,
@@ -175,11 +67,13 @@ const MiQueenMiniPage = () => {
       case 'bestseller': return { bg: '#ab8754', text: 'Bestseller' };
       case 'new': return { bg: '#10B981', text: 'Novinka' };
       case 'tip': return { bg: '#F59E0B', text: 'Tip' };
+      case 'award': return { bg: '#6366F1', text: 'Ocenění' };
+      case 'limited': return { bg: '#DC2626', text: 'Limitovaná edice' };
       default: return null;
     }
   };
 
-  const openModal = (wine: MiniWine) => {
+  const openModal = (wine: WineProduct) => {
     setSelectedWine(wine);
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
@@ -301,7 +195,10 @@ const MiQueenMiniPage = () => {
               variants={fadeInUp}
             >
               <p className="text-gray-600 text-base md:text-lg">
-                Zobrazeno <span className="font-semibold text-xl md:text-2xl" style={{ color: accentColor }}>{miniWines.length}</span> z celkem <span className="font-semibold" style={{ color: accentColor }}>{miniWines.length}</span> vín
+                Zobrazeno <span className="font-semibold text-xl md:text-2xl" style={{ color: accentColor }}>{miniWines.length}</span> mini produktů z databáze
+              </p>
+              <p className="text-gray-500 text-sm mt-2">
+                (10 mini vín + 2 degustační sety)
               </p>
             </motion.div>
 
@@ -309,6 +206,7 @@ const MiQueenMiniPage = () => {
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-6 lg:gap-8">
               {miniWines.map((wine, index) => {
                 const badge = getBadgeStyle(wine.badge);
+                const isSet = wine.category === 'set';
                 
                 return (
                   <motion.div
@@ -344,6 +242,12 @@ const MiQueenMiniPage = () => {
                         </div>
                       )}
 
+                      {isSet && (
+                        <div className="absolute top-2 sm:top-3 right-2 sm:right-3 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#ab8754] flex items-center justify-center shadow-lg z-10">
+                          <Gift className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                        </div>
+                      )}
+
                       {/* Quick view overlay - pouze desktop */}
                       {!isMobile && (
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
@@ -361,19 +265,21 @@ const MiQueenMiniPage = () => {
                     {/* Content - kompaktnější na mobilu */}
                     <div className="p-3 sm:p-5">
                       {/* Rating */}
-                      <div className="flex items-center gap-0.5 sm:gap-1 mb-2 sm:mb-3">
-                        {[...Array(5)].map((_, i) => (
-                          <Star 
-                            key={i}
-                            className={`w-3 h-3 sm:w-4 sm:h-4 ${
-                              i < Math.floor(wine.rating) 
-                                ? 'text-yellow-400 fill-yellow-400' 
-                                : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                        <span className="text-gray-500 text-[10px] sm:text-sm ml-1 sm:ml-2 font-medium">({wine.rating.toFixed(1)})</span>
-                      </div>
+                      {wine.rating && (
+                        <div className="flex items-center gap-0.5 sm:gap-1 mb-2 sm:mb-3">
+                          {[...Array(5)].map((_, i) => (
+                            <Star 
+                              key={i}
+                              className={`w-3 h-3 sm:w-4 sm:h-4 ${
+                                wine.rating && i < Math.floor(wine.rating) 
+                                  ? 'text-yellow-400 fill-yellow-400' 
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                          <span className="text-gray-500 text-[10px] sm:text-sm ml-1 sm:ml-2 font-medium">({wine.rating.toFixed(1)})</span>
+                        </div>
+                      )}
 
                       {/* Title */}
                       <h3 className="text-gray-900 font-semibold text-xs sm:text-lg mb-1 sm:mb-2 line-clamp-2 min-h-[2rem] sm:min-h-[3.5rem] cursor-pointer hover:text-[#ab8754] transition-colors" onClick={() => openModal(wine)}>
@@ -393,7 +299,7 @@ const MiQueenMiniPage = () => {
                       {/* Volume badge */}
                       <div className="mb-2 sm:mb-3">
                         <span className="text-[9px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full" style={{ backgroundColor: "#ab875410", color: "#ab8754" }}>
-                          Mini {wine.volume}ml
+                          {isSet ? `Set 4x ${wine.volume}ml` : `Mini ${wine.volume}ml`}
                         </span>
                       </div>
                       
@@ -514,21 +420,23 @@ const MiQueenMiniPage = () => {
                     <p className="text-base md:text-lg lg:text-xl text-gray-600">{selectedWine.variety}</p>
                     
                     {/* Rating */}
-                    <div className="flex items-center gap-2 mt-3 md:mt-4">
-                      <div className="flex items-center gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star 
-                            key={i}
-                            className={`w-4 md:w-5 h-4 md:h-5 ${
-                              i < Math.floor(selectedWine.rating) 
-                                ? 'text-yellow-400 fill-current' 
-                                : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
+                    {selectedWine.rating && (
+                      <div className="flex items-center gap-2 mt-3 md:mt-4">
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star 
+                              key={i}
+                              className={`w-4 md:w-5 h-4 md:h-5 ${
+                                selectedWine.rating && i < Math.floor(selectedWine.rating) 
+                                  ? 'text-yellow-400 fill-current' 
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-gray-600 font-medium text-sm md:text-base">({selectedWine.rating.toFixed(1)})</span>
                       </div>
-                      <span className="text-gray-600 font-medium text-sm md:text-base">({selectedWine.rating.toFixed(1)})</span>
-                    </div>
+                    )}
                   </div>
 
                   {/* Price section */}
@@ -538,7 +446,10 @@ const MiQueenMiniPage = () => {
                       {selectedWine.price} <span className="text-lg md:text-xl lg:text-2xl">Kč</span>
                     </p>
                     <p className="text-gray-600 text-sm md:text-base mt-1 md:mt-2">
-                      Objem: {selectedWine.volume}ml
+                      {selectedWine.category === 'set' 
+                        ? `Degustační set 4x ${selectedWine.volume}ml`
+                        : `Objem: ${selectedWine.volume}ml`
+                      }
                     </p>
                   </div>
 
@@ -557,20 +468,26 @@ const MiQueenMiniPage = () => {
                       <p className="text-gray-900 font-semibold text-sm md:text-base">{selectedWine.vintage}</p>
                     </div>
                     
-                    <div className="bg-gray-50 p-3 md:p-4 rounded-lg md:rounded-xl">
-                      <p className="text-gray-500 text-xs md:text-sm mb-1">Alkohol</p>
-                      <p className="text-gray-900 font-semibold text-sm md:text-base">{selectedWine.alcohol}%</p>
-                    </div>
+                    {selectedWine.alcohol && (
+                      <div className="bg-gray-50 p-3 md:p-4 rounded-lg md:rounded-xl">
+                        <p className="text-gray-500 text-xs md:text-sm mb-1">Alkohol</p>
+                        <p className="text-gray-900 font-semibold text-sm md:text-base">{selectedWine.alcohol}%</p>
+                      </div>
+                    )}
                     
-                    <div className="bg-gray-50 p-3 md:p-4 rounded-lg md:rounded-xl">
-                      <p className="text-gray-500 text-xs md:text-sm mb-1">Kvalita</p>
-                      <p className="text-gray-900 font-semibold text-sm md:text-base">{selectedWine.quality}</p>
-                    </div>
+                    {selectedWine.quality && (
+                      <div className="bg-gray-50 p-3 md:p-4 rounded-lg md:rounded-xl">
+                        <p className="text-gray-500 text-xs md:text-sm mb-1">Kvalita</p>
+                        <p className="text-gray-900 font-semibold text-sm md:text-base">{selectedWine.quality}</p>
+                      </div>
+                    )}
                     
-                    <div className="bg-gray-50 p-3 md:p-4 rounded-lg md:rounded-xl">
-                      <p className="text-gray-500 text-xs md:text-sm mb-1">Sladkost</p>
-                      <p className="text-gray-900 font-semibold text-sm md:text-base">{selectedWine.dryness}</p>
-                    </div>
+                    {selectedWine.dryness && (
+                      <div className="bg-gray-50 p-3 md:p-4 rounded-lg md:rounded-xl">
+                        <p className="text-gray-500 text-xs md:text-sm mb-1">Sladkost</p>
+                        <p className="text-gray-900 font-semibold text-sm md:text-base">{selectedWine.dryness}</p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Additional info */}

@@ -1,14 +1,42 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { Wine, MapPin, Users, Star, EyeOff, Phone, Mail, ExternalLink, CheckCircle, Home, Trees, Music, Utensils, Car } from "lucide-react";
+import { Wine, MapPin, Users, Star, EyeOff, Phone, Mail, ExternalLink, CheckCircle, Home, Trees, Music, Utensils, Car, LucideIcon } from "lucide-react";
 import { motion, Variants } from "framer-motion";
+
+interface EquipmentItem {
+  icon: LucideIcon;
+  text: string;
+}
+
+interface DegustaceCard {
+  id: number;
+  title: string;
+  subtitle: string;
+  tagline: string;
+  description: string;
+  image: string;
+  address: string;
+  capacity: string;
+  features?: string[];
+  wines?: string[];
+  equipment?: EquipmentItem[];
+  accommodation?: EquipmentItem[];
+  occasions?: string[];
+  nearby?: string[];
+  specialFeatures?: EquipmentItem[];
+  symbols?: string;
+  url: string;
+  color: string;
+  highlight?: boolean;
+  price?: string;
+}
 
 const DegustaceSection: React.FC = () => {
   const accentColor = "#ab8754";
   const paperColor = "#fefbea";
 
-  const degustaceCards = [
+  const degustaceCards: DegustaceCard[] = [
     {
       id: 1,
       title: "Degustace Brno",
@@ -88,7 +116,7 @@ const DegustaceSection: React.FC = () => {
       description: "Pravidelné degustace potmě, při kterých se zcela ponoříte do světa chutí a vůní. Bez zrakového vjemu vnímáte víno intenzivněji – a každý doušek se stává dobrodružstvím.",
       image: "/fotky/20240628024036423.jpeg",
       address: "Chrlické náměstí 1/4, Brno-Chrlice",
-      price: "150 Kč/osoba",
+
       specialFeatures: [
         { icon: EyeOff, text: "Trénink smyslů" },
         { icon: Music, text: "Tichá atmosféra" },
@@ -96,7 +124,8 @@ const DegustaceSection: React.FC = () => {
       ],
       highlight: true,
       url: "https://shop.miqueen.cz/degustace-potme-brno/",
-      color: "#1F2937"
+      color: "#1F2937",
+      capacity: ""
     }
   ];
 

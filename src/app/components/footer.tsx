@@ -123,10 +123,7 @@ const Footer = () => {
                 <li className="text-stone-500 text-sm">
                   Za Valama 938, 696 15 Čejkovice
                 </li>
-                <li className="text-stone-600 text-xs pt-3 space-y-0.5">
-                  <div>Po-Pá: 9:00-18:00</div>
-                  <div>So: 10:00-16:00</div>
-                </li>
+                
               </ul>
             </div>
           </div>

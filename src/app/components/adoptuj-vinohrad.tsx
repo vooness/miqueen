@@ -13,21 +13,21 @@ const AdoptujVinohradPage = () => {
       heads: 12,
       bottles: 12,
       deliveries: "2x ročně po 6 lahvích",
-      price: "od 3 990 Kč",
+      price: "4 990 Kč",
       popular: false
     },
     {
       heads: 24,
       bottles: 24,
       deliveries: "4x ročně po 6 lahvích",
-      price: "od 7 990 Kč",
+      price: "8 690 Kč",
       popular: true
     },
     {
       heads: 36,
       bottles: 36,
       deliveries: "6x ročně po 6 lahvích",
-      price: "od 11 990 Kč",
+      price: "9 900 Kč",
       popular: false
     }
   ];

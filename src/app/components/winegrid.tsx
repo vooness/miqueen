@@ -1,28 +1,50 @@
 "use client"
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { Star, ShoppingCart, Sparkles, Droplets, Cherry, Grape, Wine, Package, ExternalLink, X, Thermometer, MapPin, ChefHat, User } from "lucide-react";
-import { getWinesByCategory, getWineCountByCategory, WineProduct } from "./wineData";
+import { Star, ShoppingCart, Sparkles, Droplets, Cherry, Grape, Wine, Package, ExternalLink, X, Thermometer, MapPin, ChefHat, User, Gift } from "lucide-react";
+import { wines, getWinesByCategory, getWineCountByCategory, WineProduct } from "./wineData";
 import { motion, useInView } from "framer-motion";
+
+// Debug: Zkontrolujte počet produktů při načtení komponenty
+console.log('Grid - Celkový počet vín v databázi:', wines.length);
+console.log('Grid - Bílá vína:', wines.filter(w => w.category === 'white').length);
+console.log('Grid - Červená vína:', wines.filter(w => w.category === 'red').length);
+console.log('Grid - Růžová vína:', wines.filter(w => w.category === 'rose').length);
+console.log('Grid - Perlivá vína:', wines.filter(w => w.category === 'sparkling').length);
+console.log('Grid - Speciální:', wines.filter(w => w.category === 'special').length);
+console.log('Grid - Sety:', wines.filter(w => w.category === 'set').length);
+console.log('Grid - Novinky:', wines.filter(w => w.badge === 'new').length);
+console.log('Grid - Celkový součet kategorií:', 
+  wines.filter(w => w.category === 'white').length +
+  wines.filter(w => w.category === 'red').length +
+  wines.filter(w => w.category === 'rose').length +
+  wines.filter(w => w.category === 'sparkling').length +
+  wines.filter(w => w.category === 'special').length +
+  wines.filter(w => w.category === 'set').length
+);
 
 const WineGridPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedWine, setSelectedWine] = useState<WineProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const filteredWines = getWinesByCategory(selectedCategory);
+  // Filtrování podle kategorie včetně novinek
+  const filteredWines = selectedCategory === 'new' 
+    ? wines.filter(w => w.badge === 'new')
+    : selectedCategory === 'all'
+    ? wines
+    : getWinesByCategory(selectedCategory);
 
   const getBadgeStyle = (badge?: string) => {
     switch(badge) {
       case 'bestseller': return { bg: '#ab8754', text: 'Bestseller' };
-      case 'award': return { bg: '#FFD700', text: 'Oceněné' };
+      case 'award': return { bg: '#ab8754', text: 'Oceněné' };
       case 'new': return { bg: '#10B981', text: 'Novinka' };
       case 'limited': return { bg: '#E11D48', text: 'Limitované' };
-      case 'tip': return { bg: '#ab8754', text: 'Tip' };
+      case 'tip': return { bg: '#F59E0B', text: 'Tip' };
       default: return null;
     }
   };
-
 
   const openModal = (wine: WineProduct) => {
     setSelectedWine(wine);
@@ -113,7 +135,7 @@ const WineGridPage: React.FC = () => {
             </div>
           </AnimatedSection>
 
-          {/* Kategorie Filter - kompaktnější na mobilu */}
+          {/* Kategorie Filter - s filtrem Novinky */}
           <AnimatedSection delay={0.2}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
               <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2 sm:gap-3">
@@ -131,7 +153,25 @@ const WineGridPage: React.FC = () => {
                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span className="whitespace-nowrap">Všechna vína</span>
                 <span className={`${selectedCategory === 'all' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getWineCountByCategory('all')})
+                  ({wines.length})
+                </span>
+              </button>
+
+              <button
+                onClick={() => setSelectedCategory('new')}
+                className={`
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
+                  ${selectedCategory === 'new' 
+                    ? 'text-white border-transparent shadow-lg' 
+                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
+                  }
+                `}
+                style={selectedCategory === 'new' ? { backgroundColor: '#10B981' } : {}}
+              >
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="whitespace-nowrap">Novinky</span>
+                <span className={`${selectedCategory === 'new' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
+                  ({wines.filter(w => w.badge === 'new').length})
                 </span>
               </button>
 
@@ -224,6 +264,24 @@ const WineGridPage: React.FC = () => {
                   ({getWineCountByCategory('special')})
                 </span>
               </button>
+
+              <button
+                onClick={() => setSelectedCategory('set')}
+                className={`
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
+                  ${selectedCategory === 'set' 
+                    ? 'text-white border-transparent shadow-lg' 
+                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
+                  }
+                `}
+                style={selectedCategory === 'set' ? { backgroundColor: '#ab8754' } : {}}
+              >
+                <Gift className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span>Sety</span>
+                <span className={`${selectedCategory === 'set' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
+                  ({getWineCountByCategory('set')})
+                </span>
+              </button>
             </div>
           </div>
           </AnimatedSection>
@@ -231,11 +289,11 @@ const WineGridPage: React.FC = () => {
           {/* Results Count */}
           <div className="mb-8 text-center">
             <p className="text-gray-600 text-lg">
-              Zobrazeno <span className="font-semibold text-2xl" style={{ color: "#ab8754" }}>{filteredWines.length}</span> z celkem <span className="font-semibold" style={{ color: "#ab8754" }}>23</span> vín
+              Zobrazeno <span className="font-semibold text-2xl" style={{ color: "#ab8754" }}>{filteredWines.length}</span> z celkem <span className="font-semibold" style={{ color: "#ab8754" }}>{wines.length}</span> vín
             </p>
           </div>
 
-          {/* Wine Grid - UPRAVENO: 2 sloupce na mobilu, menší mezery */}
+          {/* Wine Grid - 2 sloupce na mobilu, více na desktopu */}
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-6 lg:gap-8">
             {filteredWines.map((wine, index) => {
               const badge = getBadgeStyle(wine.badge);
@@ -277,7 +335,7 @@ const WineGridPage: React.FC = () => {
                     </div>
                   </div>
                   
-                  {/* Content - UPRAVENO: kompaktnější na mobilu */}
+                  {/* Content - kompaktnější na mobilu */}
                   <div className="p-3 sm:p-5">
                     {/* Rating */}
                     <div className="flex items-center gap-0.5 sm:gap-1 mb-2 sm:mb-3">
@@ -315,7 +373,7 @@ const WineGridPage: React.FC = () => {
                     {wine.volume && (
                       <div className="mb-2 sm:mb-3">
                         <span className="text-[9px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full" style={{ backgroundColor: "#ab875410", color: "#ab8754" }}>
-                          {wine.volume === 200 ? "Mini 200ml" : wine.volume === 187 ? "187ml" : wine.volume === 375 ? "375ml" : wine.volume === 500 ? "500ml" : "750ml"}
+                          {wine.volume === 200 ? "Mini 200ml" : wine.volume === 187 ? "Mini 187ml" : wine.volume === 375 ? "375ml" : wine.volume === 500 ? "500ml" : "750ml"}
                         </span>
                       </div>
                     )}
@@ -421,7 +479,7 @@ const WineGridPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Modal - s viditelným scrollbarem */}
+      {/* Modal - stejný jako v původní verzi */}
       {isModalOpen && selectedWine && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4" onClick={closeModal}>
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />

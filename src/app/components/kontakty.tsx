@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Phone, Mail, MapPin, Send, User, MessageSquare, Building2, Clock, Facebook, Instagram } from "lucide-react";
+import Image from "next/image";
 
 const MiQueenContactPage: React.FC = () => {
   const accentColor = "#ab8754";
@@ -62,9 +63,35 @@ const MiQueenContactPage: React.FC = () => {
     }
   ];
 
+  const teamMembers = [
+    {
+      name: "Miroslav Marada",
+      position: "Majitel & hlavní vinař",
+      image: "/profil1.png",
+      description: "Zakladatel vinařství s více než 20letou zkušeností v oboru",
+      email: "miroslav.marada@miqueen.cz"
+    },
+    {
+      name: "Petra Maradová",
+      position: "Obchodní ředitelka",
+      image: "/profil2.png",
+      description: "Specialistka na degustace a firemní události",
+      email: "petra.maradova@miqueen.cz"
+    },
+    {
+      name: "Jan Novák",
+      position: "Vedoucí výroby",
+      image: "/profil3.png",
+      description: "Expert na ekologické vinohradnictví a udržitelnou produkci",
+      email: "jan.novak@miqueen.cz"
+    }
+  ];
+
   const subjectOptions = [
+    "Adoptuj vinohrad",
     "Objednávka vín",
-    "Degustace",
+    "Degustace Chrlice",
+    "Degustace Čejkovice",
     "Firemní spolupráce",
     "Akce a události",
     "Dotaz k produktům",
@@ -176,7 +203,7 @@ const MiQueenContactPage: React.FC = () => {
                     Kontaktní formulář
                   </h2>
                   <p className="text-gray-600">
-                    Pro odeslání zprávy prosím použijte e-mail: <a href="mailto:obchod@miqueen.cz" className="font-semibold hover:underline" style={{ color: accentColor }}>obchod@miqueen.cz</a>
+                    Pro odeslání zprávy prosím použijte e-mail: <a href="mailto:info@miqueen.cz" className="font-semibold hover:underline" style={{ color: accentColor }}>info@miqueen.cz</a>
                   </p>
                 </div>
 
@@ -275,6 +302,74 @@ const MiQueenContactPage: React.FC = () => {
             </div>
           </div>
 
+          {/* Team Section - UPRAVENÁ SEKCE */}
+          <div className="mb-20">
+            <h2 className="text-3xl lg:text-4xl font-light text-gray-800 text-center mb-4">
+              Náš <span style={{ color: accentColor }}>tým</span>
+            </h2>
+            <p className="text-center text-gray-600 mb-16 max-w-3xl mx-auto text-lg">
+              Poznejte lidi, kteří stojí za kvalitou našich vín a výjimečným servisem
+            </p>
+            
+            <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+              {teamMembers.map((member, index) => (
+                <div
+                  key={index}
+                  className="text-center"
+                >
+                  {/* Circular Profile Image */}
+                  <div className="mb-6 relative inline-block">
+                    <div className="w-56 h-56 mx-auto rounded-full overflow-hidden border-4 border-white shadow-xl relative">
+                      <Image
+                        src={member.image}
+                        alt={member.name}
+                        width={224}
+                        height={224}
+                        className="object-cover"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Name */}
+                  <h3 className="text-2xl font-medium text-gray-900 mb-2">
+                    {member.name}
+                  </h3>
+                  
+                  {/* Position */}
+                  <p 
+                    className="text-sm font-semibold uppercase tracking-wider mb-4"
+                    style={{ color: accentColor }}
+                  >
+                    {member.position}
+                  </p>
+                  
+                  {/* Description */}
+                  <p className="text-gray-600 mb-5 max-w-xs mx-auto leading-relaxed">
+                    {member.description}
+                  </p>
+                  
+                  {/* Contact icons */}
+                  <div className="flex justify-center gap-4">
+                    <a 
+                      href={`mailto:${member.email}`}
+                      className="text-gray-400 hover:text-[#ab8754] transition-colors"
+                      aria-label="Email"
+                    >
+                      <Mail className="w-5 h-5" />
+                    </a>
+                    <a 
+                      href="tel:+420731610345"
+                      className="text-gray-400 hover:text-[#ab8754] transition-colors"
+                      aria-label="Telefon"
+                    >
+                      <Phone className="w-5 h-5" />
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Locations */}
           <div className="mb-20">
             <h2 className="text-3xl lg:text-4xl font-light text-gray-800 text-center mb-12">
@@ -317,12 +412,12 @@ const MiQueenContactPage: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="tel:+420731610345"
+                href="tel:+420731610344"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 text-white rounded-full font-semibold text-lg transition-all hover:scale-105 shadow-lg"
                 style={{ backgroundColor: accentColor }}
               >
                 <Phone className="w-5 h-5" />
-                +420 731 610 345
+                +420 731 610 344
               </a>
               <a
                 href="mailto:obchod@miqueen.cz"

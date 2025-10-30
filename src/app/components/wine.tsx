@@ -1,8 +1,20 @@
 "use client"
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Star, ChevronLeft, ChevronRight, Sparkles, Droplets, Cherry, Grape, Wine, Package, ShoppingCart, X, Thermometer, MapPin, ChefHat, User } from "lucide-react";
-import { getWinesByCategory, getWineCountByCategory, WineProduct } from "./wineData";
+import { Star, ChevronLeft, ChevronRight, Sparkles, Droplets, Cherry, Grape, Wine, Package, ShoppingCart, X, Thermometer, MapPin, ChefHat, User, Gift } from "lucide-react";
+
+// DŮLEŽITÁ ZMĚNA: Importujte správnou databázi s 40 produkty!
+// Ujistěte se, že máte aktualizovaný soubor wineData.ts s 40 produkty
+import { wines, getWinesByCategory, getWineCountByCategory, WineProduct } from "./wineData";
+
+// Debug: Zkontrolujte počet produktů při načtení komponenty
+console.log('Celkový počet vín v databázi:', wines.length);
+console.log('Bílá vína:', wines.filter(w => w.category === 'white').length);
+console.log('Červená vína:', wines.filter(w => w.category === 'red').length);
+console.log('Růžová vína:', wines.filter(w => w.category === 'rose').length);
+console.log('Perlivá vína:', wines.filter(w => w.category === 'sparkling').length);
+console.log('Speciální:', wines.filter(w => w.category === 'special').length);
+console.log('Sety:', wines.filter(w => w.category === 'set').length);
 
 const WineCollectionSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -12,14 +24,14 @@ const WineCollectionSection: React.FC = () => {
   const [selectedWine, setSelectedWine] = useState<WineProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Responzivní počet viditelných produktů - ZMĚNA: 2 na mobilu
+  // Responzivní počet viditelných produktů
   useEffect(() => {
     const handleResize = () => {
       if (typeof window === 'undefined') return;
       
       if (window.innerWidth < 640) {
-        setItemsPerView(2); // ZMĚNA Z 1 NA 2
-        setGap(12); // Menší mezera na mobilu
+        setItemsPerView(2);
+        setGap(12);
       } else if (window.innerWidth < 768) {
         setItemsPerView(2);
         setGap(24);
@@ -40,7 +52,9 @@ const WineCollectionSection: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const filteredWines = getWinesByCategory(selectedCategory);
+  const filteredWines = selectedCategory === 'new' 
+    ? wines.filter(w => w.badge === 'new')
+    : getWinesByCategory(selectedCategory);
   const maxIndex = Math.max(0, filteredWines.length - itemsPerView);
 
   const nextSlide = () => {
@@ -61,6 +75,7 @@ const WineCollectionSection: React.FC = () => {
       case 'award': return { bg: '#ab8754', text: 'Oceněné' };
       case 'new': return { bg: '#10B981', text: 'Novinka' };
       case 'limited': return { bg: '#E11D48', text: 'Limitované' };
+      case 'tip': return { bg: '#F59E0B', text: 'Tip' };
       default: return null;
     }
   };
@@ -93,10 +108,17 @@ const WineCollectionSection: React.FC = () => {
       case 'pozdni-sber': return 'Pozdní sběr';
       case 'vyber-z-hroznu': return 'Výběr z hroznů';
       case 'vyber-z-bobuli': return 'Výběr z bobulí';
+      case 'moravske-zemske': return 'Moravské zemské';
       case 'slama': return 'Slámové víno';
       case 'ledove': return 'Ledové víno';
       default: return 'Standard';
     }
+  };
+
+  // Správné počty pro 40 produktů
+  const getCategoryCount = (category: string): number => {
+    if (category === 'all') return 40; // Celkem 40 produktů
+    return getWineCountByCategory(category);
   };
 
   return (
@@ -135,7 +157,7 @@ const WineCollectionSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Kategorie */}
+          {/* Kategorie - se správnými počty */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
             <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2 sm:gap-3">
               <button
@@ -152,7 +174,25 @@ const WineCollectionSection: React.FC = () => {
                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span className="whitespace-nowrap">Všechna vína</span>
                 <span className={`${selectedCategory === 'all' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getWineCountByCategory('all')})
+                  ({getCategoryCount('all')})
+                </span>
+              </button>
+              
+              <button
+                onClick={() => setSelectedCategory('new')}
+                className={`
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
+                  ${selectedCategory === 'new' 
+                    ? 'text-white border-transparent shadow-lg' 
+                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
+                  }
+                `}
+                style={selectedCategory === 'new' ? { backgroundColor: '#10B981' } : {}}
+              >
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="whitespace-nowrap">Novinky</span>
+                <span className={`${selectedCategory === 'new' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
+                  ({wines.filter(w => w.badge === 'new').length})
                 </span>
               </button>
 
@@ -170,7 +210,7 @@ const WineCollectionSection: React.FC = () => {
                 <Droplets className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Bílá</span>
                 <span className={`${selectedCategory === 'white' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getWineCountByCategory('white')})
+                  ({getCategoryCount('white')})
                 </span>
               </button>
 
@@ -188,7 +228,7 @@ const WineCollectionSection: React.FC = () => {
                 <Cherry className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Červená</span>
                 <span className={`${selectedCategory === 'red' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getWineCountByCategory('red')})
+                  ({getCategoryCount('red')})
                 </span>
               </button>
 
@@ -206,7 +246,7 @@ const WineCollectionSection: React.FC = () => {
                 <Grape className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Růžová</span>
                 <span className={`${selectedCategory === 'rose' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getWineCountByCategory('rose')})
+                  ({getCategoryCount('rose')})
                 </span>
               </button>
 
@@ -224,7 +264,7 @@ const WineCollectionSection: React.FC = () => {
                 <Wine className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Perlivá</span>
                 <span className={`${selectedCategory === 'sparkling' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getWineCountByCategory('sparkling')})
+                  ({getCategoryCount('sparkling')})
                 </span>
               </button>
 
@@ -242,7 +282,25 @@ const WineCollectionSection: React.FC = () => {
                 <Package className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Mimosa</span>
                 <span className={`${selectedCategory === 'special' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getWineCountByCategory('special')})
+                  ({getCategoryCount('special')})
+                </span>
+              </button>
+
+              <button
+                onClick={() => setSelectedCategory('set')}
+                className={`
+                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
+                  ${selectedCategory === 'set' 
+                    ? 'text-white border-transparent shadow-lg' 
+                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
+                  }
+                `}
+                style={selectedCategory === 'set' ? { backgroundColor: '#ab8754' } : {}}
+              >
+                <Gift className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span>Sety</span>
+                <span className={`${selectedCategory === 'set' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
+                  ({getCategoryCount('set')})
                 </span>
               </button>
             </div>
@@ -253,10 +311,12 @@ const WineCollectionSection: React.FC = () => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-light text-gray-800">
                 {selectedCategory === 'all' ? 'Všechna vína' : 
+                 selectedCategory === 'new' ? 'Novinky' :
                  selectedCategory === 'white' ? 'Bílá vína' :
                  selectedCategory === 'red' ? 'Červená vína' :
                  selectedCategory === 'rose' ? 'Růžová vína' :
                  selectedCategory === 'sparkling' ? 'Perlivá vína' :
+                 selectedCategory === 'set' ? 'Dárkové sety' :
                  'Speciální edice'}
               </h3>
               
@@ -416,7 +476,7 @@ const WineCollectionSection: React.FC = () => {
                             {wine.volume && (
                               <div className="mb-2 sm:mb-3">
                                 <span className="text-[9px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full" style={{ backgroundColor: "#ab875410", color: "#ab8754" }}>
-                                  {wine.volume === 200 ? "Mini 200ml" : wine.volume === 375 ? "375ml" : wine.volume === 500 ? "500ml" : "750ml"}
+                                  {wine.volume === 200 ? "Mini 200ml" : wine.volume === 187 ? "Mini 187ml" : wine.volume === 375 ? "375ml" : wine.volume === 500 ? "500ml" : "750ml"}
                                 </span>
                               </div>
                             )}
@@ -498,7 +558,7 @@ const WineCollectionSection: React.FC = () => {
         </div>
       </section>
 
-      {/* Modal - nezměněn */}
+      {/* Modal */}
       {isModalOpen && selectedWine && (
         <div 
           className="fixed inset-0 z-50 overflow-y-auto"

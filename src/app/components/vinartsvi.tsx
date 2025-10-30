@@ -1,11 +1,11 @@
 "use client"
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Award, Leaf, MapPin, Users, Calendar, Wine, Star, Crown, Trophy, Sparkles, ChevronRight, Grape } from "lucide-react";
+import { Award, Leaf, MapPin, Users, Wine, Star, Crown, Trophy, Sparkles, ChevronRight, Grape } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 
 const AboutWinerySection = () => {
-  const storyImageUrl = "/fotky/doprava_zdarma2.webp";
+  const storyImageUrl = "/fotky/doprava_zdarma3.jpg";
   
   const accentColor = "#ab8754";
   const paperColor = "#fefbea";
@@ -148,8 +148,8 @@ const AboutWinerySection = () => {
     {
       icon: Leaf,
       title: "Ekologické hospodaření",
-      description: "32 hektarů vinic v plně ekologickém režimu",
-      stat: "32 ha"
+      description: "31,2 hektarů vinic v plně ekologickém režimu",
+      stat: "31,2 ha"
     },
     {
       icon: MapPin,
@@ -159,15 +159,15 @@ const AboutWinerySection = () => {
     },
     {
       icon: Users,
-      title: "Rodinná tradice",
-      description: "Od roku 2006 s láskou k vínu a tradicím",
-      stat: "2006"
+      title: "Symbol přírody a čistoty",
+      description: "Náš soused",
+      stat: "Náš Dudek"
     },
     {
       icon: Wine,
-      title: "30 000 lahví ročně",
+      title: "130 000 lahví ročně",
       description: "Prémiová kvalita v každé lahvi",
-      stat: "30k+"
+      stat: "130k+"
     }
   ];
 
@@ -267,15 +267,7 @@ const AboutWinerySection = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                 
                 {/* Floating badge */}
-                <div className="absolute bottom-4 left-4 md:bottom-6 md:left-6 bg-white/90 backdrop-blur-md rounded-xl md:rounded-2xl p-3 md:p-4 border border-gray-200 shadow-xl">
-                  <div className="flex items-center gap-2 md:gap-3">
-                    <Calendar className="w-4 h-4 md:w-5 md:h-5" style={{ color: accentColor }} />
-                    <div>
-                      <p className="text-xs md:text-sm font-medium text-gray-600">Od roku</p>
-                      <p className="text-gray-900 text-lg md:text-2xl font-bold">2006</p>
-                    </div>
-                  </div>
-                </div>
+                
               </div>
 
               {/* Story Text */}

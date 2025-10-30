@@ -34,11 +34,11 @@ export const metadata: Metadata = {
   // Title: 50-60 znaků (Google zobrazuje 50-60)
   title: {
     template: '%s | Vinařství Miqueen - Prémiová vína z Moravy',
-    default: 'Vinařství Miqueen - Rodinné vinařství Velké Pavlovice | Špičková moravská vína'
+    default: 'Vinařství Miqueen - Rodinné vinařství Mikulov | Špičková moravská vína'
   },
   
   // Description: 150-160 znaků (Google zobrazuje 155-160)
-  description: 'Rodinné vinařství Miqueen z Velkých Pavlovic. Prémiová moravská vína, Ryzlink rýnský, Veltlínské zelené, Pálava. ✓ Degustace ✓ Exkurze ✓ Online shop',
+  description: 'Rodinné vinařství Miqueen z Mikulova. Prémiová moravská vína, Ryzlink rýnský, Veltlínské zelené, Pálava. ✓ Degustace ✓ Exkurze ✓ Online shop',
   
   // Aplikační metadata
   applicationName: "Vinařství Miqueen",
