@@ -328,6 +328,173 @@ const AdoptujVinohradPage = () => {
         />
       </div>
 
+      {/* Special Offer Section - Uvítací balíček */}
+      <section className="py-20" style={{ backgroundColor: paperColor }}>
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          
+          {/* Header */}
+          <motion.div 
+            className="text-center mb-16"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style={{ backgroundColor: `${accentColor}20` }}>
+              <Gift className="w-5 h-5" style={{ color: accentColor }} />
+              <span className="font-bold text-sm" style={{ color: accentColor }}>SPECIÁLNÍ NABÍDKA</span>
+            </div>
+
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-800 mb-4">
+              <span style={{ color: accentColor }}>Uvítací balíček</span> pro nové adoptivní rodiče
+            </h2>
+            
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Děkujeme, že jste se rozhodli stát se součástí vinařské rodiny MiQueen
+            </p>
+          </motion.div>
+
+          {/* Main Content Card */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+            className="bg-white rounded-3xl overflow-hidden shadow-xl border-2 hover:shadow-2xl transition-all duration-500"
+            style={{ borderColor: accentColor }}
+          >
+            <div className="grid lg:grid-cols-2 gap-0">
+              
+              {/* Left side - Image */}
+              <motion.div 
+                className="relative h-[400px] lg:h-[600px] bg-gradient-to-br from-gray-50 to-gray-100"
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <Image
+                  src="https://shop.miqueen.cz/user/documents/upload/sklenicesvyvrtkou.jpg"
+                  alt="Uvítací balíček - sklenice s vývrtkou"
+                  fill
+                  className="object-contain p-8"
+                />
+              </motion.div>
+
+              {/* Right side - Content */}
+              <motion.div 
+                className="p-8 lg:p-12"
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+              >
+                <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
+                  Co získáte zdarma k adopci?
+                </h3>
+
+                <div className="space-y-5 mb-8">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${accentColor}20` }}>
+                      <Wine className="w-5 h-5" style={{ color: accentColor }} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 mb-1">Sklenice s gravírováním</h4>
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        Elegantní sklenice na víno s vygravírovaným logem Vinařství MiQueen
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${accentColor}20` }}>
+                      <Gift className="w-5 h-5" style={{ color: accentColor }} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 mb-1">Vývrtka s logem</h4>
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        Praktická vývrtka s logem vinařství pro snadné otevírání vašich lahví
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${accentColor}20` }}>
+                      <Calendar className="w-5 h-5" style={{ color: accentColor }} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 mb-1">Dodání s první bedýnkou</h4>
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        Uvítací balíček obdržíte společně s vaší první dodávkou vína
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${accentColor}20` }}>
+                      <Mail className="w-5 h-5" style={{ color: accentColor }} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 mb-1">Pro nákupy přes eshop</h4>
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        Balíček je určen pro všechny zákazníky, kteří si adopci zakoupí online
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Package Details */}
+                <div className="rounded-2xl p-6 mb-8" style={{ backgroundColor: `${accentColor}10` }}>
+                  <h4 className="font-bold text-gray-900 mb-4 text-lg">Počet sklenic podle balíčku:</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-700">12 hlav révy</span>
+                      <span className="font-bold" style={{ color: accentColor }}>2 sklenice + vývrtka</span>
+                    </div>
+                    <div className="h-px bg-gray-300"></div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-700">24 hlav révy</span>
+                      <span className="font-bold" style={{ color: accentColor }}>4 sklenice + vývrtka</span>
+                    </div>
+                    <div className="h-px bg-gray-300"></div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-700">36 hlav révy</span>
+                      <span className="font-bold" style={{ color: accentColor }}>6 sklenic + vývrtka</span>
+                    </div>
+                  </div>
+                </div>
+
+                <motion.a
+                  href="https://shop.miqueen.cz/adoptuj-vinohrad/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-8 py-4 text-white rounded-full font-bold text-lg shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+                  style={{ backgroundColor: accentColor }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Adoptovat vinohrad
+                  <Gift className="w-5 h-5" />
+                </motion.a>
+              </motion.div>
+
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Border Between Sections */}
+      <div className="relative w-full">
+        <Image 
+          src="/border.png"
+          alt=""
+          width={1920}
+          height={176}
+          className="w-full h-auto"
+          style={{ display: 'block' }}
+        />
+      </div>
+
       {/* Benefits Section */}
       <section className="py-20" style={{ backgroundColor: paperColor }}>
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">

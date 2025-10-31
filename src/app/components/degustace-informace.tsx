@@ -114,7 +114,7 @@ const DegustaceSection: React.FC = () => {
       subtitle: "Zapojte smysly jinak",
       tagline: "Když se zhasne světlo, rozsvítí se chuť.",
       description: "Pravidelné degustace potmě, při kterých se zcela ponoříte do světa chutí a vůní. Bez zrakového vjemu vnímáte víno intenzivněji – a každý doušek se stává dobrodružstvím.",
-      image: "/fotky/20240628024036423.jpeg",
+      image: "/fotky/zazitek.webp",
       address: "Chrlické náměstí 1/4, Brno-Chrlice",
 
       specialFeatures: [

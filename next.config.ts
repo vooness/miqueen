@@ -10,6 +10,12 @@ const nextConfig = {
         port: '',
         pathname: '/usr/shop.miqueen.cz/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'shop.miqueen.cz',
+        port: '',
+        pathname: '/user/documents/upload/**',
+      },
     ],
   },
 }
