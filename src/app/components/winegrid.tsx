@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Star, ShoppingCart, Sparkles, Droplets, Cherry, Grape, Wine, Package, ExternalLink, X, Thermometer, MapPin, ChefHat, User, Gift } from "lucide-react";
 import { wines, getWinesByCategory, getWineCountByCategory, WineProduct } from "./wineData";
 import { motion, useInView } from "framer-motion";
+import WineFilterBar, { WineFilters } from "./WineFilterBar";
 
 // Debug: Zkontrolujte počet produktů při načtení komponenty
 console.log('Grid - Celkový počet vín v databázi:', wines.length);
@@ -28,12 +29,84 @@ const WineGridPage: React.FC = () => {
   const [selectedWine, setSelectedWine] = useState<WineProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Vypočítej min a max cenu z dat
+  const minPrice = Math.min(...wines.map(w => w.price));
+  const maxPrice = Math.max(...wines.map(w => w.price));
+
+  // Získej všechny unikátní ročníky jako čísla
+  const availableVintages = Array.from(new Set(wines.map(w => w.vintage).filter(Boolean))).sort((a, b) => b - a);
+
+  // State pro WineFilterBar - podle správného interface
+  const [filters, setFilters] = useState<WineFilters>({
+    searchQuery: '',
+    priceRange: [minPrice, maxPrice],
+    selectedVintages: [],
+    selectedDryness: [],
+    selectedQuality: []
+  });
+
+  // Separate state pro řazení (není součástí WineFilters)
+  const [sortBy] = useState<'name' | 'price-asc' | 'price-desc' | 'rating'>('name');
+
+  // Handler pro změnu filtrů
+  const handleFiltersChange = (newFilters: WineFilters) => {
+    setFilters(newFilters);
+  };
+
   // Filtrování podle kategorie včetně novinek
-  const filteredWines = selectedCategory === 'new' 
+  let filteredWines = selectedCategory === 'new' 
     ? wines.filter(w => w.badge === 'new')
     : selectedCategory === 'all'
     ? wines
     : getWinesByCategory(selectedCategory);
+
+  // Aplikuj filtry z WineFilterBar
+  filteredWines = filteredWines.filter(wine => {
+    // Filtr vyhledávání
+    if (filters.searchQuery && !wine.name.toLowerCase().includes(filters.searchQuery.toLowerCase()) &&
+        !wine.variety.toLowerCase().includes(filters.searchQuery.toLowerCase())) {
+      return false;
+    }
+
+    // Filtr ceny
+    if (wine.price < filters.priceRange[0] || wine.price > filters.priceRange[1]) {
+      return false;
+    }
+
+    // Filtr ročníků
+    if (filters.selectedVintages.length > 0 && !filters.selectedVintages.includes(wine.vintage.toString())) {
+      return false;
+    }
+
+    // Filtr sladkosti
+    if (filters.selectedDryness.length > 0 && wine.dryness && !filters.selectedDryness.includes(wine.dryness)) {
+      return false;
+    }
+
+    // Filtr kvality
+    if (filters.selectedQuality.length > 0 && wine.quality && !filters.selectedQuality.includes(wine.quality)) {
+      return false;
+    }
+
+    return true;
+  });
+
+  // Řazení
+  switch (sortBy) {
+    case 'price-asc':
+      filteredWines.sort((a, b) => a.price - b.price);
+      break;
+    case 'price-desc':
+      filteredWines.sort((a, b) => b.price - a.price);
+      break;
+    case 'rating':
+      filteredWines.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      break;
+    case 'name':
+    default:
+      filteredWines.sort((a, b) => a.name.localeCompare(b.name, 'cs'));
+      break;
+  }
 
   const getBadgeStyle = (badge?: string) => {
     switch(badge) {
@@ -284,6 +357,20 @@ const WineGridPage: React.FC = () => {
               </button>
             </div>
           </div>
+          </AnimatedSection>
+
+          {/* WineFilterBar - nová sekce nad produkty */}
+          <AnimatedSection delay={0.3}>
+            <div className="mb-8">
+              <WineFilterBar 
+                filters={filters}
+                onFiltersChange={handleFiltersChange}
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                availableVintages={availableVintages}
+                resultCount={filteredWines.length}
+              />
+            </div>
           </AnimatedSection>
 
           {/* Results Count */}
