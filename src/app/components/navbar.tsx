@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { X, ChevronRight, ShoppingBag, Facebook, Instagram, Mail, Home, Menu } from 'lucide-react';
+import { X, ChevronRight, ChevronDown, ShoppingBag, Facebook, Instagram, Mail, Home, Menu } from 'lucide-react';
 
 interface BreadcrumbItem {
   name: string;
@@ -15,14 +15,20 @@ interface BreadcrumbItem {
 interface NavItem {
   label: string;
   href: string;
-  icon?: string;
+  subItems?: { label: string; href: string; }[];
 }
 
 // Data mimo komponentu pro lepší performance
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Adoptuj vinohrad', href: '/adoptuj-vinohrad', icon: '🍇' },
-  { label: 'Všechna vína', href: '/vsechna-nase-vina' },
-  { label: 'Akční nabídka', href: '/akcni-nabidka', icon: '🔥' },
+  { label: 'Adoptuj vinohrad', href: '/adoptuj-vinohrad' },
+  { 
+    label: 'Všechna vína', 
+    href: '/vsechna-nase-vina',
+    subItems: [
+      { label: 'Akční nabídka', href: '/akcni-nabidka' }
+    ]
+  },
+  { label: 'Blog', href: '/blog' },
   { label: 'MiQueen mini', href: '/miqueen-mini' },
   { label: 'Poukazy', href: '/poukazy' },
   { label: 'Pro firmy', href: '/pro-firmy' },
@@ -34,6 +40,7 @@ const BREADCRUMB_MAP: Record<string, string> = {
   'adoptuj-vinohrad': 'Adoptuj vinohrad',
   'vsechna-nase-vina': 'Všechna vína',
   'akcni-nabidka': 'Akční nabídka',
+  'blog': 'Blog',
   'miqueen-mini': 'MiQueen mini',
   'poukazy': 'Poukazy',
   'pro-firmy': 'Pro firmy',
@@ -48,6 +55,8 @@ const GOLD_COLOR = '#d4a574';
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [, setIsScrolled] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [openMobileSubmenu, setOpenMobileSubmenu] = useState<string | null>(null);
   const pathname = usePathname();
 
   // Optimalizovaný scroll handler s throttling
@@ -98,6 +107,7 @@ const Navbar = () => {
 
   const closeMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(false);
+    setOpenMobileSubmenu(null);
   }, []);
 
   // Memoizované breadcrumbs
@@ -158,33 +168,74 @@ const Navbar = () => {
             <div className="hidden lg:flex items-center justify-center flex-1 mx-8">
               <div className="flex items-center gap-1 xl:gap-2">
                 {NAV_ITEMS.map((item) => (
-                  <Link
+                  <div 
                     key={item.href}
-                    href={item.href}
-                    className="relative px-3 xl:px-4 py-2 text-stone-400 hover:text-stone-200 transition-all duration-300 font-medium text-sm xl:text-base tracking-wide group touch-manipulation"
-                    prefetch={true}
+                    className="relative group/dropdown"
+                    onMouseEnter={() => item.subItems && setOpenDropdown(item.href)}
+                    onMouseLeave={() => item.subItems && setOpenDropdown(null)}
                   >
-                    <span className="flex items-center gap-1.5">
-                      {item.icon && (
-                        <span className="text-sm" role="img" aria-hidden="true">{item.icon}</span>
-                      )}
-                      <span className="relative">
+                    <Link
+                      href={item.href}
+                      className="relative px-3 xl:px-4 py-2 text-stone-400 hover:text-stone-200 transition-all duration-300 font-medium text-sm xl:text-base tracking-wide group touch-manipulation block"
+                      prefetch={true}
+                    >
+                      <span className="relative flex items-center gap-1">
                         {item.label}
+                        {item.subItems && (
+                          <ChevronDown className="h-3 w-3 transition-transform duration-200 group-hover:translate-y-0.5" />
+                        )}
                         <span 
                           className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
                           style={{ backgroundColor: BRAND_COLOR }}
                         />
                       </span>
-                    </span>
-                    
-                    {/* Active indicator */}
-                    {pathname === item.href && (
-                      <span 
-                        className="absolute -bottom-1 left-0 right-0 h-0.5"
-                        style={{ backgroundColor: BRAND_COLOR }}
-                      />
+                      
+                      {/* Active indicator */}
+                      {pathname === item.href && (
+                        <span 
+                          className="absolute -bottom-1 left-0 right-0 h-0.5"
+                          style={{ backgroundColor: BRAND_COLOR }}
+                        />
+                      )}
+                    </Link>
+
+                    {/* Dropdown Menu */}
+                    {item.subItems && openDropdown === item.href && (
+                      <div 
+                        className="absolute top-full left-0 pt-1 w-56 z-50"
+                      >
+                        <div
+                          className="bg-stone-900/98 backdrop-blur-md rounded-xl shadow-2xl border border-stone-800/50 overflow-hidden"
+                          style={{ 
+                            animation: 'slideDown 0.2s ease-out'
+                          }}
+                        >
+                          <div className="py-2">
+                            {item.subItems.map((subItem) => (
+                              <Link
+                                key={subItem.href}
+                                href={subItem.href}
+                                className="block px-4 py-3 text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-all duration-200 font-medium text-sm relative group/item"
+                                prefetch={true}
+                              >
+                                <span className="flex items-center justify-between">
+                                  <span>{subItem.label}</span>
+                                  <ChevronRight 
+                                    className="h-4 w-4 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200" 
+                                    style={{ color: BRAND_COLOR }}
+                                  />
+                                </span>
+                                <span 
+                                  className="absolute left-0 top-0 bottom-0 w-0 group-hover/item:w-1 transition-all duration-200"
+                                  style={{ backgroundColor: BRAND_COLOR }}
+                                />
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                     )}
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>
@@ -336,25 +387,61 @@ const Navbar = () => {
             <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
               <nav className="p-4 space-y-1">
                 {NAV_ITEMS.map((item) => (
-                  <Link 
-                    key={item.href}
-                    href={item.href}
-                    className="flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 hover:bg-stone-800/50 active:bg-stone-800 text-stone-300 font-medium text-base tracking-wide touch-manipulation group"
-                    onClick={closeMobileMenu}
-                    prefetch={true}
-                  >
-                    <span className="flex items-center gap-2">
-                      {item.icon && (
-                        <span role="img" aria-hidden="true">{item.icon}</span>
-                      )}
-                      <span>{item.label}</span>
-                    </span>
-                    <ChevronRight 
-                      className="h-5 w-5 transition-transform group-hover:translate-x-1" 
-                      style={{ color: BRAND_COLOR }}
-                      aria-hidden="true"
-                    />
-                  </Link>
+                  <div key={item.href}>
+                    {/* Hlavní položka */}
+                    {item.subItems ? (
+                      <button
+                        onClick={() => setOpenMobileSubmenu(openMobileSubmenu === item.href ? null : item.href)}
+                        className="w-full flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 hover:bg-stone-800/50 active:bg-stone-800 text-stone-300 font-medium text-base tracking-wide touch-manipulation group"
+                      >
+                        <span>{item.label}</span>
+                        <ChevronRight 
+                          className={`h-5 w-5 transition-all duration-200 ${
+                            openMobileSubmenu === item.href ? 'rotate-90' : ''
+                          }`}
+                          style={{ color: BRAND_COLOR }}
+                          aria-hidden="true"
+                        />
+                      </button>
+                    ) : (
+                      <Link 
+                        href={item.href}
+                        className="flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 hover:bg-stone-800/50 active:bg-stone-800 text-stone-300 font-medium text-base tracking-wide touch-manipulation group"
+                        onClick={closeMobileMenu}
+                        prefetch={true}
+                      >
+                        <span>{item.label}</span>
+                        <ChevronRight 
+                          className="h-5 w-5 transition-transform group-hover:translate-x-1" 
+                          style={{ color: BRAND_COLOR }}
+                          aria-hidden="true"
+                        />
+                      </Link>
+                    )}
+
+                    {/* Submenu */}
+                    {item.subItems && openMobileSubmenu === item.href && (
+                      <div className="ml-4 mt-1 space-y-1 animate-slideDown">
+                        {item.subItems.map((subItem) => (
+                          <Link
+                            key={subItem.href}
+                            href={subItem.href}
+                            className="block p-3 pl-4 rounded-lg text-stone-400 hover:text-stone-200 hover:bg-stone-800/30 transition-all duration-200 text-sm font-medium touch-manipulation"
+                            onClick={closeMobileMenu}
+                            prefetch={true}
+                          >
+                            <span className="flex items-center gap-2">
+                              <span 
+                                className="w-1.5 h-1.5 rounded-full" 
+                                style={{ backgroundColor: BRAND_COLOR }}
+                              />
+                              {subItem.label}
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
               </nav>
 
@@ -455,6 +542,22 @@ const Navbar = () => {
 
         .touch-manipulation {
           touch-action: manipulation;
+        }
+
+        /* Dropdown animations */
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-slideDown {
+          animation: slideDown 0.2s ease-out;
         }
       `}</style>
     </>

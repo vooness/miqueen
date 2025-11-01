@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { Play, MapPin, X } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 
 interface HeroSectionProps {
@@ -38,7 +38,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentVideo, setCurrentVideo] = useState(0);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [loadedVideos, setLoadedVideos] = useState<Set<number>>(new Set([0]));
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
@@ -144,10 +143,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       ? { opacity: 1, y: 0 }
       : { opacity: 0, y: 30 }
   , [prefersReducedMotion, isMobile]);
-
-  const closeModal = useCallback(() => {
-    setIsVideoPlaying(false);
-  }, []);
 
   const handleSlideChange = useCallback((index: number) => {
     setCurrentSlide(index);
@@ -361,17 +356,16 @@ const HeroSection: React.FC<HeroSectionProps> = ({
               <div className="absolute -inset-1 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-bottom bg-[#ab8754]" />
             </a>
             
-            <button
-              className="relative group px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 bg-white rounded-full overflow-hidden transition-all duration-300 w-full sm:w-auto sm:min-w-[200px] md:min-w-[220px] cursor-pointer touch-manipulation"
-              onClick={() => setIsVideoPlaying(true)}
-              aria-label="Přehrát video"
+            <a
+              href="/mapa-vin"
+              className="relative group px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 bg-white rounded-full overflow-hidden transition-all duration-300 w-full sm:w-auto sm:min-w-[200px] md:min-w-[220px] text-center block cursor-pointer touch-manipulation"
             >
               <span className="relative z-10 text-black group-hover:text-white transition-colors duration-300 font-semibold text-sm sm:text-base flex items-center justify-center gap-2">
-                <Play className="h-4 w-4 fill-current" />
-                Přehrát video
+                <MapPin className="h-4 w-4" />
+                Kde koupíte vína
               </span>
               <div className="absolute -inset-1 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-bottom bg-[#ab8754]" />
-            </button>
+            </a>
           </motion.div>
 
           {/* Location badge */}
@@ -389,38 +383,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
           </motion.div>
         </div>
       </div>
-
-      {/* MODAL VIDEO PLAYER - načte se až když se klikne */}
-      {isVideoPlaying && (
-        <motion.div 
-          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          onClick={closeModal}
-        >
-          <motion.div 
-            className="relative max-w-4xl w-full aspect-video bg-gray-900 rounded-lg sm:rounded-2xl overflow-hidden"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={closeModal}
-              className="absolute top-2 sm:top-4 right-2 sm:right-4 text-white/70 hover:text-white z-10 p-2 bg-black/30 rounded-full cursor-pointer touch-manipulation"
-              aria-label="Zavřít video"
-            >
-              <X className="w-5 sm:w-6 h-5 sm:h-6" />
-            </button>
-            <video className="w-full h-full" controls autoPlay playsInline>
-              <source src="/video/adoptuj-vinohrad.webm" type="video/webm" />
-            </video>
-          </motion.div>
-        </motion.div>
-      )}
 
       {/* LOCAL STYLES */}
       <style jsx>{`

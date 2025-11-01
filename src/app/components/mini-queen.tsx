@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Wine, Heart, ShoppingBag, Star, ShoppingCart, X, Thermometer, MapPin, ChefHat, User, ChevronDown, Gift } from "lucide-react";
 import { motion, Variants, useReducedMotion } from "framer-motion";
 import { wines, WineProduct } from "./wineData";
+import WineFilterBar, { WineFilters } from "./WineFilterBar";
 
 const MiQueenMiniPage = () => {
   const accentColor = "#ab8754";
@@ -23,7 +24,7 @@ const MiQueenMiniPage = () => {
 
   // ============= NAČÍTÁNÍ DAT Z DATABÁZE =============
   // Filtrování pouze mini vín a setů z kompletní databáze
-  const miniWines: WineProduct[] = wines.filter(wine => {
+  const baseMiniWines: WineProduct[] = wines.filter(wine => {
     // Načíst mini vína (ID 1-10) a sety (ID 38-39)
     // Mini vína: objem < 250ml nebo obsahuje "mini" v názvu
     // Sety: kategorie 'set' nebo ID 38-39
@@ -37,6 +38,64 @@ const MiQueenMiniPage = () => {
     if ((a.category === 'set') && (b.category !== 'set')) return 1;
     if ((a.category !== 'set') && (b.category === 'set')) return -1;
     return a.id - b.id;
+  });
+
+  // Vypočítej min a max cenu z mini vín
+  const minPrice = Math.min(...baseMiniWines.map(w => w.price));
+  const maxPrice = Math.max(...baseMiniWines.map(w => w.price));
+
+  // Získej všechny unikátní ročníky jako čísla
+  const availableVintages = Array.from(new Set(baseMiniWines.map(w => w.vintage).filter(Boolean))).sort((a, b) => b - a);
+
+  // State pro filtry - podle správného WineFilters interface
+  const [filters, setFilters] = useState<WineFilters>({
+    searchQuery: '',
+    priceRange: [minPrice, maxPrice],
+    selectedVintages: [],
+    selectedDryness: [],
+    selectedQuality: [],
+    selectedColors: []  // Nový filtr pro barvu vína
+  });
+
+  // Handler pro změnu filtrů
+  const handleFiltersChange = (newFilters: WineFilters) => {
+    setFilters(newFilters);
+  };
+
+  // Aplikuj filtry z WineFilterBar
+  const miniWines = baseMiniWines.filter(wine => {
+    // Filtr vyhledávání
+    if (filters.searchQuery && !wine.name.toLowerCase().includes(filters.searchQuery.toLowerCase()) &&
+        !wine.variety.toLowerCase().includes(filters.searchQuery.toLowerCase())) {
+      return false;
+    }
+
+    // Filtr ceny
+    if (wine.price < filters.priceRange[0] || wine.price > filters.priceRange[1]) {
+      return false;
+    }
+
+    // Filtr ročníků
+    if (filters.selectedVintages.length > 0 && !filters.selectedVintages.includes(wine.vintage.toString())) {
+      return false;
+    }
+
+    // Filtr sladkosti
+    if (filters.selectedDryness.length > 0 && wine.dryness && !filters.selectedDryness.includes(wine.dryness)) {
+      return false;
+    }
+
+    // Filtr kvality
+    if (filters.selectedQuality.length > 0 && wine.quality && !filters.selectedQuality.includes(wine.quality)) {
+      return false;
+    }
+
+    // Filtr podle barvy vína - NOVÝ
+    if (filters.selectedColors.length > 0 && wine.category && !filters.selectedColors.includes(wine.category)) {
+      return false;
+    }
+
+    return true;
   });
 
   const benefits = [
@@ -186,6 +245,24 @@ const MiQueenMiniPage = () => {
               })}
             </motion.div>
 
+            {/* WineFilterBar - nová sekce nad produkty */}
+            <motion.div
+              className="mb-8"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInUp}
+            >
+              <WineFilterBar 
+                filters={filters}
+                onFiltersChange={handleFiltersChange}
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                availableVintages={availableVintages}
+                resultCount={miniWines.length}
+              />
+            </motion.div>
+
             {/* Products Section Header */}
             <motion.div 
               className="mb-8 text-center"
@@ -195,10 +272,7 @@ const MiQueenMiniPage = () => {
               variants={fadeInUp}
             >
               <p className="text-gray-600 text-base md:text-lg">
-                Zobrazeno <span className="font-semibold text-xl md:text-2xl" style={{ color: accentColor }}>{miniWines.length}</span> mini produktů z databáze
-              </p>
-              <p className="text-gray-500 text-sm mt-2">
-                (10 mini vín + 2 degustační sety)
+                Zobrazeno <span className="font-semibold text-xl md:text-2xl" style={{ color: accentColor }}>{miniWines.length}</span> z celkem <span className="font-semibold" style={{ color: accentColor }}>{baseMiniWines.length}</span> mini produktů
               </p>
             </motion.div>
 
@@ -354,6 +428,19 @@ const MiQueenMiniPage = () => {
                 );
               })}
             </div>
+
+            {/* Empty State */}
+            {miniWines.length === 0 && (
+              <div className="text-center py-20">
+                <Wine className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+                <h3 className="text-2xl font-light text-gray-600 mb-2">
+                  Žádná vína nenalezena
+                </h3>
+                <p className="text-gray-500">
+                  Zkuste změnit filtry
+                </p>
+              </div>
+            )}
           </div>
         </section>
       </div>

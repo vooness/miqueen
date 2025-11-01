@@ -5,7 +5,7 @@ import { Award, Leaf, MapPin, Users, Wine, Star, Crown, Trophy, Sparkles, Chevro
 import { motion, useReducedMotion } from "framer-motion";
 
 const AboutWinerySection = () => {
-  const storyImageUrl = "/fotky/doprava_zdarma3.jpg";
+  const storyImageUrl = "/frontpage.webp";
   
   const accentColor = "#ab8754";
   const paperColor = "#fefbea";

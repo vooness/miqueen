@@ -7,6 +7,9 @@ import { Star, ChevronLeft, ChevronRight, Sparkles, Droplets, Cherry, Grape, Win
 // Ujistěte se, že máte aktualizovaný soubor wineData.ts s 40 produkty
 import { wines, getWinesByCategory, getWineCountByCategory, WineProduct } from "./wineData";
 
+// Import WineFilterBar komponenty
+import WineFilterBar, { WineFilters } from "@/app/components/WineFilterBar";
+
 // Debug: Zkontrolujte počet produktů při načtení komponenty
 console.log('Celkový počet vín v databázi:', wines.length);
 console.log('Bílá vína:', wines.filter(w => w.category === 'white').length);
@@ -23,6 +26,26 @@ const WineCollectionSection: React.FC = () => {
   const [gap, setGap] = useState(24);
   const [selectedWine, setSelectedWine] = useState<WineProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Vypočítání min/max ceny z aktuální databáze
+  const minPrice = Math.min(...wines.map(w => w.price));
+  const maxPrice = Math.max(...wines.map(w => w.price));
+
+  // Získej všechny unikátní ročníky jako čísla
+  const availableVintages = Array.from(new Set(wines.map(w => w.vintage).filter(Boolean))).sort((a, b) => b - a);
+
+  // State pro filtry - podle správného WineFilters interface
+  const [filters, setFilters] = useState<WineFilters>({
+    searchQuery: '',
+    priceRange: [minPrice, maxPrice],
+    selectedVintages: [],
+    selectedDryness: [],
+    selectedQuality: [],
+    selectedColors: []  // Nový filtr pro barvu vína
+  });
+
+  // Separate state pro řazení (není součástí WineFilters)
+  const [sortBy] = useState<'name' | 'price-asc' | 'price-desc' | 'rating'>('name');
 
   // Responzivní počet viditelných produktů
   useEffect(() => {
@@ -55,7 +78,72 @@ const WineCollectionSection: React.FC = () => {
   const filteredWines = selectedCategory === 'new' 
     ? wines.filter(w => w.badge === 'new')
     : getWinesByCategory(selectedCategory);
-  const maxIndex = Math.max(0, filteredWines.length - itemsPerView);
+  
+  // Aplikace filtrů
+  const applyFilters = (wines: WineProduct[]) => {
+    let result = [...wines];
+
+    // Filtr vyhledávání
+    if (filters.searchQuery) {
+      result = result.filter(wine => 
+        wine.name.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+        wine.variety.toLowerCase().includes(filters.searchQuery.toLowerCase())
+      );
+    }
+
+    // Filtr podle ceny
+    result = result.filter(w => 
+      w.price >= filters.priceRange[0] && w.price <= filters.priceRange[1]
+    );
+
+    // Filtr ročníků
+    if (filters.selectedVintages.length > 0) {
+      result = result.filter(w => filters.selectedVintages.includes(w.vintage.toString()));
+    }
+
+    // Filtr podle sladkosti
+    if (filters.selectedDryness.length > 0) {
+      result = result.filter(w => w.dryness && filters.selectedDryness.includes(w.dryness));
+    }
+
+    // Filtr podle kvality
+    if (filters.selectedQuality.length > 0) {
+      result = result.filter(w => w.quality && filters.selectedQuality.includes(w.quality));
+    }
+
+    // Filtr podle barvy vína - NOVÝ
+    if (filters.selectedColors.length > 0) {
+      result = result.filter(w => w.category && filters.selectedColors.includes(w.category));
+    }
+
+    // Řazení
+    switch (sortBy) {
+      case 'price-asc':
+        result.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        result.sort((a, b) => b.price - a.price);
+        break;
+      case 'rating':
+        result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        break;
+      case 'name':
+      default:
+        result.sort((a, b) => a.name.localeCompare(b.name, 'cs'));
+        break;
+    }
+
+    return result;
+  };
+
+  const finalFilteredWines = applyFilters(filteredWines);
+  const maxIndex = Math.max(0, finalFilteredWines.length - itemsPerView);
+
+  // Callback pro změnu filtrů
+  const handleFiltersChange = (newFilters: WineFilters) => {
+    setFilters(newFilters);
+    setCurrentIndex(0); // Reset na první slide při změně filtrů
+  };
 
   const nextSlide = () => {
     setCurrentIndex(prev => Math.min(prev + 1, maxIndex));
@@ -67,7 +155,7 @@ const WineCollectionSection: React.FC = () => {
 
   useEffect(() => {
     setCurrentIndex(0);
-  }, [selectedCategory]);
+  }, [selectedCategory, filters]); // Reset i při změně filtrů
 
   const getBadgeStyle = (badge?: string) => {
     switch(badge) {
@@ -306,6 +394,18 @@ const WineCollectionSection: React.FC = () => {
             </div>
           </div>
 
+          {/* WineFilterBar - Filtrační lišta nad produkty */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <WineFilterBar 
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              availableVintages={availableVintages}
+              resultCount={finalFilteredWines.length}
+            />
+          </div>
+
           {/* Products Slider */}
           <div className="relative">
             <div className="flex items-center justify-between mb-6">
@@ -320,69 +420,44 @@ const WineCollectionSection: React.FC = () => {
                  'Speciální edice'}
               </h3>
               
-              <div className="hidden sm:flex items-center gap-3">
+              <div className="flex items-center gap-3">
                 <span className="text-gray-600 text-sm font-medium">
-                  {filteredWines.length} produktů
+                  {finalFilteredWines.length} produktů
                 </span>
-                
-                {/* Slider controls - desktop */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={prevSlide}
-                    disabled={currentIndex === 0}
-                    className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all
-                      ${currentIndex === 0 
-                        ? 'border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50' 
-                        : 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white shadow-sm'}`}
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  
-                  <button
-                    onClick={nextSlide}
-                    disabled={currentIndex >= maxIndex}
-                    className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all
-                      ${currentIndex >= maxIndex 
-                        ? 'border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50' 
-                        : 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white shadow-sm'}`}
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
               </div>
             </div>
 
-            {/* Slider container with mobile arrows on sides */}
+            {/* Slider container with arrows on sides (desktop and mobile) */}
             <div className="relative">
-              {/* Mobile arrows - positioned on middle edge with golden background */}
+              {/* Šipky po stranách uprostřed vertikálně - pro všechna zařízení */}
               <button
                 onClick={prevSlide}
                 disabled={currentIndex === 0}
                 className={`
-                  sm:hidden absolute -left-4 top-1/2 -translate-y-1/2 z-10
-                  w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-lg
+                  absolute -left-4 top-1/2 -translate-y-1/2 z-10
+                  w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg
                   ${currentIndex === 0 
                     ? 'opacity-30 cursor-not-allowed' 
-                    : 'active:scale-95'}
+                    : 'hover:scale-110 active:scale-95'}
                 `}
                 style={{ backgroundColor: currentIndex === 0 ? '#d1d5db' : '#ab8754' }}
               >
-                <ChevronLeft className="w-4 h-4 text-white" />
+                <ChevronLeft className="w-5 h-5 text-white" />
               </button>
               
               <button
                 onClick={nextSlide}
                 disabled={currentIndex >= maxIndex}
                 className={`
-                  sm:hidden absolute -right-4 top-1/2 -translate-y-1/2 z-10
-                  w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-lg
+                  absolute -right-4 top-1/2 -translate-y-1/2 z-10
+                  w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg
                   ${currentIndex >= maxIndex 
                     ? 'opacity-30 cursor-not-allowed' 
-                    : 'active:scale-95'}
+                    : 'hover:scale-110 active:scale-95'}
                 `}
                 style={{ backgroundColor: currentIndex >= maxIndex ? '#d1d5db' : '#ab8754' }}
               >
-                <ChevronRight className="w-4 h-4 text-white" />
+                <ChevronRight className="w-5 h-5 text-white" />
               </button>
 
               <div className="overflow-hidden px-0 sm:px-0">
@@ -393,7 +468,7 @@ const WineCollectionSection: React.FC = () => {
                     transform: `translateX(calc(-${currentIndex} * (${100 / itemsPerView}% + ${gap / itemsPerView}px)))`
                   }}
                 >
-                  {filteredWines.map((wine) => {
+                  {finalFilteredWines.map((wine) => {
                     const badge = getBadgeStyle(wine.badge);
                     
                     return (
@@ -537,7 +612,7 @@ const WineCollectionSection: React.FC = () => {
             </div>
             
             {/* Slider dots */}
-            {filteredWines.length > itemsPerView && (
+            {finalFilteredWines.length > itemsPerView && (
               <div className="flex justify-center mt-6 sm:mt-8 gap-1 sm:gap-2">
                 {Array.from({ length: Math.min(8, maxIndex + 1) }).map((_, i) => (
                   <button

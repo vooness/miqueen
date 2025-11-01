@@ -20,7 +20,7 @@ const AdoptujVinohrad: React.FC = () => {
     "Vyzkoušej si práci vinohradníka",
     "Měj kvalitní moravská vína",
     "Pojmenuj svůj mikrovinohrad",
-    "Zaži celoroční vinařský zážitek"
+    "Zažij celoroční vinařský zážitek"
   ];
 
   const benefits = [
@@ -51,7 +51,7 @@ const AdoptujVinohrad: React.FC = () => {
     },
     {
       icon: Play,
-      title: "Zaži celoroční vinařský zážitek",
+      title: "Zažij celoroční vinařský zážitek",
       subtitle: "Celý rok plný nezapomenutelných okamžiků"
     }
   ];
@@ -267,7 +267,7 @@ const AdoptujVinohrad: React.FC = () => {
               <p className="text-base md:text-lg lg:text-xl xl:text-2xl font-light">
                 Staň se virtuálním vinařem. Poznej fáze práce na vinohradu během celého roku, 
                 vyzkoušej si práci vinohradníka, měj po celý rok skvělá moravská vína z Pálavy ve své 
-                skleněce, pojmenuj svůj mikrovinohrad a zaži jeden velký celý rok trvající zážitek.
+                skleněce, pojmenuj svůj mikrovinohrad a zažij jeden velký celý rok trvající zážitek.
               </p>
               
               <p className="text-base md:text-lg lg:text-xl xl:text-2xl font-medium text-gray-900">

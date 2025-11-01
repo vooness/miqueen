@@ -27,8 +27,8 @@ const MiQueenVouchersPage: React.FC = () => {
     },
     {
       icon: Calendar,
-      title: "Platnost do 30.6.2025",
-      description: "Poukazy zakoupené v roce 2024 jsou platné až do 30. června 2025."
+      title: "Platnost 12 měsíců",
+      description: "Poukazy jsou platné 12 měsíců od data zakoupení."
     },
     {
       icon: CheckCircle,

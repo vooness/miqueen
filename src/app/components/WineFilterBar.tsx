@@ -8,6 +8,7 @@ export interface WineFilters {
   selectedVintages: string[];
   selectedDryness: string[];
   selectedQuality: string[];
+  selectedColors: string[];  // Nový filtr pro barvu vína
 }
 
 interface WineFilterBarProps {
@@ -39,16 +40,24 @@ const WineFilterBar: React.FC<WineFilterBarProps> = ({
       priceRange: [minPrice, maxPrice],
       selectedVintages: [],
       selectedDryness: [],
-      selectedQuality: []
+      selectedQuality: [],
+      selectedColors: []
     });
   };
 
-  const toggleArrayFilter = (value: string, key: keyof Pick<WineFilters, 'selectedVintages' | 'selectedDryness' | 'selectedQuality'>) => {
+  const toggleArrayFilter = (value: string, key: keyof Pick<WineFilters, 'selectedVintages' | 'selectedDryness' | 'selectedQuality' | 'selectedColors'>) => {
     const current = filters[key];
-    const updated = current.includes(value)
-      ? current.filter(v => v !== value)
-      : [...current, value];
-    updateFilters({ [key]: updated });
+    
+    // RADIO BUTTON LOGIKA - jen jedna možnost z kategorie
+    if (current.includes(value)) {
+      // Pokud už je vybraná, odznač ji (prázdné pole)
+      updateFilters({ [key]: [] });
+      console.log(`Odznačeno: ${value} z ${key}`);
+    } else {
+      // Pokud není vybraná, vyber JEN tuto (nahraď celé pole)
+      updateFilters({ [key]: [value] });
+      console.log(`Vybráno: ${value} v ${key}`);
+    }
   };
 
   const hasActiveFilters = 
@@ -57,7 +66,8 @@ const WineFilterBar: React.FC<WineFilterBarProps> = ({
     filters.priceRange[1] !== maxPrice ||
     filters.selectedVintages.length > 0 ||
     filters.selectedDryness.length > 0 ||
-    filters.selectedQuality.length > 0;
+    filters.selectedQuality.length > 0 ||
+    filters.selectedColors.length > 0;
 
   const getDrynessLabel = (dryness: string) => {
     const labels: Record<string, string> = {
@@ -71,14 +81,21 @@ const WineFilterBar: React.FC<WineFilterBarProps> = ({
 
   const getQualityLabel = (quality: string) => {
     const labels: Record<string, string> = {
-      'kabinet': 'Kabinet',
+      'moravske-zemske': 'Moravské zemské',
       'pozdni-sber': 'Pozdní sběr',
-      'vyber-z-hroznu': 'Výběr z hroznů',
-      'vyber-z-bobuli': 'Výběr z bobulí',
-      'slama': 'Slámové',
-      'ledove': 'Ledové'
+      'vyber-z-hroznu': 'Výběr z hroznů'
     };
     return labels[quality] || quality;
+  };
+
+  const getColorLabel = (color: string) => {
+    const labels: Record<string, string> = {
+      'white': 'Bílé víno',
+      'rose': 'Růžové víno',
+      'claret': 'Klaret',
+      'red': 'Červené víno'
+    };
+    return labels[color] || color;
   };
 
   return (
@@ -129,30 +146,30 @@ const WineFilterBar: React.FC<WineFilterBarProps> = ({
 
       {/* Rozbalovací filtry */}
       {showFilters && (
-        <div className="border-t border-gray-200 p-4 space-y-4 bg-white/40">
+        <div className="border-t border-gray-200 p-4 space-y-4 bg-white/80">
           
           {/* Cena */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-bold text-gray-900 mb-3">
               Cena: {filters.priceRange[0]} - {filters.priceRange[1]} Kč
             </label>
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-3 items-center">
               <input
                 type="number"
                 value={filters.priceRange[0]}
                 onChange={(e) => updateFilters({ priceRange: [parseInt(e.target.value) || minPrice, filters.priceRange[1]] })}
-                className="w-20 px-2 py-1 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-[#ab8754]"
+                className="w-24 px-3 py-2 text-base font-bold text-gray-900 border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ab8754] focus:border-[#ab8754] bg-white shadow-sm"
                 min={minPrice}
                 max={filters.priceRange[1]}
               />
-              <div className="flex-1 flex gap-2">
+              <div className="flex-1 flex flex-col gap-1 px-2">
                 <input
                   type="range"
                   min={minPrice}
                   max={maxPrice}
                   value={filters.priceRange[0]}
                   onChange={(e) => updateFilters({ priceRange: [parseInt(e.target.value), filters.priceRange[1]] })}
-                  className="flex-1 accent-[#ab8754] h-1"
+                  className="w-full accent-[#ab8754] slider-custom"
                 />
                 <input
                   type="range"
@@ -160,32 +177,56 @@ const WineFilterBar: React.FC<WineFilterBarProps> = ({
                   max={maxPrice}
                   value={filters.priceRange[1]}
                   onChange={(e) => updateFilters({ priceRange: [filters.priceRange[0], parseInt(e.target.value)] })}
-                  className="flex-1 accent-[#ab8754] h-1"
+                  className="w-full accent-[#ab8754] slider-custom"
                 />
               </div>
               <input
                 type="number"
                 value={filters.priceRange[1]}
                 onChange={(e) => updateFilters({ priceRange: [filters.priceRange[0], parseInt(e.target.value) || maxPrice] })}
-                className="w-20 px-2 py-1 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-[#ab8754]"
+                className="w-24 px-3 py-2 text-base font-bold text-gray-900 border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ab8754] focus:border-[#ab8754] bg-white shadow-sm"
                 min={filters.priceRange[0]}
                 max={maxPrice}
               />
             </div>
           </div>
 
+          {/* Barva vína - NOVÁ SEKCE */}
+          <div>
+            <label className="block text-sm font-bold text-gray-900 mb-2">
+              Barva vína
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {['white', 'rose', 'claret', 'red'].map(color => (
+                <button
+                  key={color}
+                  onClick={() => toggleArrayFilter(color, 'selectedColors')}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md border-2 transition-all ${
+                    filters.selectedColors.includes(color)
+                      ? 'bg-[#ab8754] text-white border-[#ab8754] shadow-md'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-[#ab8754]'
+                  }`}
+                >
+                  {getColorLabel(color)}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Ročník */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-2">Ročník</label>
+            <label className="block text-sm font-bold text-gray-900 mb-2">
+              Ročník
+            </label>
             <div className="flex flex-wrap gap-1.5">
               {availableVintages.map(vintage => (
                 <button
                   key={vintage}
                   onClick={() => toggleArrayFilter(vintage.toString(), 'selectedVintages')}
-                  className={`px-3 py-1 text-xs rounded-md border transition-all ${
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md border-2 transition-all ${
                     filters.selectedVintages.includes(vintage.toString())
-                      ? 'bg-[#ab8754] text-white border-[#ab8754]'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-[#ab8754]'
+                      ? 'bg-[#ab8754] text-white border-[#ab8754] shadow-md'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-[#ab8754]'
                   }`}
                 >
                   {vintage}
@@ -196,16 +237,18 @@ const WineFilterBar: React.FC<WineFilterBarProps> = ({
 
           {/* Sladkost */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-2">Sladkost</label>
+            <label className="block text-sm font-bold text-gray-900 mb-2">
+              Sladkost
+            </label>
             <div className="flex flex-wrap gap-1.5">
               {['suche', 'polosuche', 'polosladke', 'sladke'].map(dryness => (
                 <button
                   key={dryness}
                   onClick={() => toggleArrayFilter(dryness, 'selectedDryness')}
-                  className={`px-3 py-1 text-xs rounded-md border transition-all ${
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md border-2 transition-all ${
                     filters.selectedDryness.includes(dryness)
-                      ? 'bg-[#ab8754] text-white border-[#ab8754]'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-[#ab8754]'
+                      ? 'bg-[#ab8754] text-white border-[#ab8754] shadow-md'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-[#ab8754]'
                   }`}
                 >
                   {getDrynessLabel(dryness)}
@@ -214,18 +257,20 @@ const WineFilterBar: React.FC<WineFilterBarProps> = ({
             </div>
           </div>
 
-          {/* Kvalita */}
+          {/* Kategorie vín - UPRAVENO, pouze 3 možnosti */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-2">Kvalita</label>
+            <label className="block text-sm font-bold text-gray-900 mb-2">
+              Kategorie vín
+            </label>
             <div className="flex flex-wrap gap-1.5">
-              {['kabinet', 'pozdni-sber', 'vyber-z-hroznu', 'vyber-z-bobuli', 'slama', 'ledove'].map(quality => (
+              {['moravske-zemske', 'pozdni-sber', 'vyber-z-hroznu'].map(quality => (
                 <button
                   key={quality}
                   onClick={() => toggleArrayFilter(quality, 'selectedQuality')}
-                  className={`px-2.5 py-1 text-xs rounded-md border transition-all ${
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md border-2 transition-all ${
                     filters.selectedQuality.includes(quality)
-                      ? 'bg-[#ab8754] text-white border-[#ab8754]'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-[#ab8754]'
+                      ? 'bg-[#ab8754] text-white border-[#ab8754] shadow-md'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-[#ab8754]'
                   }`}
                 >
                   {getQualityLabel(quality)}
@@ -245,45 +290,62 @@ const WineFilterBar: React.FC<WineFilterBarProps> = ({
       </div>
 
       <style jsx>{`
-        input[type="range"] {
+        input[type="range"].slider-custom {
           -webkit-appearance: none;
           appearance: none;
           background: transparent;
           cursor: pointer;
+          height: 6px;
         }
 
-        input[type="range"]::-webkit-slider-track {
-          height: 4px;
-          border-radius: 2px;
-          background: #e5e7eb;
+        input[type="range"].slider-custom::-webkit-slider-track {
+          height: 6px;
+          border-radius: 3px;
+          background: #9ca3af;
+          border: 1px solid #6b7280;
         }
 
-        input[type="range"]::-webkit-slider-thumb {
+        input[type="range"].slider-custom::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
-          width: 16px;
-          height: 16px;
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
           background: #ab8754;
-          border: 2px solid white;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-          margin-top: -6px;
+          border: 3px solid white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+          margin-top: -7px;
+          cursor: grab;
         }
 
-        input[type="range"]::-moz-range-track {
-          height: 4px;
-          border-radius: 2px;
-          background: #e5e7eb;
+        input[type="range"].slider-custom::-webkit-slider-thumb:active {
+          cursor: grabbing;
+          transform: scale(1.1);
         }
 
-        input[type="range"]::-moz-range-thumb {
-          width: 16px;
-          height: 16px;
+        input[type="range"].slider-custom::-moz-range-track {
+          height: 6px;
+          border-radius: 3px;
+          background: #9ca3af;
+          border: 1px solid #6b7280;
+        }
+
+        input[type="range"].slider-custom::-moz-range-thumb {
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
           background: #ab8754;
-          border: 2px solid white;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+          border: 3px solid white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+          cursor: grab;
         }
+
+        input[type="range"].slider-custom::-moz-range-thumb:active {
+          cursor: grabbing;
+          transform: scale(1.1);
+        }
+
+        /* Starý fallback CSS - odstraněn */
       `}</style>
     </div>
   );

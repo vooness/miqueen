@@ -42,7 +42,8 @@ const WineGridPage: React.FC = () => {
     priceRange: [minPrice, maxPrice],
     selectedVintages: [],
     selectedDryness: [],
-    selectedQuality: []
+    selectedQuality: [],
+    selectedColors: []  // Nový filtr pro barvu vína
   });
 
   // Separate state pro řazení (není součástí WineFilters)
@@ -85,6 +86,11 @@ const WineGridPage: React.FC = () => {
 
     // Filtr kvality
     if (filters.selectedQuality.length > 0 && wine.quality && !filters.selectedQuality.includes(wine.quality)) {
+      return false;
+    }
+
+    // Filtr podle barvy vína - NOVÝ
+    if (filters.selectedColors.length > 0 && wine.category && !filters.selectedColors.includes(wine.category)) {
       return false;
     }
 
@@ -526,7 +532,7 @@ const WineGridPage: React.FC = () => {
                 Žádná vína nenalezena
               </h3>
               <p className="text-gray-500">
-                Zkuste změnit filtr kategorie
+                Zkuste změnit filtry
               </p>
             </div>
           )}
