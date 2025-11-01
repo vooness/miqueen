@@ -243,42 +243,58 @@ const HeroSection: React.FC<HeroSectionProps> = ({
 
             {/* Stars - statické na mobilu */}
             {isMobile ? (
-              <div className="flex justify-center items-center space-x-1 sm:space-x-2 mb-4 sm:mb-6 md:mb-8">
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-yellow-400 text-2xl sm:text-3xl md:text-4xl flex items-center justify-center"
-                  >
-                    ★
-                  </div>
-                ))}
+              <div className="space-y-2 mb-4 sm:mb-6 md:mb-8">
+                <div className="flex justify-center items-center space-x-1 sm:space-x-2">
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-yellow-400 text-2xl sm:text-3xl md:text-4xl flex items-center justify-center"
+                    >
+                      ★
+                    </div>
+                  ))}
+                </div>
+                <div className="text-white/90 text-xs sm:text-sm font-light tracking-wide">
+                  Čtyřhvězdičkové vinařství AWC Vienna 2025
+                </div>
               </div>
             ) : (
-              <motion.div 
-                className="flex justify-center items-center space-x-1 sm:space-x-2 mb-4 sm:mb-6 md:mb-8"
-                initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
-                whileInView={prefersReducedMotion ? { opacity: 1 } : { opacity: 1 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: 0.3 }}
-              >
-                {[...Array(4)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-yellow-400 star-glow text-2xl sm:text-3xl md:text-4xl flex items-center justify-center"
-                    initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0 }}
-                    whileInView={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={prefersReducedMotion ? {} : { 
-                      duration: 0.4, 
-                      delay: 0.4 + (i * 0.1),
-                      type: "spring",
-                      stiffness: 200
-                    }}
-                  >
-                    ★
-                  </motion.div>
-                ))}
-              </motion.div>
+              <div className="space-y-3 mb-4 sm:mb-6 md:mb-8">
+                <motion.div 
+                  className="flex justify-center items-center space-x-1 sm:space-x-2"
+                  initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+                  whileInView={prefersReducedMotion ? { opacity: 1 } : { opacity: 1 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: 0.3 }}
+                >
+                  {[...Array(4)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-yellow-400 star-glow text-2xl sm:text-3xl md:text-4xl flex items-center justify-center"
+                      initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0 }}
+                      whileInView={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+                      viewport={{ once: true, margin: "-50px" }}
+                      transition={prefersReducedMotion ? {} : { 
+                        duration: 0.4, 
+                        delay: 0.4 + (i * 0.1),
+                        type: "spring",
+                        stiffness: 200
+                      }}
+                    >
+                      ★
+                    </motion.div>
+                  ))}
+                </motion.div>
+                <motion.div 
+                  className="text-white/90 text-sm md:text-base font-light tracking-wide"
+                  initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 10 }}
+                  whileInView={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: 0.8 }}
+                >
+                  Čtyřhvězdičkové vinařství AWC Vienna 2025
+                </motion.div>
+              </div>
             )}
 
             {/* Rotating slide content */}
