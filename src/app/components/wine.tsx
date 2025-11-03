@@ -3,9 +3,8 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Star, ChevronLeft, ChevronRight, Sparkles, Droplets, Cherry, Grape, Wine, Package, ShoppingCart, X, Thermometer, MapPin, ChefHat, User, Gift } from "lucide-react";
 
-// DŮLEŽITÁ ZMĚNA: Importujte správnou databázi s 40 produkty!
-// Ujistěte se, že máte aktualizovaný soubor wineData.ts s 40 produkty
-import { wines, getWinesByCategory, getWineCountByCategory, WineProduct } from "./wineData";
+// ZMĚNA: Import nové funkce pro řazení podle sladkosti
+import { wines, getWinesByCategorySortedBySweetness, getWineCountByCategory, WineProduct } from "./wineData";
 
 // Import WineFilterBar komponenty
 import WineFilterBar, { WineFilters } from "@/app/components/WineFilterBar";
@@ -45,7 +44,7 @@ const WineCollectionSection: React.FC = () => {
   });
 
   // Separate state pro řazení (není součástí WineFilters)
-  const [sortBy] = useState<'name' | 'price-asc' | 'price-desc' | 'rating'>('name');
+  const [] = useState<'name' | 'price-asc' | 'price-desc' | 'rating'>('name');
 
   // Responzivní počet viditelných produktů
   useEffect(() => {
@@ -75,11 +74,20 @@ const WineCollectionSection: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // ZMĚNA: Použití nové funkce, která vrací vína seřazená od nejsladšího
   const filteredWines = selectedCategory === 'new' 
-    ? wines.filter(w => w.badge === 'new')
-    : getWinesByCategory(selectedCategory);
+    ? wines.filter(w => w.badge === 'new').sort((a, b) => {
+        // Seřadit novinky také podle sladkosti
+        const aHasSugar = a.residualSugar !== null && a.residualSugar !== undefined;
+        const bHasSugar = b.residualSugar !== null && b.residualSugar !== undefined;
+        if (!aHasSugar && !bHasSugar) return 0;
+        if (!aHasSugar) return 1;
+        if (!bHasSugar) return -1;
+        return b.residualSugar! - a.residualSugar!;
+      })
+    : getWinesByCategorySortedBySweetness(selectedCategory);
   
-  // Aplikace filtrů
+  // Aplikace filtrů - vína jsou již seřazená od nejsladšího, takže nepřeřazujeme
   const applyFilters = (wines: WineProduct[]) => {
     let result = [...wines];
 
@@ -116,7 +124,9 @@ const WineCollectionSection: React.FC = () => {
       result = result.filter(w => w.category && filters.selectedColors.includes(w.category));
     }
 
-    // Řazení
+    // POZNÁMKA: Řazení je vypnuté - vína jsou seřazená od nejsladšího
+    // Pokud chcete vrátit možnost změny řazení, odkomentujte níže:
+    /*
     switch (sortBy) {
       case 'price-asc':
         result.sort((a, b) => a.price - b.price);
@@ -128,10 +138,10 @@ const WineCollectionSection: React.FC = () => {
         result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
       case 'name':
-      default:
         result.sort((a, b) => a.name.localeCompare(b.name, 'cs'));
         break;
     }
+    */
 
     return result;
   };
@@ -240,7 +250,7 @@ const WineCollectionSection: React.FC = () => {
                 Naše <span className="font-normal" style={{ color: "#ab8754" }}>kolekce</span>
               </h2>
               <p className="text-xl text-gray-600 font-light max-w-2xl mx-auto leading-relaxed">
-                Objevte naše nejcennější a nejlépe hodnocená vína
+                Vína seřazená od nejsladšího po nejsušší
               </p>
             </div>
           </div>

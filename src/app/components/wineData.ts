@@ -1,6 +1,6 @@
 // wineData.ts - FINÁLNÍ KOMPLETNÍ DATABÁZE VŠECH 40 VÍN MiQueen
 // Aktualizováno podle shop.miqueen.cz - říjen/listopad 2024
-// 40 produktů se správnými odkazy poskytnutými uživatelem
+// 40 produktů se správnými odkazy a hodnotami zbytkového cukru
 
 export interface WineProduct {
   id: number;
@@ -25,6 +25,7 @@ export interface WineProduct {
   winemaker?: string;
   notes?: string;
   sku?: string;
+  residualSugar?: number | null; // g/l - pro řazení od nejsladšího
 }
 
 export const wines: WineProduct[] = [
@@ -50,7 +51,8 @@ export const wines: WineProduct[] = [
     region: 'Mikulovská podoblast, Mikulov',
     servingTemp: '10-12°C',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ036'
+    sku: 'VMQ036',
+    residualSugar: 3.0
   },
   
   // ID 2: Cuvée Slastná Dudková 2024 mini
@@ -72,7 +74,8 @@ export const wines: WineProduct[] = [
     volume: 187,
     region: 'Mikulovská podoblast, Mikulov',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ037'
+    sku: 'VMQ037',
+    residualSugar: 15.8
   },
   
   // ID 3: Frankovka 2024 mini
@@ -94,7 +97,8 @@ export const wines: WineProduct[] = [
     volume: 187,
     region: 'Mikulovská podoblast, Mikulov',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ038'
+    sku: 'VMQ038',
+    residualSugar: 0.4
   },
   
   // ID 4: Frankovka Rosé 2024 mini
@@ -116,7 +120,8 @@ export const wines: WineProduct[] = [
     volume: 187,
     region: 'Mikulovská podoblast, Mikulov',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ039'
+    sku: 'VMQ039',
+    residualSugar: 23.7
   },
   
   // ID 5: Pinot Noir 2022 mini
@@ -139,7 +144,8 @@ export const wines: WineProduct[] = [
     region: 'Mikulovská podoblast, Perná',
     winemaker: 'MiQueen Winery',
     notes: 'Balení po 24ks',
-    sku: 'VMQ016'
+    sku: 'VMQ016',
+    residualSugar: 0.9
   },
   
   // ID 6: Rulandské šedé 2023 mini
@@ -161,7 +167,8 @@ export const wines: WineProduct[] = [
     volume: 187,
     region: 'Mikulovská podoblast, Mikulov',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ017'
+    sku: 'VMQ017',
+    residualSugar: 31.7
   },
   
   // ID 7: Ryzlink vlašský 2023 mini
@@ -183,7 +190,8 @@ export const wines: WineProduct[] = [
     volume: 187,
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ018'
+    sku: 'VMQ018',
+    residualSugar: 5.2
   },
   
   // ID 8: Frizzante Frankovka Rosé 2024 mini
@@ -205,7 +213,8 @@ export const wines: WineProduct[] = [
     volume: 187,
     region: 'Mikulovská podoblast, Mikulov',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ040'
+    sku: 'VMQ040',
+    residualSugar: 23.7
   },
   
   // ID 9: Frizzante Ryzlink vlašský 2023 mini
@@ -227,7 +236,8 @@ export const wines: WineProduct[] = [
     volume: 187,
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ019'
+    sku: 'VMQ019',
+    residualSugar: 6.5
   },
   
   // ID 10: MIMOSA mini
@@ -247,7 +257,8 @@ export const wines: WineProduct[] = [
     volume: 200,
     badge: 'tip',
     servingTemp: '4-6°C',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: null
   },
 
   // ========== FRIZZANTE (750ml) - 5 produktů ==========
@@ -271,7 +282,8 @@ export const wines: WineProduct[] = [
     volume: 750,
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ007'
+    sku: 'VMQ007',
+    residualSugar: 14.5
   },
   
   // ID 12: Frizzante Ryzlink vlašský 2023
@@ -294,7 +306,8 @@ export const wines: WineProduct[] = [
     badge: 'new',
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ020'
+    sku: 'VMQ020',
+    residualSugar: 6.5
   },
   
   // ID 13: Frankovka Klaret 2023
@@ -315,7 +328,8 @@ export const wines: WineProduct[] = [
     alcohol: 11,
     volume: 750,
     region: 'Mikulovská podoblast',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 7.6
   },
   
   // ID 14: Frizzante Frankovka Rosé 2023
@@ -338,7 +352,8 @@ export const wines: WineProduct[] = [
     badge: 'tip',
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ008'
+    sku: 'VMQ008',
+    residualSugar: 9.2
   },
   
   // ID 15: Frizzante Frankovka Rosé 2024
@@ -359,7 +374,8 @@ export const wines: WineProduct[] = [
     alcohol: 11.5,
     volume: 750,
     region: 'Mikulovská podoblast, Mikulov',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 23.7
   },
 
   // ========== BÍLÁ VÍNA (750ml) - 14 produktů ==========
@@ -383,7 +399,8 @@ export const wines: WineProduct[] = [
     volume: 750,
     badge: 'award',
     region: 'Mikulovská podoblast',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 1.4
   },
   
   // ID 17: Frankovka 2023 (červené)
@@ -405,7 +422,8 @@ export const wines: WineProduct[] = [
     volume: 750,
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ021'
+    sku: 'VMQ021',
+    residualSugar: 0.4
   },
   
   // ID 18: Frankovka Rosé 2024 (750ml)
@@ -426,7 +444,8 @@ export const wines: WineProduct[] = [
     alcohol: 12,
     volume: 750,
     region: 'Mikulovská podoblast, Mikulov',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 23.7
   },
   
   // ID 19: Ryzlink vlašský 2023 - polosuchý
@@ -448,7 +467,8 @@ export const wines: WineProduct[] = [
     volume: 750,
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ012'
+    sku: 'VMQ012',
+    residualSugar: 6.5
   },
   
   // ID 20: Ryzlink vlašský 2023
@@ -471,7 +491,8 @@ export const wines: WineProduct[] = [
     badge: 'award',
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ014'
+    sku: 'VMQ014',
+    residualSugar: 5.2
   },
   
   // ID 21: Sauvignon 2023
@@ -494,7 +515,8 @@ export const wines: WineProduct[] = [
     badge: 'award',
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ011'
+    sku: 'VMQ011',
+    residualSugar: 4.6
   },
   
   // ID 22: Sauvignon 2023 - výběr z hroznů
@@ -515,7 +537,8 @@ export const wines: WineProduct[] = [
     alcohol: 13.5,
     volume: 750,
     region: 'Mikulovská podoblast',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 0.3
   },
   
   // ID 23: Frankovka Rosé 2023
@@ -538,7 +561,8 @@ export const wines: WineProduct[] = [
     badge: 'tip',
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ010'
+    sku: 'VMQ010',
+    residualSugar: 9.2
   },
   
   // ID 24: Rulandské bílé 2024
@@ -559,7 +583,8 @@ export const wines: WineProduct[] = [
     alcohol: 12.5,
     volume: 750,
     region: 'Mikulovská podoblast',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 3.5
   },
   
   // ID 25: Rulandské šedé 2023
@@ -582,7 +607,8 @@ export const wines: WineProduct[] = [
     badge: 'award',
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ013'
+    sku: 'VMQ013',
+    residualSugar: 31.7
   },
   
   // ID 26: Rulandské šedé 2024
@@ -603,7 +629,8 @@ export const wines: WineProduct[] = [
     alcohol: 13.5,
     volume: 750,
     region: 'Mikulovská podoblast',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 32.1
   },
   
   // ID 27: Ryzlink rýnský 2023 - polosuchý
@@ -626,7 +653,8 @@ export const wines: WineProduct[] = [
     badge: 'tip',
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ006'
+    sku: 'VMQ006',
+    residualSugar: 14.5
   },
   
   // ID 28: Ryzlink rýnský 2024
@@ -647,7 +675,8 @@ export const wines: WineProduct[] = [
     alcohol: 13.5,
     volume: 750,
     region: 'Mikulovská podoblast, Mikulov',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 2.2
   },
   
   // ID 29: Ryzlink vlašský 2024
@@ -668,7 +697,8 @@ export const wines: WineProduct[] = [
     alcohol: 13.5,
     volume: 750,
     region: 'Mikulovská podoblast, Mikulov',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 4.6
   },
 
   // ========== DALŠÍ BÍLÁ VÍNA (750ml) - pokračování ==========
@@ -691,7 +721,8 @@ export const wines: WineProduct[] = [
     alcohol: 14,
     volume: 750,
     region: 'Mikulovská podoblast, Mikulov',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 4.9
   },
   
   // ID 31: Tramín červený 2023
@@ -714,7 +745,8 @@ export const wines: WineProduct[] = [
     badge: 'tip',
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ005'
+    sku: 'VMQ005',
+    residualSugar: 41.5
   },
   
   // ID 32: Tramín červený 2024
@@ -735,7 +767,8 @@ export const wines: WineProduct[] = [
     alcohol: 13,
     volume: 750,
     region: 'Mikulovská podoblast, Mikulov',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 28.1
   },
 
   // ID 33: Cuvée Hrdý Dudek 2024
@@ -756,7 +789,8 @@ export const wines: WineProduct[] = [
     alcohol: 13.5,
     volume: 750,
     region: 'Mikulovská podoblast, Mikulov',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 3.0
   },
   
   // ID 34: Cuvée Slastná Dudková 2024
@@ -777,7 +811,8 @@ export const wines: WineProduct[] = [
     alcohol: 13.5,
     volume: 750,
     region: 'Mikulovská podoblast, Mikulov',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 15.8
   },
 
   // ========== SPECIÁLNÍ - 1 produkt (750ml) ==========
@@ -800,7 +835,8 @@ export const wines: WineProduct[] = [
     badge: 'new',
     servingTemp: '4-6°C',
     winemaker: 'MiQueen Winery',
-    notes: 'Obsahuje přírodní sedlinu. Netřepat, jen otočit na pár vteřin.'
+    notes: 'Obsahuje přírodní sedlinu. Netřepat, jen otočit na pár vteřin.',
+    residualSugar: null
   },
 
   // ID 36: Rulandské bílé 2023
@@ -823,7 +859,8 @@ export const wines: WineProduct[] = [
     badge: 'tip',
     region: 'Mikulovská podoblast',
     winemaker: 'MiQueen Winery',
-    sku: 'VMQ004'
+    sku: 'VMQ004',
+    residualSugar: 6.9
   },
   
   // ID 37: Ryzlink rýnský 2023
@@ -845,7 +882,8 @@ export const wines: WineProduct[] = [
     volume: 750,
     badge: 'tip',
     region: 'Mikulovská podoblast',
-    winemaker: 'MiQueen Winery'
+    winemaker: 'MiQueen Winery',
+    residualSugar: 7.3
   },
 
   // ========== SETY MINI VÍN - 2 produkty ==========
@@ -867,7 +905,8 @@ export const wines: WineProduct[] = [
     servingTemp: '8-16°C',
     winemaker: 'MiQueen Winery',
     notes: 'Stylový dárek, který potěší i reprezentuje',
-    sku: 'VMQ042'
+    sku: 'VMQ042',
+    residualSugar: null
   },
   
   // ID 39: Set 4x mini - premium
@@ -887,7 +926,8 @@ export const wines: WineProduct[] = [
     servingTemp: '6-16°C',
     winemaker: 'MiQueen Winery',
     notes: 'Stylový dárek, který potěší i reprezentuje',
-    sku: 'VMQ041'
+    sku: 'VMQ041',
+    residualSugar: null
   },
 
   // ========== ČERVENÁ VÍNA (750ml) - 1 produkt ==========
@@ -914,7 +954,8 @@ export const wines: WineProduct[] = [
     servingTemp: '16-18°C',
     winemaker: 'MiQueen Winery',
     notes: 'Zrálo 12 měsíců v dubových sudech.',
-    sku: 'VMQ015'
+    sku: 'VMQ015',
+    residualSugar: 0.9
   }
 ];
 
@@ -924,6 +965,24 @@ export const getWinesByCategory = (category: string): WineProduct[] => {
   return wines.filter(wine => wine.category === category);
 };
 
+// Vrací vína podle kategorie seřazená od nejsladšího
+export const getWinesByCategorySortedBySweetness = (category: string): WineProduct[] => {
+  const categoryWines = getWinesByCategory(category);
+  
+  return [...categoryWines].sort((a, b) => {
+    // Vína bez residualSugar (null nebo undefined) dáme na konec
+    const aHasSugar = a.residualSugar !== null && a.residualSugar !== undefined;
+    const bHasSugar = b.residualSugar !== null && b.residualSugar !== undefined;
+    
+    if (!aHasSugar && !bHasSugar) return 0;
+    if (!aHasSugar) return 1;
+    if (!bHasSugar) return -1;
+    
+    // Jinak řadíme od nejvyššího (nejsladšího) po nejnižší
+    return b.residualSugar! - a.residualSugar!;
+  });
+};
+
 export const getWineCountByCategory = (category: string): number => {
   if (category === 'all') return wines.length;
   return wines.filter(wine => wine.category === category).length;
@@ -931,6 +990,22 @@ export const getWineCountByCategory = (category: string): number => {
 
 export const getWineById = (id: number): WineProduct | undefined => {
   return wines.find(wine => wine.id === id);
+};
+
+// Řazení vín podle zbytkového cukru (od nejsladšího)
+export const getWinesSortedBySweetness = (): WineProduct[] => {
+  return [...wines].sort((a, b) => {
+    // Vína bez residualSugar (null nebo undefined) dáme na konec
+    const aHasSugar = a.residualSugar !== null && a.residualSugar !== undefined;
+    const bHasSugar = b.residualSugar !== null && b.residualSugar !== undefined;
+    
+    if (!aHasSugar && !bHasSugar) return 0;
+    if (!aHasSugar) return 1;
+    if (!bHasSugar) return -1;
+    
+    // Jinak řadíme od nejvyššího (nejsladšího) po nejnižší
+    return b.residualSugar! - a.residualSugar!;
+  });
 };
 
 // Kontrolní statistiky
@@ -956,6 +1031,11 @@ export const getStatistics = () => {
   };
 
   const newWines2024 = wines.filter(w => w.badge === 'new' || w.vintage === 2024);
+  
+  const sugarStats = {
+    withSugar: wines.filter(w => w.residualSugar !== null && w.residualSugar !== undefined).length,
+    withoutSugar: wines.filter(w => w.residualSugar === null || w.residualSugar === undefined).length
+  };
 
   console.log('========================================');
   console.log('KOMPLETNÍ DATABÁZE VÍN MIQUEEN 2024');
@@ -979,6 +1059,10 @@ export const getStatistics = () => {
   console.log(`  2023: ${vintages['2023']} produktů`);
   console.log(`  2024: ${vintages['2024']} produktů`);
   console.log('');
+  console.log('ZBYTKOVÝ CUKR:');
+  console.log(`  S hodnotou: ${sugarStats.withSugar} produktů`);
+  console.log(`  Bez hodnoty (sety/speciální): ${sugarStats.withoutSugar} produktů`);
+  console.log('');
   console.log(`NOVÁ VÍNA 2024: ${newWines2024.length} produktů`);
   console.log('========================================');
   console.log(wines.length === 40 ? '✅ ÚSPĚCH: Všech 40 produktů je v databázi!' : `⚠️ VAROVÁNÍ: Je ${wines.length} produktů!`);
@@ -987,14 +1071,20 @@ export const getStatistics = () => {
   const urlCheck = wines.every(w => w.shopUrl.startsWith('https://shop.miqueen.cz/'));
   console.log(urlCheck ? '✅ Všechny odkazy jsou správné!' : '⚠️ Některé odkazy nejsou správné!');
   
+  // Kontrola zbytkového cukru
+  const sugarCheck = wines.filter(w => w.residualSugar !== null && w.residualSugar !== undefined).length === 37;
+  console.log(sugarCheck ? '✅ Všechna vína mají hodnoty zbytkového cukru (kromě setů a MIMOSA)!' : '⚠️ Zkontroluj hodnoty zbytkového cukru!');
+  
   return {
     total: wines.length,
     categories,
     volumes,
     vintages,
     newWines2024: newWines2024.length,
+    sugarStats,
     status: wines.length === 40,
-    urlsValid: urlCheck
+    urlsValid: urlCheck,
+    sugarValid: sugarCheck
   };
 };
 

@@ -617,6 +617,81 @@ const AdoptujVinohradPage = () => {
         </div>
       </section>
 
+      {/* Border Between Sections */}
+      <div className="relative w-full">
+        <Image 
+          src="/border.png"
+          alt=""
+          width={1920}
+          height={176}
+          className="w-full h-auto"
+          style={{ display: 'block' }}
+        />
+      </div>
+
+      {/* Video Gallery Section */}
+      <section className="py-20" style={{ backgroundColor: paperColor }}>
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            className="text-center mb-16"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+          >
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-800 mb-4">
+              Podívej se <span style={{ color: accentColor }}>blíže</span>
+            </h2>
+            <p className="text-xl text-gray-600">
+              Zážitky z vinohradu v pohybu
+            </p>
+          </motion.div>
+
+          <motion.div 
+            className="grid md:grid-cols-2 gap-6 lg:gap-8"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+          >
+            {[1, 2, 3, 4].map((num) => (
+              <motion.div
+                key={num}
+                variants={fadeInUp}
+                className="relative rounded-2xl overflow-hidden shadow-lg border-2 border-gray-200 hover:shadow-2xl hover:border-[#ab8754] transition-all duration-500 group"
+              >
+                <div className="aspect-video bg-gradient-to-br from-gray-900 to-black">
+                  <video
+                    className="w-full h-full object-cover"
+                    controls
+                    playsInline
+                    preload="metadata"
+                  >
+                    <source src={`/video/promo${num}.mp4`} type="video/mp4" />
+                    Váš prohlížeč nepodporuje přehrávání videa.
+                  </video>
+                </div>
+                
+                {/* Overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Border Between Sections */}
+      <div className="relative w-full">
+        <Image 
+          src="/border.png"
+          alt=""
+          width={1920}
+          height={176}
+          className="w-full h-auto"
+          style={{ display: 'block' }}
+        />
+      </div>
+
       {/* CTA Section */}
       <section className="py-20" style={{ backgroundColor: paperColor }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

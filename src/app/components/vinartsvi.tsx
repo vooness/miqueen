@@ -33,29 +33,6 @@ const AboutWinerySection = () => {
   const achievements = [
     {
       id: 1,
-      title: "Zlatý pohár Česko Slovenska 2024",
-      goldMedals: 2,
-      silverMedals: 0,
-      totalMedals: "2 velké zlaté + 4 zlaté medaile",
-      year: "2024",
-      type: "main",
-      icon: Crown,
-      highlight: true,
-      image: "/medaile/loga_soutezi_shop_ostra5.webp"
-    },
-    {
-      id: 2,
-      title: "AWC Vienna 2024", 
-      goldMedals: 2,
-      silverMedals: 7,
-      totalMedals: "2 zlaté + 7 stříbrných medailí",
-      year: "2024",
-      type: "grand",
-      icon: Trophy,
-      image: "/medaile/awc_medaillen2024_visuals_all_gold.webp"
-    },
-    {
-      id: 3,
       title: "AWC Vienna 2025",
       goldMedals: 5,
       silverMedals: 1,
@@ -63,65 +40,121 @@ const AboutWinerySection = () => {
       year: "2025",
       type: "premium",
       icon: Star,
+      highlight: true,
       image: "/medaile/awc_gold.webp"
     },
     {
-      id: 4,
-      title: "GRAND PRIX VINEX 2024",
-      goldMedals: 1,
-      silverMedals: 6,
-      totalMedals: "1 zlatá + 6 stříbrných medailí", 
+      id: 2,
+      title: "Král vín 2025",
+      goldMedals: 6,
+      silverMedals: 1,
+      totalMedals: "4 velké zlaté + 2 zlaté + 1 stříbrná",
+      year: "2025",
+      type: "grand",
+      icon: Crown,
+      image: "/medaile/loga_soutezi_shop_ostra5.webp"
+    },
+    {
+      id: 3,
+      title: "Zlatý pohár Československa 2024",
+      goldMedals: 7,
+      silverMedals: 0,
+      totalMedals: "1 vítěz kategorie + 2 velké zlaté + 4 zlaté",
       year: "2024",
-      type: "international",
-      icon: Sparkles,
+      type: "main",
+      icon: Trophy,
+      image: "/medaile/loga_soutezi_shop_ostra5.webp"
+    },
+    {
+      id: 4,
+      title: "Nominační výstava Mikulov 2025",
+      goldMedals: 5,
+      silverMedals: 0,
+      totalMedals: "1 velká zlatá + 4 zlaté medaile",
+      year: "2025",
+      type: "gold",
+      icon: Wine,
       image: "/medaile/loga_soutezi_shop_ostra3.webp"
     },
     {
       id: 5,
-      title: "Jarovin 2024",
+      title: "AWC Vienna 2024",
       goldMedals: 2,
-      silverMedals: 0,
-      totalMedals: "2 zlaté medaile",
+      silverMedals: 7,
+      totalMedals: "2 zlaté + 7 stříbrných medailí",
       year: "2024",
-      type: "gold",
-      icon: Award,
-      image: "/medaile/loga_soutezi_shop_ostra.webp"
+      type: "international",
+      icon: Trophy,
+      image: "/medaile/awc_medaillen2024_visuals_all_gold.webp"
     },
     {
       id: 6,
-      title: "Jarovin 2025",
-      goldMedals: 1,
-      silverMedals: 1,
-      totalMedals: "1 zlatá + 1 stříbrná medaile",
-      year: "2025",
-      type: "main",
-      icon: Award,
-      image: "/medaile/medaile_jarovin_zlata.webp"
-    },
-    {
-      id: 7,
       title: "Valtické vinné trhy 2024",
-      goldMedals: 3,
+      goldMedals: 4,
       silverMedals: 0,
-      totalMedals: "3 zlaté medaile",
+      totalMedals: "4 zlaté medaile",
       year: "2024",
       type: "gold",
       icon: Trophy,
       image: "/medaile/loga_soutezi_shop_ostra2.webp"
     },
     {
+      id: 7,
+      title: "GRAND PRIX VINEX 2024",
+      goldMedals: 1,
+      silverMedals: 5,
+      totalMedals: "1 velká zlatá + 5 stříbrných medailí",
+      year: "2024",
+      type: "international",
+      icon: Sparkles,
+      image: "/medaile/loga_soutezi_shop_ostra3.webp"
+    },
+    {
       id: 8,
-      title: "Valtické vinné trhy 2025",
+      title: "Nominační výstava Mikulov 2024",
+      goldMedals: 3,
+      silverMedals: 0,
+      totalMedals: "3 zlaté medaile",
+      year: "2024",
+      type: "gold",
+      icon: Wine,
+      image: "/medaile/loga_soutezi_shop_ostra3.webp"
+    },
+    {
+      id: 9,
+      title: "Pardubický festival vína 2025",
+      goldMedals: 3,
+      silverMedals: 0,
+      totalMedals: "1 velká zlatá + 2 zlaté medaile",
+      year: "2025",
+      type: "gold",
+      icon: Award,
+      image: "/medaile/loga_soutezi_shop_ostra.webp"
+    },
+    {
+      id: 10,
+      title: "Weinparade Poysdorf 2024",
+      goldMedals: 2,
+      silverMedals: 6,
+      totalMedals: "2 zlaté + 6 stříbrných medailí",
+      year: "2024",
+      type: "international",
+      icon: Wine,
+      image: "/medaile/loga_soutezi_shop_ostra4.webp"
+    },
+    {
+      id: 11,
+      title: "Galerie rulandských vín 2025",
       goldMedals: 2,
       silverMedals: 0,
       totalMedals: "2 zlaté medaile",
       year: "2025",
       type: "gold",
-      icon: Trophy,
+      icon: Wine,
       image: "/medaile/zlato_vvt.webp"
     },
     {
-      id: 9,
+      id: 12,
       title: "VINUM JUVENALE 2023",
       goldMedals: 2,
       silverMedals: 2,
@@ -132,15 +165,70 @@ const AboutWinerySection = () => {
       image: "/medaile/loga_soutezi_shop_ostra3.webp"
     },
     {
-      id: 10,
-      title: "Weinparade Poysdorf 2024",
+      id: 13,
+      title: "Jarovín 2024",
       goldMedals: 2,
-      silverMedals: 7,
-      totalMedals: "2 zlaté + 7 stříbrných medailí",
+      silverMedals: 0,
+      totalMedals: "2 zlaté medaile",
       year: "2024",
-      type: "international",
+      type: "gold",
+      icon: Award,
+      image: "/medaile/loga_soutezi_shop_ostra.webp"
+    },
+    {
+      id: 14,
+      title: "Nejlepší biopotravina roku 2025",
+      goldMedals: 2,
+      silverMedals: 1,
+      totalMedals: "1 vítěz kategorie + 1 zlatá + 1 stříbrná",
+      year: "2025",
+      type: "bio",
+      icon: Leaf,
+      image: "/medaile/loga_soutezi_shop_ostra.webp"
+    },
+    {
+      id: 15,
+      title: "Král vín 2024",
+      goldMedals: 2,
+      silverMedals: 1,
+      totalMedals: "1 vítěz kategorie + 1 zlatá + 1 stříbrná",
+      year: "2024",
+      type: "main",
+      icon: Crown,
+      image: "/medaile/loga_soutezi_shop_ostra5.webp"
+    },
+    {
+      id: 16,
+      title: "Jarovín 2025",
+      goldMedals: 1,
+      silverMedals: 1,
+      totalMedals: "1 zlatá + 1 stříbrná medaile",
+      year: "2025",
+      type: "main",
+      icon: Award,
+      image: "/medaile/medaile_jarovin_zlata.webp"
+    },
+    {
+      id: 17,
+      title: "Valtické vinné trhy 2025",
+      goldMedals: 1,
+      silverMedals: 0,
+      totalMedals: "1 zlatá medaile",
+      year: "2025",
+      type: "gold",
+      icon: Trophy,
+      image: "/medaile/zlato_vvt.webp"
+    },
+    {
+      id: 18,
+      title: "Salon vín 2025",
+      goldMedals: 0,
+      silverMedals: 1,
+      totalMedals: "1 stříbrná medaile",
+      year: "2025",
+      type: "silver",
       icon: Wine,
-      image: "/medaile/loga_soutezi_shop_ostra4.webp"
+      image: "/medaile/loga_soutezi_shop_ostra.webp"
     }
   ];
 
@@ -174,10 +262,21 @@ const AboutWinerySection = () => {
   const totalGold = achievements.reduce((sum, achievement) => sum + achievement.goldMedals, 0);
   const totalSilver = achievements.reduce((sum, achievement) => sum + achievement.silverMedals, 0);
 
+  // NOVÉ: State pro filtrování podle roku
+  const [selectedYear, setSelectedYear] = useState<string>("Vše");
+
+  // NOVÉ: Získání všech unikátních roků seřazených od nejnovějšího
+  const years = ["Vše", ...Array.from(new Set(achievements.map(a => a.year))).sort((a, b) => b.localeCompare(a))];
+
+  // NOVÉ: Filtrování podle vybraného roku
+  const filteredAchievements = selectedYear === "Vše" 
+    ? achievements 
+    : achievements.filter(a => a.year === selectedYear);
+
   // Optimalizace: méně duplikací na mobilu
   const duplicatedAchievements = isMobile 
-    ? [...achievements, ...achievements]
-    : [...achievements, ...achievements, ...achievements];
+    ? [...filteredAchievements, ...filteredAchievements]
+    : [...filteredAchievements, ...filteredAchievements, ...filteredAchievements];
 
   return (
     <section 
@@ -493,6 +592,43 @@ const AboutWinerySection = () => {
             </div>
           </motion.div>
 
+          {/* NOVÉ: Filtrování podle roku */}
+          <motion.div 
+            className="flex justify-center mb-8 md:mb-12 px-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: prefersReducedMotion ? 0.3 : 0.5, delay: 0.2 }}
+          >
+            <div className="inline-flex flex-wrap justify-center gap-2 md:gap-3 bg-white/80 backdrop-blur-sm rounded-2xl p-2 border border-gray-200 shadow-lg">
+              {years.map((year) => (
+                <button
+                  key={year}
+                  onClick={() => setSelectedYear(year)}
+                  className={`
+                    px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium text-sm md:text-base
+                    transition-all duration-300 touch-manipulation
+                    ${selectedYear === year 
+                      ? 'text-white shadow-lg transform scale-105' 
+                      : 'text-gray-700 hover:bg-gray-100 hover:scale-105 active:scale-95'
+                    }
+                  `}
+                  style={selectedYear === year ? { 
+                    backgroundColor: accentColor,
+                    boxShadow: `0 4px 12px ${accentColor}40`
+                  } : {}}
+                >
+                  {year}
+                  {year !== "Vše" && (
+                    <span className={`ml-2 text-xs ${selectedYear === year ? 'text-white/80' : 'text-gray-500'}`}>
+                      ({achievements.filter(a => a.year === year).length})
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
           {/* Awards Slider Container */}
           <motion.div 
             className="awards-slider-container overflow-hidden relative py-4 md:py-8"
@@ -500,11 +636,12 @@ const AboutWinerySection = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: prefersReducedMotion ? 0.3 : 0.8 }}
+            key={selectedYear} // Reset animace při změně roku
           >
             <div 
               className="awards-slider flex gap-4 md:gap-6"
               style={{
-                animationDuration: isMobile ? '60s' : '40s',
+                animationDuration: isMobile ? '80s' : '60s',
                 animationPlayState: prefersReducedMotion ? 'paused' : 'running'
               }}
             >
@@ -574,28 +711,6 @@ const AboutWinerySection = () => {
                       <p className="text-xs md:text-sm font-medium mb-3 md:mb-4" style={{ color: accentColor }}>
                         {achievement.totalMedals}
                       </p>
-
-                      {/* Stars rating */}
-                      <div className="flex gap-1">
-                        {[...Array(5)].map((_, i) => {
-                          const totalStars = Math.min(5, Math.ceil((achievement.goldMedals + achievement.silverMedals) / 2));
-                          const isGold = i < achievement.goldMedals && achievement.goldMedals > 0;
-                          const isSilver = !isGold && i < totalStars;
-                          
-                          return (
-                            <Star 
-                              key={i} 
-                              className={`w-3.5 h-3.5 md:w-4 md:h-4 ${
-                                isGold 
-                                  ? 'text-amber-400 fill-current' 
-                                  : isSilver 
-                                    ? 'text-gray-300 fill-current'
-                                    : 'text-gray-300'
-                              }`}
-                            />
-                          );
-                        })}
-                      </div>
                     </div>
                   </div>
                 );
@@ -683,7 +798,7 @@ const AboutWinerySection = () => {
         }
 
         .awards-slider {
-          animation: slide 40s linear infinite;
+          animation: slide 60s linear infinite;
           width: fit-content;
           will-change: transform;
         }

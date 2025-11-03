@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import { Briefcase, Wine, Calendar, Gift, Phone, Mail, MapPin, Sparkles, Award, Heart, CheckCircle, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { Briefcase, Wine, Calendar, Gift, Phone, Mail, MapPin, Sparkles, Award, CheckCircle, ExternalLink, ChevronLeft, ChevronRight, Trophy, Handshake } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 
 interface ImageGalleryProps {
@@ -91,8 +91,9 @@ const MiQueenCorporatePage: React.FC = () => {
         "Degustace vzorků zdarma"
       ],
       images: [
-        "/fotky/IMG_6362.jpg"
-      ]
+        "/firemni.jpg"
+      ],
+      url: "/pro-firmy/firemni-vina"
     },
     {
       icon: Calendar,
@@ -106,7 +107,8 @@ const MiQueenCorporatePage: React.FC = () => {
       ],
       images: [
         "/fotky/20240628024059866.jpeg"
-      ]
+      ],
+      url: "/pro-firmy/akce-pro-firmy"
     }
   ];
 
@@ -170,15 +172,19 @@ const MiQueenCorporatePage: React.FC = () => {
     { name: "Tramín červený", type: "white" },
     { name: "Chardonnay", type: "white" },
     { name: "Sauvignon", type: "white" },
+    { name: "Rulandské bílé", type: "white" },
+    { name: "Rulandské šedé", type: "white" },
+    { name: "Pálava", type: "white" },
     { name: "Frankovka", type: "rose" },
-    { name: "Pinot Noir", type: "red" }
+    { name: "Pinot Noir", type: "red" },
+    { name: "Merlot", type: "red" }
   ];
 
   const useCases = [
-    { icon: Gift, title: "Klientské dárky", color: "#ab8754" },
-    { icon: Award, title: "VIP balíčky na akce", color: "#FFD700" },
-    { icon: Heart, title: "Ocenění pro zaměstnance", color: "#E11D48" },
-    { icon: Briefcase, title: "Propagační materiály", color: "#10B981" }
+    { icon: Award, title: "Ocenění pro zaměstnance", color: "#ab8754" },
+    { icon: Handshake, title: "Poděkování obchodním partnerům", color: "#10B981" },
+    { icon: Gift, title: "Vánoční a sezónní dárky", color: "#E11D48" },
+    { icon: Trophy, title: "Oslavy firemních milníků", color: "#FFD700" }
   ];
 
   const fadeInUp: Variants = {
@@ -283,12 +289,13 @@ const MiQueenCorporatePage: React.FC = () => {
                       ))}
                     </div>
 
-                    <button
-                      className="w-full py-3.5 text-white rounded-full font-semibold text-base transition-all hover:shadow-lg hover:scale-105"
+                    <a
+                      href={service.url}
+                      className="block w-full py-3.5 text-white text-center rounded-full font-semibold text-base transition-all hover:shadow-lg hover:scale-105"
                       style={{ backgroundColor: accentColor }}
                     >
                       Zjistit více
-                    </button>
+                    </a>
                   </div>
                 </motion.div>
               );

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Phone, Mail, MapPin, Send, User, MessageSquare, Building2, Clock, Facebook, Instagram } from "lucide-react";
+import { Phone, Mail, MapPin, Send, User, MessageSquare, Building2, Facebook, Instagram } from "lucide-react";
 import Image from "next/image";
 
 const MiQueenContactPage: React.FC = () => {
@@ -38,14 +38,7 @@ const MiQueenContactPage: React.FC = () => {
       lines: ["obchod@miqueen.cz"],
       link: "mailto:obchod@miqueen.cz"
     },
-    {
-      icon: Clock,
-      title: "Otevírací doba",
-      lines: [
-        "Po–Pá: 9:00–17:00",
-        "Víkend: Po dohodě"
-      ]
-    }
+    
   ];
 
   const locations = [

@@ -48,15 +48,15 @@ const WineFilterBar: React.FC<WineFilterBarProps> = ({
   const toggleArrayFilter = (value: string, key: keyof Pick<WineFilters, 'selectedVintages' | 'selectedDryness' | 'selectedQuality' | 'selectedColors'>) => {
     const current = filters[key];
     
-    // RADIO BUTTON LOGIKA - jen jedna možnost z kategorie
+    // CHECKBOX LOGIKA - můžeš vybrat více možností najednou
     if (current.includes(value)) {
-      // Pokud už je vybraná, odznač ji (prázdné pole)
-      updateFilters({ [key]: [] });
+      // Pokud už je vybraná, odeber ji
+      updateFilters({ [key]: current.filter(v => v !== value) });
       console.log(`Odznačeno: ${value} z ${key}`);
     } else {
-      // Pokud není vybraná, vyber JEN tuto (nahraď celé pole)
-      updateFilters({ [key]: [value] });
-      console.log(`Vybráno: ${value} v ${key}`);
+      // Pokud není vybraná, přidej ji k existujícím
+      updateFilters({ [key]: [...current, value] });
+      console.log(`Přidáno: ${value} do ${key}`);
     }
   };
 
@@ -91,8 +91,7 @@ const WineFilterBar: React.FC<WineFilterBarProps> = ({
   const getColorLabel = (color: string) => {
     const labels: Record<string, string> = {
       'white': 'Bílé víno',
-      'rose': 'Růžové víno',
-      'claret': 'Klaret',
+      'rose': 'Růžové víno',  // ZMĚNA: Klaret je růžové víno
       'red': 'Červené víno'
     };
     return labels[color] || color;
@@ -191,13 +190,13 @@ const WineFilterBar: React.FC<WineFilterBarProps> = ({
             </div>
           </div>
 
-          {/* Barva vína - NOVÁ SEKCE */}
+          {/* Barva vína - OPRAVENO: rose místo claret */}
           <div>
             <label className="block text-sm font-bold text-gray-900 mb-2">
               Barva vína
             </label>
             <div className="flex flex-wrap gap-1.5">
-              {['white', 'rose', 'claret', 'red'].map(color => (
+              {['white', 'rose', 'red'].map(color => (
                 <button
                   key={color}
                   onClick={() => toggleArrayFilter(color, 'selectedColors')}
@@ -211,6 +210,7 @@ const WineFilterBar: React.FC<WineFilterBarProps> = ({
                 </button>
               ))}
             </div>
+            
           </div>
 
           {/* Ročník */}
@@ -344,8 +344,6 @@ const WineFilterBar: React.FC<WineFilterBarProps> = ({
           cursor: grabbing;
           transform: scale(1.1);
         }
-
-        /* Starý fallback CSS - odstraněn */
       `}</style>
     </div>
   );

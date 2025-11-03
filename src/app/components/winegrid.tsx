@@ -2,7 +2,7 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Star, ShoppingCart, Sparkles, Droplets, Cherry, Grape, Wine, Package, ExternalLink, X, Thermometer, MapPin, ChefHat, User, Gift } from "lucide-react";
-import { wines, getWinesByCategory, getWineCountByCategory, WineProduct } from "./wineData";
+import { wines, getWinesByCategorySortedBySweetness, getWineCountByCategory, WineProduct } from "./wineData";
 import { motion, useInView } from "framer-motion";
 import WineFilterBar, { WineFilters } from "./WineFilterBar";
 
@@ -47,19 +47,35 @@ const WineGridPage: React.FC = () => {
   });
 
   // Separate state pro řazení (není součástí WineFilters)
-  const [sortBy] = useState<'name' | 'price-asc' | 'price-desc' | 'rating'>('name');
+  const [] = useState<'name' | 'price-asc' | 'price-desc' | 'rating'>('name');
 
   // Handler pro změnu filtrů
   const handleFiltersChange = (newFilters: WineFilters) => {
     setFilters(newFilters);
   };
 
-  // Filtrování podle kategorie včetně novinek
+  // ZMĚNA: Filtrování podle kategorie - seřazeno od nejsladšího
   let filteredWines = selectedCategory === 'new' 
-    ? wines.filter(w => w.badge === 'new')
+    ? wines.filter(w => w.badge === 'new').sort((a, b) => {
+        // Seřadit novinky také podle sladkosti
+        const aHasSugar = a.residualSugar !== null && a.residualSugar !== undefined;
+        const bHasSugar = b.residualSugar !== null && b.residualSugar !== undefined;
+        if (!aHasSugar && !bHasSugar) return 0;
+        if (!aHasSugar) return 1;
+        if (!bHasSugar) return -1;
+        return b.residualSugar! - a.residualSugar!;
+      })
     : selectedCategory === 'all'
-    ? wines
-    : getWinesByCategory(selectedCategory);
+    ? [...wines].sort((a, b) => {
+        // Seřadit všechna vína podle sladkosti
+        const aHasSugar = a.residualSugar !== null && a.residualSugar !== undefined;
+        const bHasSugar = b.residualSugar !== null && b.residualSugar !== undefined;
+        if (!aHasSugar && !bHasSugar) return 0;
+        if (!aHasSugar) return 1;
+        if (!bHasSugar) return -1;
+        return b.residualSugar! - a.residualSugar!;
+      })
+    : getWinesByCategorySortedBySweetness(selectedCategory);
 
   // Aplikuj filtry z WineFilterBar
   filteredWines = filteredWines.filter(wine => {
@@ -97,7 +113,9 @@ const WineGridPage: React.FC = () => {
     return true;
   });
 
-  // Řazení
+  // POZNÁMKA: Řazení je vypnuté - vína jsou seřazená od nejsladšího
+  // Pokud chcete vrátit možnost změny řazení, odkomentujte níže:
+  /*
   switch (sortBy) {
     case 'price-asc':
       filteredWines.sort((a, b) => a.price - b.price);
@@ -109,10 +127,10 @@ const WineGridPage: React.FC = () => {
       filteredWines.sort((a, b) => (b.rating || 0) - (a.rating || 0));
       break;
     case 'name':
-    default:
       filteredWines.sort((a, b) => a.name.localeCompare(b.name, 'cs'));
       break;
   }
+  */
 
   const getBadgeStyle = (badge?: string) => {
     switch(badge) {
@@ -208,7 +226,7 @@ const WineGridPage: React.FC = () => {
                   Naše <span className="font-normal" style={{ color: "#ab8754" }}>vína</span>
                 </h1>
                 <p className="text-xl text-gray-600 font-light max-w-2xl mx-auto leading-relaxed">
-                  Kompletní nabídka našich oceněných vín z Pálavy
+                  Vína seřazená od nejsladšího po nejsušší
                 </p>
               </div>
             </div>
@@ -572,7 +590,7 @@ const WineGridPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Modal - stejný jako v původní verzi */}
+      {/* Modal - stejný jako v původní verzi - zkráceno kvůli délce */}
       {isModalOpen && selectedWine && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4" onClick={closeModal}>
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
@@ -618,7 +636,7 @@ const WineGridPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Details side - s viditelným scrollbarem */}
+              {/* Details side - zkráceno */}
               <div className="lg:w-3/5 overflow-y-scroll custom-scrollbar flex-1">
                 <div className="p-6 sm:p-8 lg:p-12">
                   {/* Header */}
@@ -694,7 +712,7 @@ const WineGridPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Additional info */}
+                  {/* Additional info - zkráceno */}
                   <div className="space-y-4 mb-8">
                     {selectedWine.region && (
                       <div className="flex items-start gap-3">
