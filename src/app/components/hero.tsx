@@ -7,12 +7,6 @@ interface HeroSectionProps {
   useAnimation?: boolean;
 }
 
-const videos = [
-  "/vine.webm",
-  "/vine2.webm",
-  "/vine3.webm",
-];
-
 const slides = [
   {
     title: "Mikulovská královna",
@@ -37,10 +31,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   useAnimation = false,
 }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [currentVideo, setCurrentVideo] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const [loadedVideos, setLoadedVideos] = useState<Set<number>>(new Set([0]));
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
   const [isInView, setIsInView] = useState(false);
@@ -71,23 +63,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     return () => observer.disconnect();
   }, []);
 
-  // Inteligentní preload následujícího videa
-  useEffect(() => {
-    if (!isInView || useAnimation) return;
-
-    const nextVideo = (currentVideo + 1) % videos.length;
-    
-    // Načti následující video jen pokud ještě není načtené
-    if (!loadedVideos.has(nextVideo)) {
-      const timer = setTimeout(() => {
-        setLoadedVideos(prev => new Set(prev).add(nextVideo));
-      }, 1000); // Počká 1s než začne načítat další video
-      
-      return () => clearTimeout(timer);
-    }
-  }, [currentVideo, isInView, useAnimation, loadedVideos]);
-
-  // Časovač pouze pro slide text
+  // Časovač pro slide text
   useEffect(() => {
     if (!isInView) return;
 
@@ -103,31 +79,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     };
   }, [isMobile, isInView]);
 
-  // Handler pro přechod na další video po dohrání
-  const handleVideoEnded = useCallback(() => {
-    setCurrentVideo((prev) => (prev + 1) % videos.length);
-  }, []);
-
-  // Optimalizované přehrávání videí
+  // Přehrávání videa
   useEffect(() => {
-    if (useAnimation || !isInView) return;
+    if (useAnimation || !isInView || !videoRef.current) return;
 
-    const currentRef = videoRefs.current[currentVideo];
-    
-    if (currentRef && loadedVideos.has(currentVideo)) {
-      // Použij requestAnimationFrame pro plynulejší přehrávání
-      requestAnimationFrame(() => {
-        currentRef.play().catch(() => {});
-      });
-    }
-
-    // Pozastaví ostatní videa
-    videoRefs.current.forEach((ref, idx) => {
-      if (ref && idx !== currentVideo && ref.readyState >= 2) {
-        ref.pause();
-      }
+    requestAnimationFrame(() => {
+      videoRef.current?.play().catch(() => {});
     });
-  }, [currentVideo, useAnimation, isInView, loadedVideos]);
+  }, [useAnimation, isInView]);
 
   // Zjednodušené animace pro mobily
   const fadeInUp = useMemo(() => 
@@ -146,35 +105,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     setCurrentSlide(index);
   }, []);
 
-  // Komponenta pro video s lazy loadingem a fade in/out efektem
-  const VideoElement = useCallback(({ src, idx }: { src: string; idx: number }) => {
-    const shouldLoad = loadedVideos.has(idx);
-    const isActive = idx === currentVideo;
-    
-    return (
-      <video
-        key={src}
-        ref={(el) => { videoRefs.current[idx] = el; }}
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms] ease-in-out ${
-          isActive ? "opacity-90" : "opacity-0"
-        }`}
-        style={{
-          objectPosition: '50% 35%',
-          transform: 'scale(1.05)',
-          willChange: isActive ? 'opacity' : 'auto'
-        }}
-        autoPlay={idx === 0 && isInView}
-        muted
-        playsInline
-        preload={shouldLoad ? "auto" : "none"}
-        poster={isMobile ? `/video/wine${idx + 1}-poster.jpg` : undefined}
-        onEnded={isActive ? handleVideoEnded : undefined}
-      >
-        {shouldLoad && <source src={src} type="video/webm" />}
-      </video>
-    );
-  }, [loadedVideos, currentVideo, isInView, isMobile, handleVideoEnded]);
-
   return (
     <section 
       ref={sectionRef}
@@ -191,10 +121,25 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
           </div>
         ) : (
-          <div className="relative w-full h-full">
-            {videos.map((src, idx) => (
-              <VideoElement key={src} src={src} idx={idx} />
-            ))}
+          <div className="relative w-full h-full" style={{ transform: 'translateZ(0)' }}>
+            <video
+              ref={videoRef}
+              className="absolute inset-0 w-full h-full object-cover opacity-90"
+              style={{
+                objectPosition: '50% 35%',
+                transform: 'scale(1.05) translateZ(0)',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden'
+              }}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              poster={isMobile ? '/video-poster.jpg' : undefined}
+            >
+              <source src="/video.webm" type="video/webm" />
+            </video>
             
             <div className="absolute inset-0 pointer-events-none">
               <div className="absolute top-0 left-0 right-0 h-32 sm:h-40 lg:h-48 bg-gradient-to-b from-black/80 via-black/40 to-transparent"></div>
