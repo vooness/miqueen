@@ -213,9 +213,27 @@ const AdoptujVinohradPage = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.3, duration: 0.6 }}
             >
-              <p className="text-lg text-gray-600">
+              <p className="text-lg text-gray-600 mb-6">
                 Adoptovat vinohrad můžeš <span className="font-semibold" style={{ color: accentColor }}>sám pro sebe</span> anebo jako <span className="font-semibold" style={{ color: accentColor }}>dárek</span>
               </p>
+              
+              {/* Upozornění o návštěvě vinohradu */}
+              <motion.div 
+                className="inline-flex items-start gap-3 px-6 py-4 bg-white rounded-2xl shadow-lg border-2 max-w-2xl mx-auto"
+                style={{ borderColor: accentColor }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
+                <MapPin className="w-6 h-6 flex-shrink-0 mt-1" style={{ color: accentColor }} />
+                <div className="text-left">
+                  <h3 className="font-bold text-gray-900 mb-1">Vinohrad můžeš navštívit kdykoliv během roku</h3>
+                  <p className="text-sm text-gray-600">
+                    Přijeď se podívat na svůj mikrovinohrad, poznej práci vinaře a užij si atmosféru Pálavských vinic
+                  </p>
+                </div>
+              </motion.div>
             </motion.div>
           </motion.div>
         </div>
@@ -752,8 +770,8 @@ const AdoptujVinohradPage = () => {
               </motion.a>
               
               <motion.a
-                href="https://shop.miqueen.cz/kontakt/"
-                target="_blank"
+                href="/kontakty/"
+                
                 rel="noopener noreferrer"
                 className="px-10 py-5 bg-white text-gray-700 rounded-full font-bold text-lg border-2 border-gray-300 transition-all hover:border-gray-400 hover:shadow-lg"
                 whileHover={{ scale: 1.05 }}

@@ -1,6 +1,7 @@
 // wineData.ts - FINÁLNÍ KOMPLETNÍ DATABÁZE VŠECH 40 VÍN MiQueen
 // Aktualizováno podle shop.miqueen.cz - říjen/listopad 2024
 // 40 produktů se správnými odkazy a hodnotami zbytkového cukru
+// ŘAZENÍ: OD NEJSUŠŠÍCH (nejméně sladkých) PO NEJSLADŠÍ
 
 export interface WineProduct {
   id: number;
@@ -25,7 +26,7 @@ export interface WineProduct {
   winemaker?: string;
   notes?: string;
   sku?: string;
-  residualSugar?: number | null; // g/l - pro řazení od nejsladšího
+  residualSugar?: number | null; // g/l - pro řazení od nejsušších po nejsladší
 }
 
 export const wines: WineProduct[] = [
@@ -965,7 +966,7 @@ export const getWinesByCategory = (category: string): WineProduct[] => {
   return wines.filter(wine => wine.category === category);
 };
 
-// Vrací vína podle kategorie seřazená od nejsladšího
+// Vrací vína podle kategorie seřazená od nejsušších (nejméně sladkých) po nejsladší
 export const getWinesByCategorySortedBySweetness = (category: string): WineProduct[] => {
   const categoryWines = getWinesByCategory(category);
   
@@ -978,8 +979,8 @@ export const getWinesByCategorySortedBySweetness = (category: string): WineProdu
     if (!aHasSugar) return 1;
     if (!bHasSugar) return -1;
     
-    // Jinak řadíme od nejvyššího (nejsladšího) po nejnižší
-    return b.residualSugar! - a.residualSugar!;
+    // Řadíme od nejnižšího (nejsušší) po nejvyšší (nejsladší) - VZESTUPNĚ
+    return a.residualSugar! - b.residualSugar!;
   });
 };
 
@@ -992,7 +993,7 @@ export const getWineById = (id: number): WineProduct | undefined => {
   return wines.find(wine => wine.id === id);
 };
 
-// Řazení vín podle zbytkového cukru (od nejsladšího)
+// Řazení vín podle zbytkového cukru (od nejsušších po nejsladší)
 export const getWinesSortedBySweetness = (): WineProduct[] => {
   return [...wines].sort((a, b) => {
     // Vína bez residualSugar (null nebo undefined) dáme na konec
@@ -1003,8 +1004,8 @@ export const getWinesSortedBySweetness = (): WineProduct[] => {
     if (!aHasSugar) return 1;
     if (!bHasSugar) return -1;
     
-    // Jinak řadíme od nejvyššího (nejsladšího) po nejnižší
-    return b.residualSugar! - a.residualSugar!;
+    // Řadíme od nejnižšího (nejsušší) po nejvyšší (nejsladší) - VZESTUPNĚ
+    return a.residualSugar! - b.residualSugar!;
   });
 };
 

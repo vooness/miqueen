@@ -85,7 +85,7 @@ const CorporateWinesPage: React.FC = () => {
       description: "Vlastní personalizovanou etiketu pro vás rádi zrealizujeme od 100 ks lahví 0,75 l jednoho druhu. A to buď přidáním vašeho loga do stávající etikety anebo realizací etikety na míru. Rádi vám připravíme personalizovanou nabídku přímo na míru.",
       features: [
         "Kompletní redesign etikety",
-        "Nebo logo na stávající etiketě",
+        "Logo na stávající etiketě",
         "Profesionální grafický návrh",
         "Konzultace designu zdarma"
       ],

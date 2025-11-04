@@ -54,26 +54,26 @@ const WineGridPage: React.FC = () => {
     setFilters(newFilters);
   };
 
-  // ZMĚNA: Filtrování podle kategorie - seřazeno od nejsladšího
+  // ZMĚNA: Filtrování podle kategorie - seřazeno od nejsušších po nejsladší (VZESTUPNĚ)
   let filteredWines = selectedCategory === 'new' 
     ? wines.filter(w => w.badge === 'new').sort((a, b) => {
-        // Seřadit novinky také podle sladkosti
+        // Seřadit novinky také podle sladkosti - OD NEJSUŠŠÍCH
         const aHasSugar = a.residualSugar !== null && a.residualSugar !== undefined;
         const bHasSugar = b.residualSugar !== null && b.residualSugar !== undefined;
         if (!aHasSugar && !bHasSugar) return 0;
         if (!aHasSugar) return 1;
         if (!bHasSugar) return -1;
-        return b.residualSugar! - a.residualSugar!;
+        return a.residualSugar! - b.residualSugar!; // VZESTUPNĚ - od nejnižší po nejvyšší
       })
     : selectedCategory === 'all'
     ? [...wines].sort((a, b) => {
-        // Seřadit všechna vína podle sladkosti
+        // Seřadit všechna vína podle sladkosti - OD NEJSUŠŠÍCH
         const aHasSugar = a.residualSugar !== null && a.residualSugar !== undefined;
         const bHasSugar = b.residualSugar !== null && b.residualSugar !== undefined;
         if (!aHasSugar && !bHasSugar) return 0;
         if (!aHasSugar) return 1;
         if (!bHasSugar) return -1;
-        return b.residualSugar! - a.residualSugar!;
+        return a.residualSugar! - b.residualSugar!; // VZESTUPNĚ - od nejnižší po nejvyšší
       })
     : getWinesByCategorySortedBySweetness(selectedCategory);
 
@@ -113,7 +113,7 @@ const WineGridPage: React.FC = () => {
     return true;
   });
 
-  // POZNÁMKA: Řazení je vypnuté - vína jsou seřazená od nejsladšího
+  // POZNÁMKA: Řazení je vypnuté - vína jsou seřazená od nejsušších po nejsladší
   // Pokud chcete vrátit možnost změny řazení, odkomentujte níže:
   /*
   switch (sortBy) {
@@ -226,7 +226,7 @@ const WineGridPage: React.FC = () => {
                   Naše <span className="font-normal" style={{ color: "#ab8754" }}>vína</span>
                 </h1>
                 <p className="text-xl text-gray-600 font-light max-w-2xl mx-auto leading-relaxed">
-                  Vína seřazená od nejsladšího po nejsušší
+                  Vína seřazená od nejsušších po nejsladší
                 </p>
               </div>
             </div>
@@ -566,8 +566,8 @@ const WineGridPage: React.FC = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
-                  href="https://shop.miqueen.cz/kontakt/"
-                  target="_blank"
+                  href="/kontakty/"
+                  
                   rel="noopener noreferrer"
                   className="px-8 py-4 text-white rounded-full font-medium text-lg transition-all hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2"
                   style={{ backgroundColor: "#ab8754" }}

@@ -153,7 +153,7 @@ const MiQueenCorporatePage: React.FC = () => {
       title: "Historická sklepení",
       subtitle: "Rovensklípek",
       images: [
-        "/fotky/koutek1.png"
+        "/fotky/chrlice.jpg"
       ]
     },
     {

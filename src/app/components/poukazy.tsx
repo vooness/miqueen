@@ -55,7 +55,7 @@ const MiQueenVouchersPage: React.FC = () => {
     {
       icon: Mail,
       title: "Elektronický poukaz",
-      description: "PDF s unikátním kódem vám dorazí na e-mail ihned po platbě. Můžete vytisknout nebo přeposlat."
+      description: "PDF s unikátním kódem vám dorazí na e-mail  po platbě. Můžete vytisknout nebo přeposlat."
     },
     {
       icon: Calendar,
@@ -395,7 +395,7 @@ const MiQueenVouchersPage: React.FC = () => {
                   </motion.a>
 
                   <p className="text-xs text-gray-500 text-center mt-3">
-                    Elektronický poukaz dostanete ihned na e-mail po platbě
+                    Elektronický poukaz dostanete na e-mail po platbě
                   </p>
                 </motion.div>
               </div>
@@ -579,7 +579,7 @@ const MiQueenVouchersPage: React.FC = () => {
                   Osobní uplatnění
                 </h3>
                 <p className="text-gray-600 mb-1">
-                  Rovensklípek Brno-Chrlice
+                 Sklepní vinárna Brno-Chrlice
                 </p>
                 <p className="text-gray-600 mb-1">
                   Chrlické náměstí 1

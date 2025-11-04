@@ -237,8 +237,8 @@ const AdoptujVinohrad: React.FC = () => {
               </motion.a>
               
               <motion.a 
-                href="https://shop.miqueen.cz/kontakt/"
-                target="_blank"
+                href="/kontakty/"
+                
                 rel="noopener noreferrer"
                 className="px-6 md:px-8 lg:px-10 py-3 md:py-3.5 lg:py-4 text-gray-700 font-medium text-sm md:text-base border-2 rounded-full transition-all duration-300 text-center touch-manipulation"
                 style={{ borderColor: "#ab8754" }}

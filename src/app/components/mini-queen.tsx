@@ -23,6 +23,17 @@ const MiQueenMiniPage = () => {
   }, []);
 
   // ============= NAČÍTÁNÍ DAT Z DATABÁZE =============
+  // Pomocná funkce pro řazení podle sladkosti (od nejsušších po nejsladší)
+  const getDrynessOrder = (dryness?: string): number => {
+    const order: { [key: string]: number } = {
+      'Suché': 1,
+      'Polosuché': 2,
+      'Polosladké': 3,
+      'Sladké': 4
+    };
+    return dryness ? (order[dryness] || 999) : 999;
+  };
+
   // Filtrování pouze mini vín a setů z kompletní databáze
   const baseMiniWines: WineProduct[] = wines.filter(wine => {
     // Načíst mini vína (ID 1-10) a sety (ID 38-39)
@@ -37,6 +48,12 @@ const MiQueenMiniPage = () => {
     // Řazení: nejdřív jednotlivá mini vína, pak sety
     if ((a.category === 'set') && (b.category !== 'set')) return 1;
     if ((a.category !== 'set') && (b.category === 'set')) return -1;
+    
+    // Sekundární řazení: od nejsušších po nejsladší
+    const drynessOrder = getDrynessOrder(a.dryness) - getDrynessOrder(b.dryness);
+    if (drynessOrder !== 0) return drynessOrder;
+    
+    // Terciární řazení: podle ID
     return a.id - b.id;
   });
 

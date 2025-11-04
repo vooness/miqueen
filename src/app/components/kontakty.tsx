@@ -58,25 +58,28 @@ const MiQueenContactPage: React.FC = () => {
 
   const teamMembers = [
     {
-      name: "Miroslav Marada",
-      position: "Majitel & hlavní vinař",
+      name: "Michal Rovenský",
+      position: "Jednatel",
       image: "/profil1.png",
-      description: "Zakladatel vinařství s více než 20letou zkušeností v oboru",
-      email: "miroslav.marada@miqueen.cz"
+      description: "Jednatel vinařství zodpovědný za strategický rozvoj a vedení společnosti",
+      email: "michal@miqueen.cz",
+      phone: "+420731610344"
     },
     {
-      name: "Petra Maradová",
-      position: "Obchodní ředitelka",
-      image: "/profil2.png",
-      description: "Specialistka na degustace a firemní události",
-      email: "petra.maradova@miqueen.cz"
-    },
-    {
-      name: "Jan Novák",
-      position: "Vedoucí výroby",
+      name: "Mgr. Lucie Rovenská",
+      position: "Manager vinohradů",
       image: "/profil3.png",
-      description: "Expert na ekologické vinohradnictví a udržitelnou produkci",
-      email: "jan.novak@miqueen.cz"
+      description: "Specialistka na pěstování vinné révy a péči o vinohrady",
+      email: "lucie@miqueen.cz",
+      phone: "+420731610345"
+    },
+    {
+      name: "Jiří Konečný",
+      position: "Sales manager",
+      image: "/profil2.png",
+      description: "Obchodní manažer pro prodej vín a firemní spolupráce",
+      email: "jirka@miqueen.cz",
+      phone: "+420603778898"
     }
   ];
 
@@ -295,7 +298,7 @@ const MiQueenContactPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Team Section - UPRAVENÁ SEKCE */}
+          {/* Team Section */}
           <div className="mb-20">
             <h2 className="text-3xl lg:text-4xl font-light text-gray-800 text-center mb-4">
               Náš <span style={{ color: accentColor }}>tým</span>
@@ -351,7 +354,7 @@ const MiQueenContactPage: React.FC = () => {
                       <Mail className="w-5 h-5" />
                     </a>
                     <a 
-                      href="tel:+420731610345"
+                      href={`tel:${member.phone}`}
                       className="text-gray-400 hover:text-[#ab8754] transition-colors"
                       aria-label="Telefon"
                     >

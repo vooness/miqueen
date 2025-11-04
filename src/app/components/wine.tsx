@@ -74,20 +74,20 @@ const WineCollectionSection: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // ZMĚNA: Použití nové funkce, která vrací vína seřazená od nejsladšího
+  // ZMĚNA: Použití nové funkce pro řazení podle sladkosti - OD NEJSUŠŠÍCH PO NEJSLADŠÍ
   const filteredWines = selectedCategory === 'new' 
     ? wines.filter(w => w.badge === 'new').sort((a, b) => {
-        // Seřadit novinky také podle sladkosti
+        // Seřadit novinky také podle sladkosti - OD NEJSUŠŠÍCH (VZESTUPNĚ)
         const aHasSugar = a.residualSugar !== null && a.residualSugar !== undefined;
         const bHasSugar = b.residualSugar !== null && b.residualSugar !== undefined;
         if (!aHasSugar && !bHasSugar) return 0;
         if (!aHasSugar) return 1;
         if (!bHasSugar) return -1;
-        return b.residualSugar! - a.residualSugar!;
+        return a.residualSugar! - b.residualSugar!; // ZMĚNĚNO: vzestupně (od nejmenšího po největší)
       })
     : getWinesByCategorySortedBySweetness(selectedCategory);
   
-  // Aplikace filtrů - vína jsou již seřazená od nejsladšího, takže nepřeřazujeme
+  // Aplikace filtrů - vína jsou již seřazená od nejsušších po nejsladší, takže nepřeřazujeme
   const applyFilters = (wines: WineProduct[]) => {
     let result = [...wines];
 
@@ -124,7 +124,7 @@ const WineCollectionSection: React.FC = () => {
       result = result.filter(w => w.category && filters.selectedColors.includes(w.category));
     }
 
-    // POZNÁMKA: Řazení je vypnuté - vína jsou seřazená od nejsladšího
+    // POZNÁMKA: Řazení je vypnuté - vína jsou seřazená od nejsušších po nejsladší
     // Pokud chcete vrátit možnost změny řazení, odkomentujte níže:
     /*
     switch (sortBy) {
@@ -250,7 +250,7 @@ const WineCollectionSection: React.FC = () => {
                 Naše <span className="font-normal" style={{ color: "#ab8754" }}>kolekce</span>
               </h2>
               <p className="text-xl text-gray-600 font-light max-w-2xl mx-auto leading-relaxed">
-                Vína seřazená od nejsladšího po nejsušší
+                Vína seřazená od nejsušších po nejsladší
               </p>
             </div>
           </div>

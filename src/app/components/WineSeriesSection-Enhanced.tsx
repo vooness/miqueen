@@ -19,7 +19,7 @@ const wineSeries: WineSeries[] = [
     name: 'Tichá terroir vína',
     subtitle: 'řada',
     description: 'Vína terroir jsou tichá vína, která nesou jedinečný otisk svého původu – půdy, klimatu a práce vinaře. Každý doušek odráží charakter vinične trati Za Cihelnou, její minerálnost, svěžest i vůni místa. Jsou to vína s duší, která vyprávějí příběh krajiny, z níž vzešla. Všechna vína jsou míchána 3 až 9 měsíců na jemných kalech, což jim dodává plnost, hebkost a komplexní chuťový projev.',
-    image: '/vino1.png',
+    image: '/vino5.png',
   },
   {
     id: 2,
@@ -33,14 +33,14 @@ const wineSeries: WineSeries[] = [
     name: 'MiQueen mini',
     subtitle: 'řada',
     description: 'MiQueen Mini představuje moderní a praktický způsob, jak si vychutnat kvalitní víno v menším, osobním balení. Menší objem 187 ml u tichých vín a 200 ml u perlivých vín zaručuje, že si otevřete vždy čerstvou láhev – ideální pro chvíle, kdy si chcete dopřát sklenku bez nutnosti otevírat celé víno. Mini lahve jsou perfektní na cesty, pikniky, hotely, eventy i stylové dárky, a přitom uchovávají stejnou kvalitu a terroirový charakter jako standardní balení. MiQueen Mini je o pohodlí, eleganci a svobodě vychutnat si víno kdykoli a kdekoli, a to s maximální čerstvostí.',
-    image: '/vino2.png',
+    image: '/vino3.png',
   },
   {
     id: 4,
     name: 'MiQueen MIMOSA',
     subtitle: 'řada',
     description: 'Mimosa MiQueen je svěží a elegantní nápoj, který spojuje suchý Sauvignon z trati Za Cihelnou s 100 % pomerančovou šťávou ze Španělska. Základem je Sauvignon s výraznou mineralitou, citrusovými tóny a živou kyselinkou, pocházející z vápenitého podloží mikulovského terroiru. Díky spojení s prémiovou pomerančovou šťávou vzniká harmonický a šťavnatý drink s vyvážeností svěží kyselosti a sladce ovocného aroma – ideální pro brunch, letní osvěžení nebo lehký aperitiv.',
-    image: '/vino3.png',
+    image: '/vino2.png',
   },
 ];
 

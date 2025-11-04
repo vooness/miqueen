@@ -31,7 +31,7 @@ const Footer = () => {
               
               <p className="text-stone-400 text-sm leading-relaxed mb-6">
                 Prémiové moravské vinařství s rodinnou tradicí. 
-                Vytváříme vína s charakterem a příběhem již od roku 2015.
+                Vytváříme vína s charakterem a příběhem.
               </p>
 
               {/* CTA matching your site button */}
