@@ -727,7 +727,7 @@ const AboutWinerySection = () => {
             transition={{ duration: prefersReducedMotion ? 0.3 : 0.6 }}
           >
             <a 
-              href="/vsechna-vina/"
+              href="/vsechna-nase-vina/"
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-2 md:gap-3 px-8 md:px-10 py-4 md:py-5 text-white text-base md:text-lg font-medium rounded-full transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 touch-manipulation"
