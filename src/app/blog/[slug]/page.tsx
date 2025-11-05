@@ -16,8 +16,9 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const post = getPostBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
   
   if (!post) {
     return {
@@ -36,15 +37,16 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-const BlogPostPage = async ({ params }: { params: { slug: string } }) => {
-  const post = getPostBySlug(params.slug, true);
+const BlogPostPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
+  const { slug } = await params;
+  const post = getPostBySlug(slug, true);
 
   if (!post || !post.content) {
     notFound();
   }
 
   const contentHtml = await markdownToHtml(post.content);
-  const relatedPosts = getRelatedPosts(post.slug, post.tags || [], 3);
+  const relatedPosts = getRelatedPosts(slug, post.tags || [], 3);
   const accentColor = "#ab8754";
   const paperColor = "#fefbea";
 
