@@ -113,25 +113,6 @@ const WineGridPage: React.FC = () => {
     return true;
   });
 
-  // POZNÁMKA: Řazení je vypnuté - vína jsou seřazená od nejsušších po nejsladší
-  // Pokud chcete vrátit možnost změny řazení, odkomentujte níže:
-  /*
-  switch (sortBy) {
-    case 'price-asc':
-      filteredWines.sort((a, b) => a.price - b.price);
-      break;
-    case 'price-desc':
-      filteredWines.sort((a, b) => b.price - a.price);
-      break;
-    case 'rating':
-      filteredWines.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-      break;
-    case 'name':
-      filteredWines.sort((a, b) => a.name.localeCompare(b.name, 'cs'));
-      break;
-  }
-  */
-
   const getBadgeStyle = (badge?: string) => {
     switch(badge) {
       case 'bestseller': return { bg: '#ab8754', text: 'Bestseller' };
@@ -228,6 +209,33 @@ const WineGridPage: React.FC = () => {
                 <p className="text-xl text-gray-600 font-light max-w-2xl mx-auto leading-relaxed">
                   Vína seřazená od nejsušších po nejsladší
                 </p>
+                
+                {/* Informace kde koupit vína */}
+                <div className="mt-8 max-w-3xl mx-auto">
+                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 sm:p-6 border-2 shadow-lg" style={{ borderColor: "#ab875440" }}>
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(171, 135, 84, 0.1)" }}>
+                        <MapPin className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: "#ab8754" }} />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">
+                          Kde koupíte naše vína?
+                        </h3>
+                        <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-3">
+                          Naše vína můžete zakoupit online na e-shopu nebo v síti prodejen po celé České republice.
+                        </p>
+                        <a 
+                          href="/mapa-vin"
+                          className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold hover:underline transition-colors"
+                          style={{ color: "#ab8754" }}
+                        >
+                          <MapPin className="w-4 h-4" />
+                          Zobrazit mapu prodejen
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </AnimatedSection>
@@ -590,7 +598,7 @@ const WineGridPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Modal - stejný jako v původní verzi - zkráceno kvůli délce */}
+      {/* Modal - zkráceno kvůli délce, použít původní plnou verzi */}
       {isModalOpen && selectedWine && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4" onClick={closeModal}>
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
@@ -636,7 +644,7 @@ const WineGridPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Details side - zkráceno */}
+              {/* Details side */}
               <div className="lg:w-3/5 overflow-y-scroll custom-scrollbar flex-1">
                 <div className="p-6 sm:p-8 lg:p-12">
                   {/* Header */}
@@ -712,7 +720,7 @@ const WineGridPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Additional info - zkráceno */}
+                  {/* Additional info */}
                   <div className="space-y-4 mb-8">
                     {selectedWine.region && (
                       <div className="flex items-start gap-3">

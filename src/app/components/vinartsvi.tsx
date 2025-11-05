@@ -1,865 +1,855 @@
 "use client"
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Star, ShoppingCart, Sparkles, Droplets, Cherry, Grape, Wine, Package, ExternalLink, X, Thermometer, MapPin, ChefHat, User, Gift } from "lucide-react";
-import { wines, getWinesByCategorySortedBySweetness, getWineCountByCategory, WineProduct } from "./wineData";
-import { motion, useInView } from "framer-motion";
-import WineFilterBar, { WineFilters } from "./WineFilterBar";
+import { Award, Leaf, MapPin, Users, Wine, Star, Crown, Trophy, Sparkles, ChevronRight, Grape } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 
-// Debug: Zkontrolujte počet produktů při načtení komponenty
-console.log('Grid - Celkový počet vín v databázi:', wines.length);
-console.log('Grid - Bílá vína:', wines.filter(w => w.category === 'white').length);
-console.log('Grid - Červená vína:', wines.filter(w => w.category === 'red').length);
-console.log('Grid - Růžová vína:', wines.filter(w => w.category === 'rose').length);
-console.log('Grid - Perlivá vína:', wines.filter(w => w.category === 'sparkling').length);
-console.log('Grid - Speciální:', wines.filter(w => w.category === 'special').length);
-console.log('Grid - Sety:', wines.filter(w => w.category === 'set').length);
-console.log('Grid - Novinky:', wines.filter(w => w.badge === 'new').length);
-console.log('Grid - Celkový součet kategorií:', 
-  wines.filter(w => w.category === 'white').length +
-  wines.filter(w => w.category === 'red').length +
-  wines.filter(w => w.category === 'rose').length +
-  wines.filter(w => w.category === 'sparkling').length +
-  wines.filter(w => w.category === 'special').length +
-  wines.filter(w => w.category === 'set').length
-);
+const AboutWinerySection = () => {
+  const storyImageUrl = "/frontpage.webp";
+  
+  const accentColor = "#ab8754";
+  const paperColor = "#fefbea";
 
-const WineGridPage: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedWine, setSelectedWine] = useState<WineProduct | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Detekce mobilního zařízení pro optimalizaci
+  const [isMobile, setIsMobile] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
-  // Vypočítej min a max cenu z dat
-  const minPrice = Math.min(...wines.map(w => w.price));
-  const maxPrice = Math.max(...wines.map(w => w.price));
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
-  // Získej všechny unikátní ročníky jako čísla
-  const availableVintages = Array.from(new Set(wines.map(w => w.vintage).filter(Boolean))).sort((a, b) => b - a);
+  const galleryPhotos = [
+    { src: "/fotky/fotka1.jpg", alt: "Vinařství MiQueen 1" },
+    { src: "/fotky/fotka2.jpg", alt: "Vinařství MiQueen 2" },
+    { src: "/fotky/fotka3.jpg", alt: "Vinařství MiQueen 3" },
+    { src: "/fotky/fotka4.jpg", alt: "Vinařství MiQueen 4" },
+    { src: "/fotky/fotka5.jpg", alt: "Vinařství MiQueen 5" },
+    { src: "/fotky/fotka6.jpg", alt: "Vinařství MiQueen 6" }
+  ];
 
-  // State pro WineFilterBar - podle správného interface
-  const [filters, setFilters] = useState<WineFilters>({
-    searchQuery: '',
-    priceRange: [minPrice, maxPrice],
-    selectedVintages: [],
-    selectedDryness: [],
-    selectedQuality: [],
-    selectedColors: []  // Nový filtr pro barvu vína
-  });
-
-  // Separate state pro řazení (není součástí WineFilters)
-  const [] = useState<'name' | 'price-asc' | 'price-desc' | 'rating'>('name');
-
-  // Handler pro změnu filtrů
-  const handleFiltersChange = (newFilters: WineFilters) => {
-    setFilters(newFilters);
-  };
-
-  // ZMĚNA: Filtrování podle kategorie - seřazeno od nejsušších po nejsladší (VZESTUPNĚ)
-  let filteredWines = selectedCategory === 'new' 
-    ? wines.filter(w => w.badge === 'new').sort((a, b) => {
-        // Seřadit novinky také podle sladkosti - OD NEJSUŠŠÍCH
-        const aHasSugar = a.residualSugar !== null && a.residualSugar !== undefined;
-        const bHasSugar = b.residualSugar !== null && b.residualSugar !== undefined;
-        if (!aHasSugar && !bHasSugar) return 0;
-        if (!aHasSugar) return 1;
-        if (!bHasSugar) return -1;
-        return a.residualSugar! - b.residualSugar!; // VZESTUPNĚ - od nejnižší po nejvyšší
-      })
-    : selectedCategory === 'all'
-    ? [...wines].sort((a, b) => {
-        // Seřadit všechna vína podle sladkosti - OD NEJSUŠŠÍCH
-        const aHasSugar = a.residualSugar !== null && a.residualSugar !== undefined;
-        const bHasSugar = b.residualSugar !== null && b.residualSugar !== undefined;
-        if (!aHasSugar && !bHasSugar) return 0;
-        if (!aHasSugar) return 1;
-        if (!bHasSugar) return -1;
-        return a.residualSugar! - b.residualSugar!; // VZESTUPNĚ - od nejnižší po nejvyšší
-      })
-    : getWinesByCategorySortedBySweetness(selectedCategory);
-
-  // Aplikuj filtry z WineFilterBar
-  filteredWines = filteredWines.filter(wine => {
-    // Filtr vyhledávání
-    if (filters.searchQuery && !wine.name.toLowerCase().includes(filters.searchQuery.toLowerCase()) &&
-        !wine.variety.toLowerCase().includes(filters.searchQuery.toLowerCase())) {
-      return false;
+  const achievements = [
+    {
+      id: 1,
+      title: "AWC Vienna 2025",
+      goldMedals: 5,
+      silverMedals: 1,
+      totalMedals: "Titul Čtyřhvězdičkové vinařství + 5 zlatých + 1 stříbrná",
+      year: "2025",
+      type: "premium",
+      icon: Star,
+      highlight: true,
+      image: "/medaile/awc_gold.webp"
+    },
+    {
+      id: 2,
+      title: "Král vín 2025",
+      goldMedals: 6,
+      silverMedals: 1,
+      totalMedals: "4 velké zlaté + 2 zlaté + 1 stříbrná",
+      year: "2025",
+      type: "grand",
+      icon: Crown,
+      image: "/medaile/loga_soutezi_shop_ostra5.webp"
+    },
+    {
+      id: 3,
+      title: "Zlatý pohár Československa 2024",
+      goldMedals: 7,
+      silverMedals: 0,
+      totalMedals: "1 vítěz kategorie + 2 velké zlaté + 4 zlaté",
+      year: "2024",
+      type: "main",
+      icon: Trophy,
+      image: "/medaile/loga_soutezi_shop_ostra5.webp"
+    },
+    {
+      id: 4,
+      title: "Nominační výstava Mikulov 2025",
+      goldMedals: 5,
+      silverMedals: 0,
+      totalMedals: "1 velká zlatá + 4 zlaté medaile",
+      year: "2025",
+      type: "gold",
+      icon: Wine,
+      image: "/medaile/loga_soutezi_shop_ostra3.webp"
+    },
+    {
+      id: 5,
+      title: "AWC Vienna 2024",
+      goldMedals: 2,
+      silverMedals: 7,
+      totalMedals: "2 zlaté + 7 stříbrných medailí",
+      year: "2024",
+      type: "international",
+      icon: Trophy,
+      image: "/medaile/awc_medaillen2024_visuals_all_gold.webp"
+    },
+    {
+      id: 6,
+      title: "Valtické vinné trhy 2024",
+      goldMedals: 4,
+      silverMedals: 0,
+      totalMedals: "4 zlaté medaile",
+      year: "2024",
+      type: "gold",
+      icon: Trophy,
+      image: "/medaile/loga_soutezi_shop_ostra2.webp"
+    },
+    {
+      id: 7,
+      title: "GRAND PRIX VINEX 2024",
+      goldMedals: 1,
+      silverMedals: 5,
+      totalMedals: "1 velká zlatá + 5 stříbrných medailí",
+      year: "2024",
+      type: "international",
+      icon: Sparkles,
+      image: "/medaile/loga_soutezi_shop_ostra3.webp"
+    },
+    {
+      id: 8,
+      title: "Nominační výstava Mikulov 2024",
+      goldMedals: 3,
+      silverMedals: 0,
+      totalMedals: "3 zlaté medaile",
+      year: "2024",
+      type: "gold",
+      icon: Wine,
+      image: "/medaile/loga_soutezi_shop_ostra3.webp"
+    },
+    {
+      id: 9,
+      title: "Pardubický festival vína 2025",
+      goldMedals: 3,
+      silverMedals: 0,
+      totalMedals: "1 velká zlatá + 2 zlaté medaile",
+      year: "2025",
+      type: "gold",
+      icon: Award,
+      image: "/medaile/loga_soutezi_shop_ostra.webp"
+    },
+    {
+      id: 10,
+      title: "Weinparade Poysdorf 2024",
+      goldMedals: 2,
+      silverMedals: 6,
+      totalMedals: "2 zlaté + 6 stříbrných medailí",
+      year: "2024",
+      type: "international",
+      icon: Wine,
+      image: "/medaile/loga_soutezi_shop_ostra4.webp"
+    },
+    {
+      id: 11,
+      title: "Galerie rulandských vín 2025",
+      goldMedals: 2,
+      silverMedals: 0,
+      totalMedals: "2 zlaté medaile",
+      year: "2025",
+      type: "gold",
+      icon: Wine,
+      image: "/medaile/zlato_vvt.webp"
+    },
+    {
+      id: 12,
+      title: "VINUM JUVENALE 2023",
+      goldMedals: 2,
+      silverMedals: 2,
+      totalMedals: "2 zlaté + 2 stříbrné medaile",
+      year: "2023",
+      type: "youth",
+      icon: Award,
+      image: "/medaile/loga_soutezi_shop_ostra3.webp"
+    },
+    {
+      id: 13,
+      title: "Jarovín 2024",
+      goldMedals: 2,
+      silverMedals: 0,
+      totalMedals: "2 zlaté medaile",
+      year: "2024",
+      type: "gold",
+      icon: Award,
+      image: "/medaile/loga_soutezi_shop_ostra.webp"
+    },
+    {
+      id: 14,
+      title: "Nejlepší biopotravina roku 2025",
+      goldMedals: 2,
+      silverMedals: 1,
+      totalMedals: "1 vítěz kategorie + 1 zlatá + 1 stříbrná",
+      year: "2025",
+      type: "bio",
+      icon: Leaf,
+      image: "/medaile/loga_soutezi_shop_ostra.webp"
+    },
+    {
+      id: 15,
+      title: "Král vín 2024",
+      goldMedals: 2,
+      silverMedals: 1,
+      totalMedals: "1 vítěz kategorie + 1 zlatá + 1 stříbrná",
+      year: "2024",
+      type: "main",
+      icon: Crown,
+      image: "/medaile/loga_soutezi_shop_ostra5.webp"
+    },
+    {
+      id: 16,
+      title: "Jarovín 2025",
+      goldMedals: 1,
+      silverMedals: 1,
+      totalMedals: "1 zlatá + 1 stříbrná medaile",
+      year: "2025",
+      type: "main",
+      icon: Award,
+      image: "/medaile/medaile_jarovin_zlata.webp"
+    },
+    {
+      id: 17,
+      title: "Valtické vinné trhy 2025",
+      goldMedals: 1,
+      silverMedals: 0,
+      totalMedals: "1 zlatá medaile",
+      year: "2025",
+      type: "gold",
+      icon: Trophy,
+      image: "/medaile/zlato_vvt.webp"
+    },
+    {
+      id: 18,
+      title: "Salon vín 2025",
+      goldMedals: 0,
+      silverMedals: 1,
+      totalMedals: "1 stříbrná medaile",
+      year: "2025",
+      type: "silver",
+      icon: Wine,
+      image: "/medaile/loga_soutezi_shop_ostra.webp"
     }
+  ];
 
-    // Filtr ceny
-    if (wine.price < filters.priceRange[0] || wine.price > filters.priceRange[1]) {
-      return false;
+  const highlights = [
+    {
+      icon: Leaf,
+      title: "Ekologické hospodaření",
+      description: "31,2 hektarů vinic v plně ekologickém režimu",
+      stat: "31,2 ha"
+    },
+    {
+      icon: MapPin,
+      title: "Mikulovský terroir",
+      description: "Jedinečné minerální podloží z jurského vápence",
+      stat: "Mikulov"
+    },
+    {
+      icon: Users,
+      title: "Symbol přírody a čistoty",
+      description: "Náš soused",
+      stat: "Náš Dudek"
+    },
+    {
+      icon: Wine,
+      title: "130 000 lahví ročně",
+      description: "Prémiová kvalita v každé lahvi",
+      stat: "130k+"
     }
+  ];
 
-    // Filtr ročníků
-    if (filters.selectedVintages.length > 0 && !filters.selectedVintages.includes(wine.vintage.toString())) {
-      return false;
-    }
+  const totalGold = achievements.reduce((sum, achievement) => sum + achievement.goldMedals, 0);
+  const totalSilver = achievements.reduce((sum, achievement) => sum + achievement.silverMedals, 0);
 
-    // Filtr sladkosti
-    if (filters.selectedDryness.length > 0 && wine.dryness && !filters.selectedDryness.includes(wine.dryness)) {
-      return false;
-    }
+  // NOVÉ: State pro filtrování podle roku
+  const [selectedYear, setSelectedYear] = useState<string>("Vše");
 
-    // Filtr kvality
-    if (filters.selectedQuality.length > 0 && wine.quality && !filters.selectedQuality.includes(wine.quality)) {
-      return false;
-    }
+  // NOVÉ: Získání všech unikátních roků seřazených od nejnovějšího
+  const years = ["Vše", ...Array.from(new Set(achievements.map(a => a.year))).sort((a, b) => b.localeCompare(a))];
 
-    // Filtr podle barvy vína - NOVÝ
-    if (filters.selectedColors.length > 0 && wine.category && !filters.selectedColors.includes(wine.category)) {
-      return false;
-    }
+  // NOVÉ: Filtrování podle vybraného roku
+  const filteredAchievements = selectedYear === "Vše" 
+    ? achievements 
+    : achievements.filter(a => a.year === selectedYear);
 
-    return true;
-  });
-
-  const getBadgeStyle = (badge?: string) => {
-    switch(badge) {
-      case 'bestseller': return { bg: '#ab8754', text: 'Bestseller' };
-      case 'award': return { bg: '#ab8754', text: 'Oceněné' };
-      case 'new': return { bg: '#10B981', text: 'Novinka' };
-      case 'limited': return { bg: '#E11D48', text: 'Limitované' };
-      case 'tip': return { bg: '#F59E0B', text: 'Tip' };
-      default: return null;
-    }
-  };
-
-  const openModal = (wine: WineProduct) => {
-    setSelectedWine(wine);
-    setIsModalOpen(true);
-    document.body.style.overflow = 'hidden';
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedWine(null);
-    document.body.style.overflow = 'unset';
-  };
-
-  const getDrynessLabel = (dryness?: string) => {
-    switch(dryness) {
-      case 'suche': return 'Suché';
-      case 'polosuche': return 'Polosuché';
-      case 'polosladke': return 'Polosladké';
-      case 'sladke': return 'Sladké';
-      default: return 'N/A';
-    }
-  };
-
-  const getQualityLabel = (quality?: string) => {
-    switch(quality) {
-      case 'kabinet': return 'Kabinet';
-      case 'pozdni-sber': return 'Pozdní sběr';
-      case 'vyber-z-hroznu': return 'Výběr z hroznů';
-      case 'vyber-z-bobuli': return 'Výběr z bobulí';
-      case 'slama': return 'Slámové víno';
-      case 'ledove': return 'Ledové víno';
-      case 'moravske-zemske': return 'Moravské zemské';
-      default: return 'Standard';
-    }
-  };
-
-  const AnimatedSection = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => {
-    const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-    return (
-      <motion.div
-        ref={ref}
-        initial={{ opacity: 0, y: 50 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-        transition={{ duration: 0.6, delay, ease: "easeOut" }}
-      >
-        {children}
-      </motion.div>
-    );
-  };
+  // Optimalizace: méně duplikací na mobilu
+  const duplicatedAchievements = isMobile 
+    ? [...filteredAchievements, ...filteredAchievements]
+    : [...filteredAchievements, ...filteredAchievements, ...filteredAchievements];
 
   return (
-    <>
-      <section 
-        className="min-h-screen py-20 lg:py-28 relative overflow-hidden"
-        style={{ 
-          backgroundColor: "#fefbea"
-        }}
-      >
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl animate-pulse" 
-               style={{ background: `radial-gradient(circle, #ab875415, transparent)` }}></div>
-          <div className="absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl animate-pulse animation-delay-2000"
-               style={{ background: `radial-gradient(circle, #ab875410, transparent)` }}></div>
-        </div>
-        
-        <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+    <section 
+      className="relative overflow-hidden" 
+      style={{ 
+        backgroundColor: paperColor
+      }}
+    >
+      
+      {/* Top Border */}
+      <div className="relative w-full h-auto">
+        <Image 
+          src="/border.png"
+          alt=""
+          width={1920}
+          height={176}
+          className="w-full h-auto object-contain"
+          priority
+          quality={isMobile ? 75 : 90}
+        />
+      </div>
+
+      <div className="py-12 md:py-20 lg:py-32">
+        {/* Animated background elements - optimalizováno */}
+        {!isMobile && (
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl animate-pulse" 
+                 style={{ background: `radial-gradient(circle, ${accentColor}15, transparent)` }}></div>
+            <div className="absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl animate-pulse animation-delay-2000"
+                 style={{ background: `radial-gradient(circle, ${accentColor}10, transparent)` }}></div>
+          </div>
+        )}
+
+        {/* Header Section */}
+        <motion.div 
+          className="relative z-10 text-center mb-12 md:mb-20 px-4"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: prefersReducedMotion ? 0.3 : 0.6 }}
+        >
+          <div className="inline-flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+            <div className="h-px w-8 md:w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+            <Grape className="w-6 h-6 md:w-8 md:h-8" style={{ color: accentColor }} />
+            <div className="h-px w-8 md:w-12 bg-gradient-to-l from-transparent via-gray-300 to-transparent"></div>
+          </div>
           
-          {/* Header */}
-          <AnimatedSection>
-            <div className="text-center mb-16 px-4">
-              <div className="space-y-6">
-                <div className="inline-flex items-center gap-3 mb-4">
-                  <div className="h-px w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-                  <Grape className="w-8 h-8" style={{ color: "#ab8754" }} />
-                  <div className="h-px w-12 bg-gradient-to-l from-transparent via-gray-300 to-transparent"></div>
-                </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-light text-gray-800 mb-4 md:mb-6">
+            Náš <span className="font-normal" style={{ color: accentColor }}>příběh</span>
+          </h2>
+          
+          <p className="text-base md:text-xl text-gray-600 font-light max-w-3xl mx-auto leading-relaxed">
+            Vinařství MiQueen v sobě snoubí moderní prvky s mnohaletou tradicí a zkušeností
+          </p>
+        </motion.div>
+
+        {/* Main Content - PŮVODNÍ LAYOUT */}
+        <motion.div 
+          className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 mb-20 md:mb-32"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: prefersReducedMotion ? 0.3 : 0.7, delay: 0.2 }}
+        >
+          <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8 md:gap-12 lg:gap-20">
+            
+            {/* Left Column - Story with Image */}
+            <motion.div 
+              className="space-y-6 md:space-y-8"
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: prefersReducedMotion ? 0.3 : 0.6 }}
+            >
+              {/* Hero Image with Floating Badge */}
+              <div className="relative group overflow-hidden rounded-2xl md:rounded-3xl shadow-2xl touch-manipulation">
+                <Image 
+                  src={storyImageUrl} 
+                  alt="Vinařství MiQueen"
+                  width={900}
+                  height={600}
+                  className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-700"
+                  loading="lazy"
+                  quality={isMobile ? 75 : 90}
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                 
-                <h1 className="text-5xl lg:text-7xl font-light text-gray-800">
-                  Naše <span className="font-normal" style={{ color: "#ab8754" }}>vína</span>
-                </h1>
-                <p className="text-xl text-gray-600 font-light max-w-2xl mx-auto leading-relaxed">
-                  Vína seřazená od nejsušších po nejsladší
+                {/* Floating badge */}
+                
+              </div>
+
+              {/* Story Text */}
+              <div className="space-y-4 md:space-y-5 text-gray-700 max-w-4xl">
+                <p className="text-base md:text-lg lg:text-xl leading-relaxed">
+                  Kolébkou všeho byla rodinná výroba vína, časem umocněna zkušenostmi ze srdce velké vinařské firmy. 
+                  <span className="text-gray-900 font-medium"> Od roku 2006</span> jsme rostli s láskou k vínu a tradicím.
                 </p>
                 
-                {/* Informace kde koupit vína */}
-                <div className="mt-8 max-w-3xl mx-auto">
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 sm:p-6 border-2 shadow-lg" style={{ borderColor: "#ab875440" }}>
-                    <div className="flex items-start gap-3 sm:gap-4">
-                      <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(171, 135, 84, 0.1)" }}>
-                        <MapPin className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: "#ab8754" }} />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">
-                          Kde koupíte naše vína?
-                        </h3>
-                        <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-3">
-                          Naše vína můžete zakoupit online na e-shopu nebo v síti prodejen po celé České republice.
-                        </p>
-                        <a 
-                          href="/mapa-vin"
-                          className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold hover:underline transition-colors"
-                          style={{ color: "#ab8754" }}
-                        >
-                          <MapPin className="w-4 h-4" />
-                          Zobrazit mapu prodejen
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <p className="text-base md:text-lg lg:text-xl leading-relaxed">
+                  V roce <span className="text-gray-900 font-medium">2009</span> vznikla samostatná rodinná firma 
+                  s výrobní kapacitou 30 000 lahví. Dnes je vinařství MiQueen 
+                  <span className="font-medium" style={{ color: accentColor }}> kompletně ekologicky hospodařící</span> na 
+                  téměř 32 hektarech vinic.
+                </p>
+                
+                <p className="text-base md:text-lg lg:text-xl leading-relaxed">
+                  Naše vína získávají typický mikulovský minerální charakter díky 
+                  <span className="text-gray-900 font-medium"> minerálnímu podloží z jurského vápence s jíly</span> v 
+                  lokalitě Za cihelnou.
+                </p>
               </div>
-            </div>
-          </AnimatedSection>
+            </motion.div>
 
-          {/* Kategorie Filter - s filtrem Novinky */}
-          <AnimatedSection delay={0.2}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-              <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2 sm:gap-3">
-              <button
-                onClick={() => setSelectedCategory('all')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'all' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'all' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="whitespace-nowrap">Všechna vína</span>
-                <span className={`${selectedCategory === 'all' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({wines.length})
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('new')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'new' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'new' ? { backgroundColor: '#10B981' } : {}}
-              >
-                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="whitespace-nowrap">Novinky</span>
-                <span className={`${selectedCategory === 'new' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({wines.filter(w => w.badge === 'new').length})
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('white')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'white' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'white' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Droplets className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Bílá</span>
-                <span className={`${selectedCategory === 'white' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getWineCountByCategory('white')})
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('red')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'red' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'red' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Cherry className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Červená</span>
-                <span className={`${selectedCategory === 'red' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getWineCountByCategory('red')})
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('rose')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'rose' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'rose' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Grape className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Růžová</span>
-                <span className={`${selectedCategory === 'rose' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getWineCountByCategory('rose')})
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('sparkling')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'sparkling' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'sparkling' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Wine className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Perlivá</span>
-                <span className={`${selectedCategory === 'sparkling' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getWineCountByCategory('sparkling')})
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('special')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'special' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'special' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Package className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Mimosa</span>
-                <span className={`${selectedCategory === 'special' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getWineCountByCategory('special')})
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('set')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'set' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'set' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Gift className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Sety</span>
-                <span className={`${selectedCategory === 'set' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getWineCountByCategory('set')})
-                </span>
-              </button>
-            </div>
-          </div>
-          </AnimatedSection>
-
-          {/* WineFilterBar - nová sekce nad produkty */}
-          <AnimatedSection delay={0.3}>
-            <div className="mb-8">
-              <WineFilterBar 
-                filters={filters}
-                onFiltersChange={handleFiltersChange}
-                minPrice={minPrice}
-                maxPrice={maxPrice}
-                availableVintages={availableVintages}
-                resultCount={filteredWines.length}
-              />
-            </div>
-          </AnimatedSection>
-
-          {/* Results Count */}
-          <div className="mb-8 text-center">
-            <p className="text-gray-600 text-lg">
-              Zobrazeno <span className="font-semibold text-2xl" style={{ color: "#ab8754" }}>{filteredWines.length}</span> z celkem <span className="font-semibold" style={{ color: "#ab8754" }}>{wines.length}</span> vín
-            </p>
-          </div>
-
-          {/* Wine Grid - 2 sloupce na mobilu, více na desktopu */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-6 lg:gap-8">
-            {filteredWines.map((wine, index) => {
-              const badge = getBadgeStyle(wine.badge);
-              
-              return (
-                <AnimatedSection key={wine.id} delay={index * 0.05}>
-                <div
-                  className="group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-[#ab8754]/50 transition-all duration-500 shadow-lg hover:shadow-2xl hover:-translate-y-2"
-                >
-                  {/* Image Container */}
-                  <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
-                    <Image 
-                      src={wine.image}
-                      alt={wine.name}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-700 cursor-pointer"
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                      onClick={() => openModal(wine)}
-                    />
-                    
-                    {badge && (
-                      <div 
-                        className="absolute top-2 sm:top-3 left-2 sm:left-3 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold text-white z-10 shadow-lg"
-                        style={{ backgroundColor: badge.bg }}
-                      >
-                        {badge.text}
-                      </div>
-                    )}
-
-                    {/* Quick view overlay */}
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <button 
-                        onClick={() => openModal(wine)}
-                        className="hidden sm:flex px-6 py-3 bg-white text-gray-900 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all transform hover:scale-105 items-center gap-2 shadow-xl"
-                      >
-                        <Wine className="w-4 h-4" />
-                        Zobrazit produkt
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {/* Content - kompaktnější na mobilu */}
-                  <div className="p-3 sm:p-5">
-                    {/* Rating */}
-                    <div className="flex items-center gap-0.5 sm:gap-1 mb-2 sm:mb-3">
-                      {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i}
-                          className={`w-3 h-3 sm:w-4 sm:h-4 ${
-                            i < Math.floor(wine.rating || 0) 
-                              ? 'text-yellow-400 fill-current' 
-                              : i < (wine.rating || 0) 
-                                ? 'text-yellow-400 fill-current opacity-50'
-                                : 'text-gray-300'
-                          }`}
-                        />
-                      ))}
-                      <span className="text-gray-500 text-[10px] sm:text-sm ml-1 sm:ml-2 font-medium">({wine.rating?.toFixed(1) || '4.5'})</span>
-                    </div>
-                    
-                    {/* Title */}
-                    <h3 className="text-gray-900 font-semibold text-xs sm:text-lg mb-1 sm:mb-2 line-clamp-2 min-h-[2rem] sm:min-h-[3.5rem] cursor-pointer hover:text-[#ab8754] transition-colors" onClick={() => openModal(wine)}>
-                      {wine.name}
-                    </h3>
-                    
-                    {/* Details */}
-                    <div className="flex items-center justify-between mb-2 sm:mb-3">
-                      <p className="text-gray-600 text-[10px] sm:text-sm line-clamp-1">
-                        {wine.variety}
-                      </p>
-                      <span className="text-gray-500 text-[9px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded-full">
-                        {wine.vintage}
-                      </span>
-                    </div>
-                    
-                    {/* Volume badge */}
-                    {wine.volume && (
-                      <div className="mb-2 sm:mb-3">
-                        <span className="text-[9px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full" style={{ backgroundColor: "#ab875410", color: "#ab8754" }}>
-                          {wine.volume === 200 ? "Mini 200ml" : wine.volume === 187 ? "Mini 187ml" : wine.volume === 375 ? "375ml" : wine.volume === 500 ? "500ml" : "750ml"}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {/* Description - skrytý na mobilu */}
-                    <p className="hidden sm:block text-gray-500 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
-                      {wine.description}
-                    </p>
-                    
-                    {/* Price & Button */}
-                    <div className="flex flex-col gap-2 sm:gap-3 pt-2 sm:pt-4 border-t border-gray-100">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-gray-500 text-[9px] sm:text-xs mb-0.5 sm:mb-1">Cena</p>
-                          <p className="text-gray-900 font-bold text-lg sm:text-2xl">
-                            {wine.price} <span className="text-sm sm:text-lg">Kč</span>
-                          </p>
-                        </div>
-                        
-                        {/* Mobile: Just circle with cart icon */}
-                        <a
-                          href={wine.shopUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="sm:hidden w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-95"
-                          style={{ backgroundColor: "#ab8754" }}
-                        >
-                          <ShoppingCart className="w-4 h-4 text-white" />
-                        </a>
-                        
-                        {/* Desktop: Quality badge */}
-                        {wine.quality && (
-                          <span className="hidden sm:inline-block text-xs font-medium text-gray-600 px-2 py-1 bg-gray-50 rounded-lg">
-                            {getQualityLabel(wine.quality)}
-                          </span>
-                        )}
-                      </div>
-                      
-                      {/* Desktop: Full button */}
-                      <a
-                        href={wine.shopUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hidden sm:flex w-full px-5 py-3 text-white rounded-full font-semibold text-sm transition-all hover:shadow-lg hover:scale-105 items-center justify-center gap-2"
-                        style={{ backgroundColor: "#ab8754" }}
-                      >
-                        <ShoppingCart className="w-4 h-4" />
-                        Koupit na e-shopu
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                </AnimatedSection>
-              );
-            })}
-          </div>
-
-          {/* Empty State */}
-          {filteredWines.length === 0 && (
-            <div className="text-center py-20">
-              <Wine className="w-20 h-20 text-gray-300 mx-auto mb-6" />
-              <h3 className="text-2xl font-light text-gray-600 mb-2">
-                Žádná vína nenalezena
-              </h3>
-              <p className="text-gray-500">
-                Zkuste změnit filtry
-              </p>
-            </div>
-          )}
-
-          {/* Bottom CTA */}
-          <div className="mt-20 text-center">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 lg:p-12 border border-gray-200 shadow-xl max-w-4xl mx-auto">
-              <h3 className="text-3xl lg:text-4xl font-light text-gray-800 mb-4">
-                Máte zájem o <span style={{ color: "#ab8754" }}>degustaci</span>?
-              </h3>
-              <p className="text-gray-600 mb-6 text-lg max-w-2xl mx-auto">
-                Navštivte naše vinařství v Mikulově a ochutnejte naše oceněná vína přímo u zdroje
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a 
-                  href="/kontakty/"
-                  
-                  rel="noopener noreferrer"
-                  className="px-8 py-4 text-white rounded-full font-medium text-lg transition-all hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2"
-                  style={{ backgroundColor: "#ab8754" }}
-                >
-                  <ExternalLink className="w-5 h-5" />
-                  Kontaktovat vinařství
-                </a>
-                <a 
-                  href="https://shop.miqueen.cz/vsechna-vina/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-8 py-4 bg-white text-gray-700 rounded-full font-medium text-lg border-2 border-gray-300 transition-all hover:border-gray-400 hover:shadow-lg inline-flex items-center justify-center gap-2"
-                >
-                  Zobrazit e-shop
-                </a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Modal - zkráceno kvůli délce, použít původní plnou verzi */}
-      {isModalOpen && selectedWine && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4" onClick={closeModal}>
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-          
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="relative bg-white rounded-none sm:rounded-3xl w-full sm:max-w-5xl h-full sm:h-auto sm:max-h-[90vh] overflow-hidden shadow-2xl flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close button */}
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors shadow-lg"
+            {/* Right Column - Stats & CTA */}
+            <motion.div 
+              className="space-y-6 md:space-y-8 lg:sticky lg:top-8 lg:self-start"
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: prefersReducedMotion ? 0.3 : 0.6, delay: 0.2 }}
             >
-              <X className="w-5 h-5 text-gray-700" />
-            </button>
-
-            <div className="flex flex-col lg:flex-row h-full overflow-hidden">
-              {/* Image side */}
-              <div className="lg:w-2/5 relative bg-gradient-to-br from-gray-100 to-gray-50 flex-shrink-0">
-                <div className="relative h-[40vh] sm:h-[50vh] lg:h-full flex items-center justify-center p-6 lg:p-12">
-                  <div className="relative w-full h-full max-w-md mx-auto">
-                    <Image 
-                      src={selectedWine.image}
-                      alt={selectedWine.name}
-                      fill
-                      className="object-contain"
-                      sizes="(max-width: 768px) 100vw, 40vw"
-                    />
-                  </div>
-                  
-                  {selectedWine.badge && (
-                    <div 
-                      className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg"
-                      style={{ backgroundColor: getBadgeStyle(selectedWine.badge)?.bg }}
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-3 md:gap-4">
+                {highlights.map((highlight, index) => {
+                  const IconComponent = highlight.icon;
+                  return (
+                    <motion.div 
+                      key={index}
+                      className="group relative bg-gradient-to-br from-white via-white to-gray-50 rounded-2xl md:rounded-3xl p-4 md:p-6 border border-gray-100 hover:border-transparent hover:shadow-2xl transition-all duration-500 overflow-hidden touch-manipulation"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: prefersReducedMotion ? 0.2 : 0.4, delay: index * 0.1 }}
+                      whileHover={!isMobile ? { y: -4 } : {}}
+                      whileTap={isMobile ? { scale: 0.98 } : {}}
                     >
-                      {getBadgeStyle(selectedWine.badge)?.text}
-                    </div>
-                  )}
-                </div>
+                      {/* Gradient overlay on hover */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                           style={{ 
+                             background: `linear-gradient(135deg, ${accentColor}15, transparent)`,
+                           }}></div>
+                      
+                      {/* Animated border */}
+                      <div className="absolute inset-0 rounded-2xl md:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                           style={{ 
+                             boxShadow: `0 0 0 1px ${accentColor}40`,
+                           }}></div>
+                      
+                      <div className="relative z-10">
+                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl mb-3 md:mb-4 flex items-center justify-center transition-all duration-500 group-hover:scale-110"
+                             style={{ 
+                               background: `linear-gradient(135deg, ${accentColor}20, ${accentColor}10)`,
+                             }}>
+                          <IconComponent className="w-5 h-5 md:w-6 md:h-6" style={{ color: accentColor }} />
+                        </div>
+                        
+                        <div className="text-2xl md:text-4xl font-bold mb-1 md:mb-2 bg-gradient-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                          {highlight.stat}
+                        </div>
+                        
+                        <h3 className="text-gray-900 text-sm md:text-base font-semibold mb-1 md:mb-2">
+                          {highlight.title}
+                        </h3>
+                        
+                        <p className="text-gray-600 text-xs md:text-sm leading-relaxed">
+                          {highlight.description}
+                        </p>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
 
-              {/* Details side */}
-              <div className="lg:w-3/5 overflow-y-scroll custom-scrollbar flex-1">
-                <div className="p-6 sm:p-8 lg:p-12">
-                  {/* Header */}
-                  <div className="mb-6">
-                    <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-                      {selectedWine.name}
-                    </h2>
-                    <p className="text-lg text-gray-600 mb-4">
-                      {selectedWine.grapeVariety}
-                    </p>
-                    
-                    {/* Rating */}
-                    <div className="flex items-center gap-3">
-                      <div className="flex gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-5 h-5 ${
-                              i < Math.floor(selectedWine.rating || 0)
-                                ? 'text-yellow-400 fill-current'
-                                : i < (selectedWine.rating || 0)
-                                  ? 'text-yellow-400 fill-current opacity-50'
-                                  : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-gray-600 font-medium">({selectedWine.rating?.toFixed(1) || '4.5'})</span>
-                    </div>
-                  </div>
+              {/* CTA Card */}
+              <motion.div 
+                className="relative bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 border border-gray-100 shadow-lg overflow-hidden group hover:shadow-2xl transition-all duration-500 touch-manipulation"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: prefersReducedMotion ? 0.3 : 0.5, delay: 0.4 }}
+                whileTap={isMobile ? { scale: 0.98 } : {}}
+              >
+                {/* Background pattern */}
+                <div className="absolute inset-0 opacity-5"
+                     style={{
+                       backgroundImage: `radial-gradient(circle at 2px 2px, ${accentColor} 1px, transparent 0)`,
+                       backgroundSize: '24px 24px'
+                     }}></div>
+                
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-gray-50/50"></div>
+                
+                <div className="relative z-10">
+                  <h3 className="text-xl md:text-2xl font-light text-gray-900 mb-2 md:mb-3">
+                    Objevte naši filozofii
+                  </h3>
+                  <p className="text-gray-600 text-sm md:text-base mb-4 md:mb-6 leading-relaxed">
+                    Každé víno vypráví příběh našeho terroir a vášně pro vinařství.
+                  </p>
+                  <a 
+                    href="/blog"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group/btn inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 text-white text-sm md:text-base font-medium rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 touch-manipulation"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${accentColor}, ${accentColor}dd)`,
+                    }}
+                  >
+                    <span>Více v blogu vinařství</span>
+                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                  </a>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </motion.div>
 
-                  {/* Price section */}
-                  <div className="bg-gradient-to-r from-[#ab875410] to-transparent p-4 sm:p-6 rounded-2xl mb-6">
-                    <p className="text-gray-600 mb-2">Cena</p>
-                    <p className="text-3xl sm:text-4xl font-bold text-gray-900">
-                      {selectedWine.price} <span className="text-xl sm:text-2xl">Kč</span>
-                    </p>
-                    {selectedWine.volume && (
-                      <p className="text-gray-600 mt-2">
-                        Objem: {selectedWine.volume}ml
-                      </p>
-                    )}
-                  </div>
+        {/* PHOTO GALLERY SECTION - 3x2 Grid */}
+        <motion.div 
+          className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 mb-20 md:mb-32"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: prefersReducedMotion ? 0.3 : 0.6 }}
+        >
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+            {galleryPhotos.map((photo, index) => (
+              <motion.div
+                key={index}
+                className="photo-card group relative overflow-hidden rounded-2xl md:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-700 touch-manipulation"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: prefersReducedMotion ? 0.2 : 0.5, delay: index * 0.1 }}
+                whileTap={isMobile ? { scale: 0.98 } : {}}
+              >
+                <div className="aspect-[4/3] relative overflow-hidden">
+                  <Image
+                    src={photo.src}
+                    alt={photo.alt}
+                    width={600}
+                    height={450}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    loading="lazy"
+                    quality={isMobile ? 75 : 90}
+                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                  {/* Subtle overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+                
+                {/* Decorative border on hover */}
+                <div 
+                  className="absolute inset-0 rounded-2xl md:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{ 
+                    boxShadow: `inset 0 0 0 2px ${accentColor}40`,
+                  }}
+                ></div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
 
-                  {/* Description */}
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Popis</h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {selectedWine.description}
-                    </p>
-                  </div>
+        {/* Awards Section */}
+        <motion.div 
+          className="relative w-full overflow-hidden"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: prefersReducedMotion ? 0.3 : 0.7 }}
+        >
+          {/* Section Header */}
+          <motion.div 
+            className="text-center mb-8 md:mb-16 px-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: prefersReducedMotion ? 0.3 : 0.6 }}
+          >
+            <div className="inline-flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+              <div className="h-px w-8 md:w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+              <Trophy className="w-6 h-6 md:w-8 md:h-8" style={{ color: accentColor }} />
+              <div className="h-px w-8 md:w-12 bg-gradient-to-l from-transparent via-gray-300 to-transparent"></div>
+            </div>
+            
+            <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-light text-gray-800 mb-4 md:mb-6">
+              Naše <span className="font-normal" style={{ color: accentColor }}>ocenění</span>
+            </h3>
+            
+            <p className="text-base md:text-xl text-gray-600 font-light max-w-2xl mx-auto mb-6 md:mb-8">
+              Na významných soutěžích získáváme krásná ocenění
+            </p>
 
-                  {/* Wine details grid */}
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
-                    <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
-                      <p className="text-gray-500 text-xs sm:text-sm mb-1">Ročník</p>
-                      <p className="text-gray-900 font-semibold text-sm sm:text-base">{selectedWine.vintage}</p>
-                    </div>
-                    
-                    <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
-                      <p className="text-gray-500 text-xs sm:text-sm mb-1">Alkohol</p>
-                      <p className="text-gray-900 font-semibold text-sm sm:text-base">{selectedWine.alcohol || 'N/A'}%</p>
-                    </div>
-                    
-                    <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
-                      <p className="text-gray-500 text-xs sm:text-sm mb-1">Kvalita</p>
-                      <p className="text-gray-900 font-semibold text-sm sm:text-base">{getQualityLabel(selectedWine.quality)}</p>
-                    </div>
-                    
-                    <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
-                      <p className="text-gray-500 text-xs sm:text-sm mb-1">Sladkost</p>
-                      <p className="text-gray-900 font-semibold text-sm sm:text-base">{getDrynessLabel(selectedWine.dryness)}</p>
-                    </div>
-                  </div>
-
-                  {/* Additional info */}
-                  <div className="space-y-4 mb-8">
-                    {selectedWine.region && (
-                      <div className="flex items-start gap-3">
-                        <MapPin className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="text-gray-500 text-xs sm:text-sm">Region</p>
-                          <p className="text-gray-900 text-sm sm:text-base">{selectedWine.region}</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {selectedWine.servingTemp && (
-                      <div className="flex items-start gap-3">
-                        <Thermometer className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="text-gray-500 text-xs sm:text-sm">Teplota servírování</p>
-                          <p className="text-gray-900 text-sm sm:text-base">{selectedWine.servingTemp}</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {selectedWine.foodPairing && selectedWine.foodPairing.length > 0 && (
-                      <div className="flex items-start gap-3">
-                        <ChefHat className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
-                        <div className="flex-1">
-                          <p className="text-gray-500 text-xs sm:text-sm mb-2">Doporučujeme k</p>
-                          <div className="flex flex-wrap gap-2">
-                            {selectedWine.foodPairing.map((food, index) => (
-                              <span 
-                                key={index}
-                                className="px-2 sm:px-3 py-1 bg-[#ab875410] text-[#ab8754] rounded-full text-xs sm:text-sm font-medium"
-                              >
-                                {food}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {selectedWine.winemaker && (
-                      <div className="flex items-start gap-3">
-                        <User className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="text-gray-500 text-xs sm:text-sm">Vinařství</p>
-                          <p className="text-gray-900 text-sm sm:text-base">{selectedWine.winemaker}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {selectedWine.notes && (
-                    <div className="bg-[#ab875410] p-4 rounded-xl mb-8">
-                      <p className="text-[#ab8754] font-semibold mb-2 text-sm sm:text-base">Poznámka vinaře</p>
-                      <p className="text-gray-700 text-xs sm:text-sm">{selectedWine.notes}</p>
-                    </div>
-                  )}
-
-                  {/* CTA Button */}
-                  <div className="sticky bottom-0 left-0 right-0 bg-white pt-4 pb-safe">
-                    <a
-                      href={selectedWine.shopUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full px-6 py-4 bg-[#ab8754] text-white rounded-full font-semibold text-base sm:text-lg transition-all hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2"
-                    >
-                      <ShoppingCart className="w-5 h-5" />
-                      Koupit na e-shopu
-                    </a>
-                  </div>
+            {/* Stats Bar */}
+            <div className="flex justify-center">
+              <div className="inline-flex flex-col sm:flex-row items-center bg-white/90 backdrop-blur-md rounded-2xl sm:rounded-full p-2 border border-gray-200 shadow-lg">
+                <div className="px-6 md:px-8 py-3 md:py-4 text-center">
+                  <div className="text-2xl md:text-4xl font-bold text-amber-500">{totalGold}</div>
+                  <div className="text-xs md:text-sm text-gray-600 mt-1">Zlatých</div>
+                </div>
+                <div className="w-full sm:w-px h-px sm:h-16 bg-gray-200"></div>
+                <div className="px-6 md:px-8 py-3 md:py-4 text-center">
+                  <div className="text-2xl md:text-4xl font-bold text-gray-400">{totalSilver}</div>
+                  <div className="text-xs md:text-sm text-gray-600 mt-1">Stříbrných</div>
+                </div>
+                <div className="w-full sm:w-px h-px sm:h-16 bg-gray-200"></div>
+                <div className="px-6 md:px-8 py-3 md:py-4 text-center">
+                  <div className="text-2xl md:text-4xl font-bold" style={{ color: accentColor }}>{achievements.length}</div>
+                  <div className="text-xs md:text-sm text-gray-600 mt-1">Soutěží</div>
                 </div>
               </div>
             </div>
           </motion.div>
-        </div>
-      )}
 
+          {/* NOVÉ: Filtrování podle roku */}
+          <motion.div 
+            className="flex justify-center mb-8 md:mb-12 px-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: prefersReducedMotion ? 0.3 : 0.5, delay: 0.2 }}
+          >
+            <div className="inline-flex flex-wrap justify-center gap-2 md:gap-3 bg-white/80 backdrop-blur-sm rounded-2xl p-2 border border-gray-200 shadow-lg">
+              {years.map((year) => (
+                <button
+                  key={year}
+                  onClick={() => setSelectedYear(year)}
+                  className={`
+                    px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium text-sm md:text-base
+                    transition-all duration-300 touch-manipulation
+                    ${selectedYear === year 
+                      ? 'text-white shadow-lg transform scale-105' 
+                      : 'text-gray-700 hover:bg-gray-100 hover:scale-105 active:scale-95'
+                    }
+                  `}
+                  style={selectedYear === year ? { 
+                    backgroundColor: accentColor,
+                    boxShadow: `0 4px 12px ${accentColor}40`
+                  } : {}}
+                >
+                  {year}
+                  {year !== "Vše" && (
+                    <span className={`ml-2 text-xs ${selectedYear === year ? 'text-white/80' : 'text-gray-500'}`}>
+                      ({achievements.filter(a => a.year === year).length})
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Awards Slider Container */}
+          <motion.div 
+            className="awards-slider-container overflow-hidden relative py-4 md:py-8"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: prefersReducedMotion ? 0.3 : 0.8 }}
+            key={selectedYear} // Reset animace při změně roku
+          >
+            <div 
+              className="awards-slider flex gap-4 md:gap-6"
+              style={{
+                animationDuration: isMobile ? '80s' : '60s',
+                animationPlayState: prefersReducedMotion ? 'paused' : 'running'
+              }}
+            >
+              {duplicatedAchievements.map((achievement, index) => {
+                return (
+                  <div 
+                    key={`${achievement.id}-${index}`}
+                    className="award-card group relative flex-shrink-0 w-[260px] sm:w-[280px] md:w-[320px] bg-white rounded-2xl md:rounded-3xl border border-gray-200 hover:border-gray-300 transition-all duration-700 overflow-hidden shadow-lg hover:shadow-2xl touch-manipulation"
+                    style={{ 
+                      borderColor: achievement.highlight ? `${accentColor}` : undefined
+                    }}
+                  >
+                    {/* Year badge */}
+                    <div className="absolute top-3 right-3 md:top-4 md:right-4 z-20 px-2.5 py-1 md:px-3 md:py-1 rounded-full"
+                         style={{ backgroundColor: `${accentColor}` }}>
+                      <span className="text-white text-xs font-bold">{achievement.year}</span>
+                    </div>
+
+                    {/* Background accent gradient */}
+                    {!isMobile && (
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                           style={{ background: `linear-gradient(135deg, ${accentColor}10, transparent)` }}></div>
+                    )}
+
+                    {/* Medal Image */}
+                    <div className="relative h-24 md:h-32 mb-4 md:mb-6 flex items-center justify-center mt-6 md:mt-8">
+                      {achievement.image && (
+                        <Image 
+                          src={achievement.image}
+                          alt={achievement.title}
+                          width={100}
+                          height={100}
+                          className="object-contain drop-shadow-2xl group-hover:scale-110 transition-transform duration-500 rounded-xl md:rounded-2xl"
+                          loading="lazy"
+                          quality={isMobile ? 70 : 85}
+                        />
+                      )}
+                    </div>
+                    
+                    <div className="relative z-10 px-5 md:px-8 pb-5 md:pb-8">
+                      {/* Title */}
+                      <h4 className="text-gray-900 text-sm md:text-lg font-medium mb-3 md:mb-4 min-h-[2.5rem] md:min-h-[3rem]">
+                        {achievement.title}
+                      </h4>
+
+                      {/* Medals */}
+                      <div className="flex items-center gap-2 md:gap-4 mb-3 md:mb-4">
+                        {achievement.goldMedals > 0 && (
+                          <div className="flex items-center gap-1.5 md:gap-2">
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-xl">
+                              <span className="text-white text-xs md:text-sm font-bold">{achievement.goldMedals}</span>
+                            </div>
+                            <span className="text-amber-600 text-xs md:text-sm font-medium">zlaté</span>
+                          </div>
+                        )}
+                        {achievement.silverMedals > 0 && (
+                          <div className="flex items-center gap-1.5 md:gap-2">
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center shadow-xl">
+                              <span className="text-white text-xs md:text-sm font-bold">{achievement.silverMedals}</span>
+                            </div>
+                            <span className="text-gray-600 text-xs md:text-sm font-medium">stříbrné</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Total medals text */}
+                      <p className="text-xs md:text-sm font-medium mb-3 md:mb-4" style={{ color: accentColor }}>
+                        {achievement.totalMedals}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+
+          {/* Final CTA */}
+          <motion.div 
+            className="text-center mt-12 md:mt-20 px-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: prefersReducedMotion ? 0.3 : 0.6 }}
+          >
+            <a 
+              href="/vsechna-vina/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2 md:gap-3 px-8 md:px-10 py-4 md:py-5 text-white text-base md:text-lg font-medium rounded-full transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 touch-manipulation"
+              style={{ backgroundColor: accentColor }}
+            >
+              <span>Objevte oceněná vína</span>
+              <ChevronRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
+            </a>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Bottom Border */}
+      <div className="relative w-full">
+        <Image 
+          src="/border.png"
+          alt=""
+          width={1920}
+          height={176}
+          className="w-full h-auto"
+          style={{ display: 'block' }}
+          loading="lazy"
+          quality={isMobile ? 75 : 90}
+        />
+      </div>
+
+      {/* CSS Animations - OPTIMALIZOVÁNO */}
       <style jsx>{`
         @keyframes pulse {
-          0%, 100% {
-            opacity: 0.4;
-          }
-          50% {
-            opacity: 0.6;
-          }
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.6; }
+        }
+
+        @keyframes slide {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-33.333%); }
         }
 
         .animate-pulse {
           animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          will-change: opacity;
         }
 
         .animation-delay-2000 {
           animation-delay: 2s;
         }
 
-        .line-clamp-1 {
-          display: -webkit-box;
-          -webkit-line-clamp: 1;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        
-        .pb-safe {
-          padding-bottom: env(safe-area-inset-bottom, 1rem);
+        /* Photo Gallery Animations */
+        .photo-card {
+          will-change: transform;
         }
 
-        /* Custom scrollbar for modal */
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
+        @media (hover: hover) {
+          .photo-card:hover {
+            transform: translateY(-8px);
+          }
         }
 
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 10px;
+        @media (hover: none) {
+          .photo-card:active {
+            transform: scale(0.98);
+          }
         }
 
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #ab8754;
-          border-radius: 10px;
+        .awards-slider-container {
+          mask: linear-gradient(90deg, transparent, white 5%, white 95%, transparent);
+          -webkit-mask: linear-gradient(90deg, transparent, white 5%, white 95%, transparent);
         }
 
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #8b6d44;
+        .awards-slider {
+          animation: slide 60s linear infinite;
+          width: fit-content;
+          will-change: transform;
         }
 
-        /* Firefox scrollbar */
-        .custom-scrollbar {
-          scrollbar-width: thin;
-          scrollbar-color: #ab8754 #f1f1f1;
+        .awards-slider-container:active .awards-slider,
+        .awards-slider:hover {
+          animation-play-state: paused;
+        }
+
+        .award-card {
+          transform: translateY(0);
+          transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+          will-change: transform;
+        }
+
+        @media (hover: hover) {
+          .award-card:hover {
+            transform: translateY(-8px) scale(1.02);
+          }
+        }
+
+        @media (hover: none) {
+          .award-card:active {
+            transform: scale(0.98);
+          }
+        }
+
+        /* Touch optimalizace */
+        * {
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .touch-manipulation {
+          touch-action: manipulation;
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          .animate-pulse,
+          .awards-slider {
+            animation: none;
+          }
+          
+          .photo-card:hover,
+          .award-card:hover {
+            transform: none;
+          }
         }
       `}</style>
-    </>
+    </section>
   );
 };
 
-export default WineGridPage;
+export default AboutWinerySection;
