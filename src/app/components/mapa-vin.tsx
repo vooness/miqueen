@@ -68,6 +68,21 @@ const MapaVinPage: React.FC = () => {
               <p className="text-xl text-gray-600 font-light max-w-3xl mx-auto leading-relaxed">
                 Najděte nejbližší prodejnu nebo si víno objednejte online s pohodlným doručením až k vám domů
               </p>
+              
+              <div className="mt-8 max-w-2xl mx-auto">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border-2 shadow-lg" style={{ borderColor: `${accentColor}40` }}>
+                  <div className="flex items-center justify-center gap-3 mb-3">
+                    <MapPin className="w-6 h-6" style={{ color: accentColor }} />
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      Výhodná nabídka
+                    </h3>
+                  </div>
+                  <p className="text-base text-gray-700 leading-relaxed text-center">
+                    V síti čerpacích stanic <span className="font-semibold" style={{ color: accentColor }}>Eurobit</span> koupíte 
+                    vína Vinařství MiQueen <span className="font-semibold">za cenu stejnou jako na e-shopu</span>
+                  </p>
+                </div>
+              </div>
             </div>
           </AnimatedSection>
 

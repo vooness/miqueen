@@ -60,7 +60,7 @@ const MiQueenContactPage: React.FC = () => {
     {
       name: "Michal Rovenský",
       position: "Jednatel",
-      image: "/profil1.png",
+      image: "/profil2.png",
       description: "Jednatel vinařství zodpovědný za strategický rozvoj a vedení společnosti",
       email: "michal@miqueen.cz",
       phone: "+420731610344"
@@ -76,7 +76,7 @@ const MiQueenContactPage: React.FC = () => {
     {
       name: "Jiří Konečný",
       position: "Sales manager",
-      image: "/profil2.png",
+      image: "/profil1.png",
       description: "Obchodní manažer pro prodej vín a firemní spolupráce",
       email: "jirka@miqueen.cz",
       phone: "+420603778898"

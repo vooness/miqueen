@@ -222,6 +222,26 @@ const AdoptujVinohrad: React.FC = () => {
               <div className="absolute inset-0 rounded-xl md:rounded-2xl lg:rounded-3xl border border-gray-200 pointer-events-none"></div>
             </div>
 
+            {/* Informační notice */}
+            <motion.div 
+              className="bg-white rounded-xl md:rounded-2xl p-4 md:p-5 shadow-md border mb-4 md:mb-6"
+              style={{ borderColor: "rgba(171, 135, 84, 0.2)" }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+            >
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(171, 135, 84, 0.1)" }}>
+                  <Heart className="w-4 h-4 md:w-5 md:h-5" style={{ color: "#ab8754" }} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm md:text-base text-gray-700 leading-relaxed">
+                    <span className="font-medium" style={{ color: "#ab8754" }}>Vítáme vás kdykoliv:</span> Vinohrad můžete navštívit během celého roku a být součástí vinařského života.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
             {/* CTA Buttons pod videem */}
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 lg:gap-6">
               <motion.a 
