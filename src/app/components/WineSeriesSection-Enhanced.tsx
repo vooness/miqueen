@@ -204,7 +204,7 @@ const WineSeriesSection = () => {
             </motion.div>
 
             {/* CENTER - Wine Bottle (Right side on Mobile) - ZVĚTŠENO NA DESKTOPU */}
-            <div className="col-span-1 lg:col-span-5 flex justify-center items-center py-4 md:py-8 lg:py-0">
+            <div className="col-span-1 lg:col-span-5 flex justify-center items-center py-4 md:py-8 lg:py-0 mb-20">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentWine.id}
