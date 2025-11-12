@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import Navbar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
 import CategoryWineGrid from "@/app/components/CategoryWineGrid";
+import { use } from 'react';
 
 // Mapování URL slug na interní category key
 const SLUG_TO_CATEGORY: Record<string, string> = {
@@ -35,11 +36,13 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
 };
 
 interface PageProps {
-  params: { category: string }
+  params: Promise<{ category: string }>
 }
 
 export default function CategoryPage({ params }: PageProps) {
-  const categorySlug = params.category;
+  // Použij React.use() pro unwrap Promise
+  const resolvedParams = use(params);
+  const categorySlug = resolvedParams.category;
   const categoryKey = SLUG_TO_CATEGORY[categorySlug];
   const categoryName = CATEGORY_NAMES[categorySlug];
   const categoryDescription = CATEGORY_DESCRIPTIONS[categorySlug];
