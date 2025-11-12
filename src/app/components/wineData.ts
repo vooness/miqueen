@@ -702,8 +702,6 @@ export const wines: WineProduct[] = [
     residualSugar: 4.6
   },
 
-  // ========== DALŠÍ BÍLÁ VÍNA (750ml) - pokračování ==========
-  
   // ID 30: Sauvignon 2024
   {
     id: 30,
@@ -816,8 +814,6 @@ export const wines: WineProduct[] = [
     residualSugar: 15.8
   },
 
-  // ========== SPECIÁLNÍ - 1 produkt (750ml) ==========
-  
   // ID 35: MIMOSA 750ml
   {
     id: 35,
@@ -887,8 +883,6 @@ export const wines: WineProduct[] = [
     residualSugar: 7.3
   },
 
-  // ========== SETY MINI VÍN - 2 produkty ==========
-  
   // ID 38: Set 4x mini - klasika
   {
     id: 38,
@@ -899,7 +893,7 @@ export const wines: WineProduct[] = [
     price: 309,
     description: "Mini set vín MiQueen – kouzlo malých lahviček, velkých zážitků. Obsahuje: Ryzlink vlašský PS 2023 suché (0,187 l), Rulandské šedé VH 2023 polosladké (0,187 l), Frankovka rosé PS 2024 polosladké (0,187 l), Pinot Noir VH 2022 suché (0,187 l).",
     category: 'set',
-    image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/detail/216_navrh-bez-nazvu--89.png',
+    image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/219_navrh-bez-nazvu--86.png?68fb1b71',
     shopUrl: 'https://shop.miqueen.cz/set-4x-mini-ryzlink-vlassky--rulandske-sede--frankovka-rose--pinot-noir/',
     badge: 'tip',
     volume: 187,
@@ -931,8 +925,6 @@ export const wines: WineProduct[] = [
     residualSugar: null
   },
 
-  // ========== ČERVENÁ VÍNA (750ml) - 1 produkt ==========
-  
   // ID 40: Pinot Noir 2022
   {
     id: 40,
@@ -1038,44 +1030,6 @@ export const getStatistics = () => {
     withoutSugar: wines.filter(w => w.residualSugar === null || w.residualSugar === undefined).length
   };
 
-  console.log('========================================');
-  console.log('KOMPLETNÍ DATABÁZE VÍN MIQUEEN 2024');
-  console.log('========================================');
-  console.log(`Celkem produktů: ${wines.length}/40 ✅`);
-  console.log('');
-  console.log('KATEGORIE:');
-  console.log(`  Bílá vína: ${categories.white} produktů`);
-  console.log(`  Červená vína: ${categories.red} produktů`);
-  console.log(`  Růžová vína: ${categories.rose} produktů`);
-  console.log(`  Perlivá vína (Frizzante): ${categories.sparkling} produktů`);
-  console.log(`  Speciální: ${categories.special} produktů`);
-  console.log(`  Sety: ${categories.set} produktů`);
-  console.log('');
-  console.log('OBJEMY:');
-  console.log(`  Mini lahve (187-200ml): ${volumes.mini} produktů`);
-  console.log(`  Standardní lahve (750ml): ${volumes.standard} produktů`);
-  console.log('');
-  console.log('ROČNÍKY:');
-  console.log(`  2022: ${vintages['2022']} produktů`);
-  console.log(`  2023: ${vintages['2023']} produktů`);
-  console.log(`  2024: ${vintages['2024']} produktů`);
-  console.log('');
-  console.log('ZBYTKOVÝ CUKR:');
-  console.log(`  S hodnotou: ${sugarStats.withSugar} produktů`);
-  console.log(`  Bez hodnoty (sety/speciální): ${sugarStats.withoutSugar} produktů`);
-  console.log('');
-  console.log(`NOVÁ VÍNA 2024: ${newWines2024.length} produktů`);
-  console.log('========================================');
-  console.log(wines.length === 40 ? '✅ ÚSPĚCH: Všech 40 produktů je v databázi!' : `⚠️ VAROVÁNÍ: Je ${wines.length} produktů!`);
-  
-  // Kontrola URL
-  const urlCheck = wines.every(w => w.shopUrl.startsWith('https://shop.miqueen.cz/'));
-  console.log(urlCheck ? '✅ Všechny odkazy jsou správné!' : '⚠️ Některé odkazy nejsou správné!');
-  
-  // Kontrola zbytkového cukru
-  const sugarCheck = wines.filter(w => w.residualSugar !== null && w.residualSugar !== undefined).length === 37;
-  console.log(sugarCheck ? '✅ Všechna vína mají hodnoty zbytkového cukru (kromě setů a MIMOSA)!' : '⚠️ Zkontroluj hodnoty zbytkového cukru!');
-  
   return {
     total: wines.length,
     categories,
@@ -1084,10 +1038,101 @@ export const getStatistics = () => {
     newWines2024: newWines2024.length,
     sugarStats,
     status: wines.length === 40,
-    urlsValid: urlCheck,
-    sugarValid: sugarCheck
   };
 };
 
-// Zavolat statistiky pro kontrolu
-getStatistics();
+// ========== UTILITY FUNKCE PRO URL A NAVIGACI ==========
+
+export const createSlug = (name: string): string => {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+};
+
+// Mapování kategorií na URL slugy - SJEDNOCENO!
+export const categoryToSlug = (category: string): string => {
+  const mapping: Record<string, string> = {
+    'white': 'bila-vina',
+    'red': 'cervena-vina',
+    'rose': 'ruzova-vina',
+    'sparkling': 'perliva-vina',
+    'special': 'mimosa-specialni',
+    'set': 'darkove-sety'
+  };
+  return mapping[category] || category;
+};
+
+export const slugToCategory = (slug: string): string => {
+  const mapping: Record<string, string> = {
+    'bila-vina': 'white',
+    'cervena-vina': 'red',
+    'ruzova-vina': 'rose',
+    'perliva-vina': 'sparkling',
+    'mimosa-specialni': 'special',
+    'darkove-sety': 'set'
+  };
+  return mapping[slug] || slug;
+};
+
+export const getCategoryName = (category: string): string => {
+  const mapping: Record<string, string> = {
+    'white': 'Bílá vína',
+    'red': 'Červená vína',
+    'rose': 'Růžová vína',
+    'sparkling': 'Perlivá vína',
+    'special': 'Mimosa speciální',
+    'set': 'Dárkové sety'
+  };
+  return mapping[category] || category;
+};
+
+export const getWineUrl = (wine: WineProduct): string => {
+  const categorySlug = categoryToSlug(wine.category);
+  const nameSlug = createSlug(wine.name);
+  return `/vina/${categorySlug}/${nameSlug}`;
+};
+
+export const getCategoryUrl = (category: string): string => {
+  const categorySlug = categoryToSlug(category);
+  return `/vina/${categorySlug}`;
+};
+
+export const generateWineStructuredData = (wine: WineProduct) => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": wine.name,
+    "image": wine.image,
+    "description": wine.description,
+    "brand": {
+      "@type": "Brand",
+      "name": "MiQueen Winery"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": `https://www.miqueen.cz${getWineUrl(wine)}`,
+      "priceCurrency": "CZK",
+      "price": wine.price,
+      "availability": "https://schema.org/InStock"
+    },
+    "aggregateRating": wine.rating ? {
+      "@type": "AggregateRating",
+      "ratingValue": wine.rating,
+      "bestRating": "5"
+    } : undefined
+  };
+};
+
+export const generateBreadcrumbs = (wine: WineProduct) => {
+  return [
+    { name: 'Domů', url: '/' },
+    { name: 'Naše vína', url: '/vina' },
+    { name: getCategoryName(wine.category), url: getCategoryUrl(wine.category) },
+    { name: wine.name, url: getWineUrl(wine) }
+  ];
+};

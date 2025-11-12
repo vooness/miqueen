@@ -25,7 +25,7 @@ const CorporateWinesPage: React.FC = () => {
         "Ideální firemní pozornost",
         "Možnost personalizace od 24 ks"
       ],
-      image: "/2.jpg"
+      image: "https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/219_navrh-bez-nazvu--86.png?68fb1b71"
     },
     {
       id: 2,
@@ -43,7 +43,7 @@ const CorporateWinesPage: React.FC = () => {
         "Luxusní prezentace",
         "Možnost personalizace od 24 ks"
       ],
-      image: "/2.jpg"
+      image: "https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/216_navrh-bez-nazvu--89.png?68fb1d90"
     }
   ];
 
@@ -166,7 +166,7 @@ const CorporateWinesPage: React.FC = () => {
               variants={fadeInUp}
             >
               Darujte svým obchodním partnerům, klientům či zaměstnancům něco výjimečného. 
-              Lahev kvalitního vína s personalizovanou etiketou je neotřelý způsob, jak vyjádřít 
+              Lahev kvalitního vína s personalizovanou etiketou je neotřelý způsob, jak vyjádřit 
               poděkování a podpořit dobré vztahy.
             </motion.p>
 
@@ -193,7 +193,7 @@ const CorporateWinesPage: React.FC = () => {
             </motion.div>
           </motion.div>
 
-          {/* Wine Sets Section */}
+          {/* Wine Sets Section - VĚTŠÍ OBRÁZKY */}
           <motion.div 
             className="mb-20"
             initial="hidden"
@@ -216,13 +216,13 @@ const CorporateWinesPage: React.FC = () => {
                   whileHover={{ y: -8 }}
                   className="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500"
                 >
-                  {/* Image */}
-                  <div className="relative h-64 bg-gradient-to-br from-gray-50 to-gray-100">
+                  {/* Image - VĚTŠÍ */}
+                  <div className="relative h-80 lg:h-96 bg-gradient-to-br from-gray-50 to-gray-100">
                     <Image
                       src={set.image}
                       alt={set.name}
                       fill
-                      className="object-contain p-8"
+                      className="object-contain p-4"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
@@ -267,7 +267,7 @@ const CorporateWinesPage: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Personalization Options - 2x2 Grid */}
+          {/* Personalization Options - VĚTŠÍ OBRÁZKY */}
           <motion.div 
             className="mb-20"
             initial="hidden"
@@ -283,7 +283,7 @@ const CorporateWinesPage: React.FC = () => {
             </motion.h2>
 
             <div className="grid md:grid-cols-2 gap-8">
-              {/* First two items in top row */}
+              {/* First two items in top row - VĚTŠÍ OBRÁZKY */}
               {personalizations.slice(0, 2).map((item) => (
                 <motion.div
                   key={item.id}
@@ -291,12 +291,12 @@ const CorporateWinesPage: React.FC = () => {
                   whileHover={{ scale: 1.02 }}
                   className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
                 >
-                  <div className="relative h-48 bg-gradient-to-br from-gray-50 to-gray-100">
+                  <div className="relative h-72 lg:h-80 bg-gradient-to-br from-gray-50 to-gray-100">
                     <Image
                       src={item.image}
                       alt={item.title}
                       fill
-                      className="object-contain p-6"
+                      className="object-contain p-4"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                     {/* Badge */}
@@ -331,19 +331,19 @@ const CorporateWinesPage: React.FC = () => {
               ))}
             </div>
 
-            {/* Third item spanning full width */}
+            {/* Third item spanning full width - VĚTŠÍ OBRÁZEK */}
             <motion.div
               variants={fadeInUp}
               whileHover={{ scale: 1.01 }}
               className="mt-8 bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
             >
               <div className="grid md:grid-cols-2">
-                <div className="relative h-64 md:h-full bg-gradient-to-br from-gray-50 to-gray-100">
+                <div className="relative h-96 md:h-full min-h-[400px] bg-gradient-to-br from-gray-50 to-gray-100">
                   <Image
                     src={personalizations[2].image}
                     alt={personalizations[2].title}
                     fill
-                    className="object-contain p-8"
+                    className="object-contain p-6"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>

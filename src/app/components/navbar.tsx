@@ -23,9 +23,9 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Adoptuj vinohrad', href: '/adoptuj-vinohrad' },
   { 
     label: 'Všechna vína', 
-    href: '/vsechna-nase-vina',
+    href: '/vina',
     subItems: [
-      { label: 'Všechna vína', href: '/vsechna-nase-vina' },
+      { label: 'Všechna vína', href: '/vina' },
       { label: 'Akční nabídka', href: '/akcni-nabidka' }
     ]
   },
