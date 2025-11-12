@@ -1,32 +1,20 @@
-# Robots.txt pro Vinařství MiQueen
-# https://miqueen.cz
+// app/robots.ts
+import { MetadataRoute } from 'next';
 
-# Povolení pro všechny crawlery
-User-agent: *
-Allow: /
-Disallow: /api/
-Disallow: /admin/
-Disallow: /_next/
-Disallow: /private/
-
-# Specifická pravidla pro Googlebot
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 0
-
-# Specifická pravidla pro Seznam
-User-agent: Seznambot
-Allow: /
-Crawl-delay: 1
-
-# Specifická pravidla pro Bing
-User-agent: Bingbot
-Allow: /
-Crawl-delay: 1
-
-# Sitemap
-Sitemap: https://miqueen.cz/sitemap.xml
-Sitemap: https://miqueen.cz/sitemap-0.xml
-
-# Host preference (pro Seznam)
-Host: https://miqueen.cz
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: [
+          '/api/',
+          '/admin/',
+          '/_next/',
+          '/private/',
+        ],
+      },
+    ],
+    sitemap: 'https://miqueen.cz/sitemap.xml',
+  };
+}

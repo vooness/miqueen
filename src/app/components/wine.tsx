@@ -1,22 +1,18 @@
 "use client"
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Image from "next/image";
 import { Star, ChevronLeft, ChevronRight, Sparkles, Droplets, Cherry, Grape, Wine, Package, ShoppingCart, X, Thermometer, MapPin, ChefHat, User, Gift } from "lucide-react";
 
-// ZMĚNA: Import nové funkce pro řazení podle sladkosti
+// Import funkcí a dat
 import { wines, getWinesByCategorySortedBySweetness, getWineCountByCategory, WineProduct } from "./wineData";
 
 // Import WineFilterBar komponenty
 import WineFilterBar, { WineFilters } from "@/app/components/WineFilterBar";
 
-// Debug: Zkontrolujte počet produktů při načtení komponenty
-console.log('Celkový počet vín v databázi:', wines.length);
-console.log('Bílá vína:', wines.filter(w => w.category === 'white').length);
-console.log('Červená vína:', wines.filter(w => w.category === 'red').length);
-console.log('Růžová vína:', wines.filter(w => w.category === 'rose').length);
-console.log('Perlivá vína:', wines.filter(w => w.category === 'sparkling').length);
-console.log('Speciální:', wines.filter(w => w.category === 'special').length);
-console.log('Sety:', wines.filter(w => w.category === 'set').length);
+// Debug log - pouze v dev módu
+if (process.env.NODE_ENV === 'development') {
+  console.log('Celkový počet vín v databázi:', wines.length);
+}
 
 const WineCollectionSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -25,31 +21,36 @@ const WineCollectionSection: React.FC = () => {
   const [gap, setGap] = useState(24);
   const [selectedWine, setSelectedWine] = useState<WineProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  // Vypočítání min/max ceny z aktuální databáze
-  const minPrice = Math.min(...wines.map(w => w.price));
-  const maxPrice = Math.max(...wines.map(w => w.price));
+  // Memoizace min/max ceny
+  const priceRange = useMemo(() => ({
+    min: Math.min(...wines.map(w => w.price)),
+    max: Math.max(...wines.map(w => w.price))
+  }), []);
 
-  // Získej všechny unikátní ročníky jako čísla
-  const availableVintages = Array.from(new Set(wines.map(w => w.vintage).filter(Boolean))).sort((a, b) => b - a);
+  // Memoizace unikátních ročníků
+  const availableVintages = useMemo(() => 
+    Array.from(new Set(wines.map(w => w.vintage).filter(Boolean))).sort((a, b) => b - a)
+  , []);
 
-  // State pro filtry - podle správného WineFilters interface
+  // State pro filtry
   const [filters, setFilters] = useState<WineFilters>({
     searchQuery: '',
-    priceRange: [minPrice, maxPrice],
+    priceRange: [priceRange.min, priceRange.max],
     selectedVintages: [],
     selectedDryness: [],
     selectedQuality: [],
-    selectedColors: []  // Nový filtr pro barvu vína
+    selectedColors: []
   });
 
-  // Separate state pro řazení (není součástí WineFilters)
-  const [] = useState<'name' | 'price-asc' | 'price-desc' | 'rating'>('name');
-
-  // Responzivní počet viditelných produktů
+  // Detekce mobilního zařízení
   useEffect(() => {
-    const handleResize = () => {
-      if (typeof window === 'undefined') return;
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
       
       if (window.innerWidth < 640) {
         setItemsPerView(2);
@@ -69,33 +70,46 @@ const WineCollectionSection: React.FC = () => {
       }
     };
 
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    checkMobile();
+    
+    const debouncedResize = () => {
+      clearTimeout((window as Window & { wineResizeTimer?: number }).wineResizeTimer);
+      (window as Window & { wineResizeTimer?: number }).wineResizeTimer = window.setTimeout(checkMobile, 150);
+    };
+    
+    window.addEventListener('resize', debouncedResize, { passive: true });
+    return () => {
+      window.removeEventListener('resize', debouncedResize);
+      clearTimeout((window as Window & { wineResizeTimer?: number }).wineResizeTimer);
+    };
   }, []);
 
-  // ZMĚNA: Použití nové funkce pro řazení podle sladkosti - OD NEJSUŠŠÍCH PO NEJSLADŠÍ
-  const filteredWines = selectedCategory === 'new' 
-    ? wines.filter(w => w.badge === 'new').sort((a, b) => {
-        // Seřadit novinky také podle sladkosti - OD NEJSUŠŠÍCH (VZESTUPNĚ)
-        const aHasSugar = a.residualSugar !== null && a.residualSugar !== undefined;
-        const bHasSugar = b.residualSugar !== null && b.residualSugar !== undefined;
-        if (!aHasSugar && !bHasSugar) return 0;
-        if (!aHasSugar) return 1;
-        if (!bHasSugar) return -1;
-        return a.residualSugar! - b.residualSugar!; // ZMĚNĚNO: vzestupně (od nejmenšího po největší)
-      })
-    : getWinesByCategorySortedBySweetness(selectedCategory);
+  // Memoizace filtrovaných vín s optimalizací
+  const filteredWines = useMemo(() => {
+    const baseWines = selectedCategory === 'new' 
+      ? wines.filter(w => w.badge === 'new').sort((a, b) => {
+          const aHasSugar = a.residualSugar !== null && a.residualSugar !== undefined;
+          const bHasSugar = b.residualSugar !== null && b.residualSugar !== undefined;
+          if (!aHasSugar && !bHasSugar) return 0;
+          if (!aHasSugar) return 1;
+          if (!bHasSugar) return -1;
+          return a.residualSugar! - b.residualSugar!;
+        })
+      : getWinesByCategorySortedBySweetness(selectedCategory);
+    
+    return baseWines;
+  }, [selectedCategory]);
   
-  // Aplikace filtrů - vína jsou již seřazená od nejsušších po nejsladší, takže nepřeřazujeme
-  const applyFilters = (wines: WineProduct[]) => {
-    let result = [...wines];
+  // Memoizace aplikace filtrů
+  const finalFilteredWines = useMemo(() => {
+    let result = [...filteredWines];
 
     // Filtr vyhledávání
     if (filters.searchQuery) {
+      const query = filters.searchQuery.toLowerCase();
       result = result.filter(wine => 
-        wine.name.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
-        wine.variety.toLowerCase().includes(filters.searchQuery.toLowerCase())
+        wine.name.toLowerCase().includes(query) ||
+        wine.variety.toLowerCase().includes(query)
       );
     }
 
@@ -119,36 +133,63 @@ const WineCollectionSection: React.FC = () => {
       result = result.filter(w => w.quality && filters.selectedQuality.includes(w.quality));
     }
 
-    // Filtr podle barvy vína - NOVÝ
+    // Filtr podle barvy vína
     if (filters.selectedColors.length > 0) {
       result = result.filter(w => w.category && filters.selectedColors.includes(w.category));
     }
 
     return result;
-  };
+  }, [filteredWines, filters]);
 
-  const finalFilteredWines = applyFilters(filteredWines);
   const maxIndex = Math.max(0, finalFilteredWines.length - itemsPerView);
 
   // Callback pro změnu filtrů
-  const handleFiltersChange = (newFilters: WineFilters) => {
+  const handleFiltersChange = useCallback((newFilters: WineFilters) => {
     setFilters(newFilters);
-    setCurrentIndex(0); // Reset na první slide při změně filtrů
-  };
+    setCurrentIndex(0);
+  }, []);
 
-  const nextSlide = () => {
+  // Navigační funkce s optimalizací
+  const nextSlide = useCallback(() => {
     setCurrentIndex(prev => Math.min(prev + 1, maxIndex));
-  };
+  }, [maxIndex]);
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     setCurrentIndex(prev => Math.max(prev - 1, 0));
-  };
+  }, []);
 
+  // Touch handling pro mobilní swipe
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+    
+    if (isLeftSwipe && currentIndex < maxIndex) {
+      nextSlide();
+    }
+    if (isRightSwipe && currentIndex > 0) {
+      prevSlide();
+    }
+  }, [touchStart, touchEnd, currentIndex, maxIndex, nextSlide, prevSlide]);
+
+  // Reset indexu při změně kategorie nebo filtrů
   useEffect(() => {
     setCurrentIndex(0);
-  }, [selectedCategory, filters]); // Reset i při změně filtrů
+  }, [selectedCategory, filters]);
 
-  const getBadgeStyle = (badge?: string) => {
+  // Memoizace badge stylů
+  const getBadgeStyle = useCallback((badge?: string) => {
     switch(badge) {
       case 'bestseller': return { bg: '#ab8754', text: 'Bestseller' };
       case 'award': return { bg: '#ab8754', text: 'Oceněné' };
@@ -157,21 +198,23 @@ const WineCollectionSection: React.FC = () => {
       case 'tip': return { bg: '#F59E0B', text: 'Tip' };
       default: return null;
     }
-  };
+  }, []);
 
-  const openModal = (wine: WineProduct) => {
+  // Modal handlers s optimalizací
+  const openModal = useCallback((wine: WineProduct) => {
     setSelectedWine(wine);
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
-  };
+  }, []);
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setSelectedWine(null);
     document.body.style.overflow = 'unset';
-  };
+  }, []);
 
-  const getDrynessLabel = (dryness?: string) => {
+  // Memoizace label funkcí
+  const getDrynessLabel = useCallback((dryness?: string) => {
     switch(dryness) {
       case 'suche': return 'Suché';
       case 'polosuche': return 'Polosuché';
@@ -179,9 +222,9 @@ const WineCollectionSection: React.FC = () => {
       case 'sladke': return 'Sladké';
       default: return 'N/A';
     }
-  };
+  }, []);
 
-  const getQualityLabel = (quality?: string) => {
+  const getQualityLabel = useCallback((quality?: string) => {
     switch(quality) {
       case 'kabinet': return 'Kabinet';
       case 'pozdni-sber': return 'Pozdní sběr';
@@ -192,68 +235,80 @@ const WineCollectionSection: React.FC = () => {
       case 'ledove': return 'Ledové víno';
       default: return 'Standard';
     }
-  };
+  }, []);
 
-  // Správné počty pro 40 produktů
-  const getCategoryCount = (category: string): number => {
-    if (category === 'all') return 40; // Celkem 40 produktů
+  // Memoizace počtu kategorií
+  const getCategoryCount = useCallback((category: string): number => {
+    if (category === 'all') return wines.length;
     return getWineCountByCategory(category);
-  };
+  }, []);
+
+  // Memoizace kategorií pro lepší výkon
+  const categories = useMemo(() => [
+    { id: 'all', icon: Sparkles, label: 'Všechna vína', color: '#ab8754' },
+    { id: 'new', icon: Sparkles, label: 'Novinky', color: '#10B981', count: wines.filter(w => w.badge === 'new').length },
+    { id: 'white', icon: Droplets, label: 'Bílá', color: '#ab8754' },
+    { id: 'red', icon: Cherry, label: 'Červená', color: '#ab8754' },
+    { id: 'rose', icon: Grape, label: 'Růžová', color: '#ab8754' },
+    { id: 'sparkling', icon: Wine, label: 'Perlivá', color: '#ab8754' },
+    { id: 'special', icon: Package, label: 'Mimosa', color: '#ab8754' },
+    { id: 'set', icon: Gift, label: 'Sety', color: '#ab8754' }
+  ], []);
 
   return (
     <>
       <section 
-        className="relative min-h-screen py-20 lg:py-28 overflow-hidden"
-        style={{ 
-          backgroundColor: "#fefbea"
-        }}
+        className="relative min-h-screen py-12 sm:py-20 lg:py-28 overflow-hidden"
+        style={{ backgroundColor: "#fefbea" }}
       >
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl animate-pulse" 
-               style={{ background: `radial-gradient(circle, #ab875415, transparent)` }}></div>
-          <div className="absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl animate-pulse animation-delay-2000"
-               style={{ background: `radial-gradient(circle, #ab875410, transparent)` }}></div>
-        </div>
+        {/* Animated background - pouze desktop */}
+        {!isMobile && (
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl animate-pulse" 
+                 style={{ background: `radial-gradient(circle, #ab875415, transparent)` }}></div>
+            <div className="absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl animate-pulse animation-delay-2000"
+                 style={{ background: `radial-gradient(circle, #ab875410, transparent)` }}></div>
+          </div>
+        )}
         
         <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Header */}
-          <div className="text-center mb-16 px-4">
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-3 mb-4">
-                <div className="h-px w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-                <Grape className="w-8 h-8" style={{ color: "#ab8754" }} />
-                <div className="h-px w-12 bg-gradient-to-l from-transparent via-gray-300 to-transparent"></div>
+          <div className="text-center mb-12 sm:mb-16 px-4">
+            <div className="space-y-4 sm:space-y-6">
+              <div className="inline-flex items-center gap-2 sm:gap-3 mb-4">
+                <div className="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+                <Grape className="w-6 h-6 sm:w-8 sm:h-8" style={{ color: "#ab8754" }} />
+                <div className="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent via-gray-300 to-transparent"></div>
               </div>
               
-              <h2 className="text-5xl lg:text-7xl font-light text-gray-800">
+              <h2 className="text-3xl sm:text-5xl lg:text-7xl font-light text-gray-800">
                 Naše <span className="font-normal" style={{ color: "#ab8754" }}>kolekce</span>
               </h2>
-              <p className="text-xl text-gray-600 font-light max-w-2xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-xl text-gray-600 font-light max-w-2xl mx-auto leading-relaxed">
                 Vína seřazená od nejsušších po nejsladší
               </p>
               
               {/* Informace kde koupit vína */}
-              <div className="mt-8 max-w-3xl mx-auto">
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 sm:p-6 border-2 shadow-lg" style={{ borderColor: "#ab875440" }}>
+              <div className="mt-6 sm:mt-8 max-w-3xl mx-auto">
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border-2 shadow-lg" style={{ borderColor: "#ab875440" }}>
                   <div className="flex items-start gap-3 sm:gap-4">
                     <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(171, 135, 84, 0.1)" }}>
                       <MapPin className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: "#ab8754" }} />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">
+                      <h3 className="text-sm sm:text-lg font-semibold text-gray-800 mb-2">
                         Kde koupíte naše vína?
                       </h3>
-                      <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-3">
+                      <p className="text-xs sm:text-base text-gray-700 leading-relaxed mb-3">
                         Naše vína můžete zakoupit online na e-shopu nebo v síti prodejen po celé České republice.
                       </p>
                       <a 
                         href="/mapa-vin"
-                        className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold hover:underline transition-colors"
+                        className="inline-flex items-center gap-2 text-xs sm:text-base font-semibold hover:underline transition-colors touch-manipulation"
                         style={{ color: "#ab8754" }}
                       >
-                        <MapPin className="w-4 h-4" />
+                        <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
                         Zobrazit mapu prodejen
                       </a>
                     </div>
@@ -263,162 +318,46 @@ const WineCollectionSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Kategorie - se správnými počty */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+          {/* Kategorie */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-16">
             <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2 sm:gap-3">
-              <button
-                onClick={() => setSelectedCategory('all')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'all' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'all' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="whitespace-nowrap">Všechna vína</span>
-                <span className={`${selectedCategory === 'all' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getCategoryCount('all')})
-                </span>
-              </button>
-              
-              <button
-                onClick={() => setSelectedCategory('new')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'new' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'new' ? { backgroundColor: '#10B981' } : {}}
-              >
-                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="whitespace-nowrap">Novinky</span>
-                <span className={`${selectedCategory === 'new' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({wines.filter(w => w.badge === 'new').length})
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('white')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'white' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'white' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Droplets className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Bílá</span>
-                <span className={`${selectedCategory === 'white' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getCategoryCount('white')})
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('red')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'red' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'red' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Cherry className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Červená</span>
-                <span className={`${selectedCategory === 'red' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getCategoryCount('red')})
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('rose')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'rose' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'rose' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Grape className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Růžová</span>
-                <span className={`${selectedCategory === 'rose' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getCategoryCount('rose')})
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('sparkling')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'sparkling' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'sparkling' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Wine className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Perlivá</span>
-                <span className={`${selectedCategory === 'sparkling' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getCategoryCount('sparkling')})
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('special')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'special' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'special' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Package className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Mimosa</span>
-                <span className={`${selectedCategory === 'special' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getCategoryCount('special')})
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelectedCategory('set')}
-                className={`
-                  flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base
-                  ${selectedCategory === 'set' 
-                    ? 'text-white border-transparent shadow-lg' 
-                    : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:border-gray-300 hover:shadow-md'
-                  }
-                `}
-                style={selectedCategory === 'set' ? { backgroundColor: '#ab8754' } : {}}
-              >
-                <Gift className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>Sety</span>
-                <span className={`${selectedCategory === 'set' ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-base`}>
-                  ({getCategoryCount('set')})
-                </span>
-              </button>
+              {categories.map((category) => {
+                const Icon = category.icon;
+                const count = category.count !== undefined ? category.count : getCategoryCount(category.id);
+                const isSelected = selectedCategory === category.id;
+                
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`
+                      flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base touch-manipulation
+                      ${isSelected 
+                        ? 'text-white border-transparent shadow-lg' 
+                        : 'bg-white/90 text-gray-700 border-gray-200 active:scale-95'
+                      }
+                      ${!isMobile && !isSelected ? 'hover:bg-white hover:border-gray-300 hover:shadow-md' : ''}
+                    `}
+                    style={isSelected ? { backgroundColor: category.color } : {}}
+                  >
+                    <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="whitespace-nowrap">{category.label}</span>
+                    <span className={`${isSelected ? 'text-white/80' : 'text-gray-500'} text-[10px] sm:text-sm`}>
+                      ({count})
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* WineFilterBar - Filtrační lišta nad produkty */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+          {/* WineFilterBar */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8">
             <WineFilterBar 
               filters={filters}
               onFiltersChange={handleFiltersChange}
-              minPrice={minPrice}
-              maxPrice={maxPrice}
+              minPrice={priceRange.min}
+              maxPrice={priceRange.max}
               availableVintages={availableVintages}
               resultCount={finalFilteredWines.length}
             />
@@ -426,8 +365,8 @@ const WineCollectionSection: React.FC = () => {
 
           {/* Products Slider */}
           <div className="relative">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-light text-gray-800">
+            <div className="flex items-center justify-between mb-4 sm:mb-6 px-4">
+              <h3 className="text-lg sm:text-2xl font-light text-gray-800">
                 {selectedCategory === 'all' ? 'Všechna vína' : 
                  selectedCategory === 'new' ? 'Novinky' :
                  selectedCategory === 'white' ? 'Bílá vína' :
@@ -438,52 +377,58 @@ const WineCollectionSection: React.FC = () => {
                  'Speciální edice'}
               </h3>
               
-              <div className="flex items-center gap-3">
-                <span className="text-gray-600 text-sm font-medium">
-                  {finalFilteredWines.length} produktů
-                </span>
-              </div>
+              <span className="text-gray-600 text-xs sm:text-sm font-medium">
+                {finalFilteredWines.length} produktů
+              </span>
             </div>
 
-            {/* Slider container with arrows on sides (desktop and mobile) */}
+            {/* Slider container */}
             <div className="relative">
-              {/* Šipky po stranách uprostřed vertikálně - pro všechna zařízení */}
+              {/* Navigation arrows */}
               <button
                 onClick={prevSlide}
                 disabled={currentIndex === 0}
                 className={`
-                  absolute -left-4 top-1/2 -translate-y-1/2 z-10
-                  w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg
+                  absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 z-10
+                  w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-lg touch-manipulation
                   ${currentIndex === 0 
                     ? 'opacity-30 cursor-not-allowed' 
-                    : 'hover:scale-110 active:scale-95'}
+                    : 'active:scale-90'}
+                  ${!isMobile && currentIndex !== 0 ? 'hover:scale-110' : ''}
                 `}
                 style={{ backgroundColor: currentIndex === 0 ? '#d1d5db' : '#ab8754' }}
               >
-                <ChevronLeft className="w-5 h-5 text-white" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </button>
               
               <button
                 onClick={nextSlide}
                 disabled={currentIndex >= maxIndex}
                 className={`
-                  absolute -right-4 top-1/2 -translate-y-1/2 z-10
-                  w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg
+                  absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 z-10
+                  w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-lg touch-manipulation
                   ${currentIndex >= maxIndex 
                     ? 'opacity-30 cursor-not-allowed' 
-                    : 'hover:scale-110 active:scale-95'}
+                    : 'active:scale-90'}
+                  ${!isMobile && currentIndex < maxIndex ? 'hover:scale-110' : ''}
                 `}
                 style={{ backgroundColor: currentIndex >= maxIndex ? '#d1d5db' : '#ab8754' }}
               >
-                <ChevronRight className="w-5 h-5 text-white" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </button>
 
-              <div className="overflow-hidden px-0 sm:px-0">
+              <div 
+                className="overflow-hidden px-0"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
                 <div 
                   className="flex transition-transform duration-500 ease-out"
                   style={{ 
                     gap: `${gap}px`,
-                    transform: `translateX(calc(-${currentIndex} * (${100 / itemsPerView}% + ${gap / itemsPerView}px)))`
+                    transform: `translateX(calc(-${currentIndex} * (${100 / itemsPerView}% + ${gap / itemsPerView}px)))`,
+                    willChange: 'transform'
                   }}
                 >
                   {finalFilteredWines.map((wine) => {
@@ -497,7 +442,7 @@ const WineCollectionSection: React.FC = () => {
                           width: `calc((100% - ${gap * (itemsPerView - 1)}px) / ${itemsPerView})`
                         }}
                       >
-                        <div className="group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-[#ab8754]/50 transition-all duration-500 shadow-lg hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
+                        <div className={`group bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 transition-all duration-300 shadow-lg h-full flex flex-col ${!isMobile ? 'hover:border-[#ab8754]/50 hover:shadow-2xl hover:-translate-y-2' : 'active:scale-95'}`}>
                           
                           {/* Image Container */}
                           <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden flex-shrink-0">
@@ -505,30 +450,34 @@ const WineCollectionSection: React.FC = () => {
                               src={wine.image}
                               alt={wine.name}
                               fill
-                              className="object-cover group-hover:scale-110 transition-transform duration-700 cursor-pointer"
+                              className={`object-cover cursor-pointer ${!isMobile ? 'group-hover:scale-110 transition-transform duration-700' : ''}`}
                               sizes={`(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw`}
                               onClick={() => openModal(wine)}
+                              loading="lazy"
+                              quality={isMobile ? 70 : 85}
                             />
                             
                             {badge && (
                               <div 
-                                className="absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-lg z-10"
+                                className="absolute top-2 left-2 sm:top-3 sm:left-3 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold text-white shadow-lg z-10"
                                 style={{ backgroundColor: badge.bg }}
                               >
                                 {badge.text}
                               </div>
                             )}
 
-                            {/* Quick view overlay */}
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10 pointer-events-none group-hover:pointer-events-auto">
-                              <button
-                                onClick={() => openModal(wine)}
-                                className="px-6 py-3 bg-white text-gray-900 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center gap-2 shadow-xl"
-                              >
-                                <Wine className="w-4 h-4" />
-                                Zobrazit produkt
-                              </button>
-                            </div>
+                            {/* Quick view overlay - pouze desktop */}
+                            {!isMobile && (
+                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10 pointer-events-none group-hover:pointer-events-auto">
+                                <button
+                                  onClick={() => openModal(wine)}
+                                  className="px-4 sm:px-6 py-2 sm:py-3 bg-white text-gray-900 rounded-full font-semibold text-xs sm:text-sm hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center gap-2 shadow-xl"
+                                >
+                                  <Wine className="w-3 h-3 sm:w-4 sm:h-4" />
+                                  Zobrazit produkt
+                                </button>
+                              </div>
+                            )}
                           </div>
                           
                           {/* Content */}
@@ -551,7 +500,7 @@ const WineCollectionSection: React.FC = () => {
                             </div>
                             
                             {/* Title */}
-                            <h3 className="text-gray-900 font-semibold text-xs sm:text-sm mb-1 sm:mb-2 line-clamp-2 min-h-[2rem] sm:min-h-[3.5rem] cursor-pointer hover:text-[#ab8754] transition-colors" onClick={() => openModal(wine)}>
+                            <h3 className={`text-gray-900 font-semibold text-xs sm:text-sm mb-1 sm:mb-2 line-clamp-2 min-h-[2rem] sm:min-h-[3.5rem] cursor-pointer transition-colors ${!isMobile ? 'hover:text-[#ab8754]' : ''}`} onClick={() => openModal(wine)}>
                               {wine.name}
                             </h3>
                             
@@ -584,8 +533,8 @@ const WineCollectionSection: React.FC = () => {
                               <div className="flex items-center justify-between">
                                 <div>
                                   <p className="text-gray-500 text-[9px] sm:text-xs mb-0.5 sm:mb-1">Cena</p>
-                                  <p className="text-gray-900 font-bold text-lg sm:text-2xl">
-                                    {wine.price} <span className="text-sm sm:text-lg">Kč</span>
+                                  <p className="text-gray-900 font-bold text-base sm:text-2xl">
+                                    {wine.price} <span className="text-xs sm:text-lg">Kč</span>
                                   </p>
                                 </div>
                                 
@@ -594,7 +543,7 @@ const WineCollectionSection: React.FC = () => {
                                   href={wine.shopUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="sm:hidden w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-95"
+                                  className="sm:hidden w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation"
                                   style={{ backgroundColor: "#ab8754" }}
                                 >
                                   <ShoppingCart className="w-4 h-4 text-white" />
@@ -613,7 +562,7 @@ const WineCollectionSection: React.FC = () => {
                                 href={wine.shopUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="hidden sm:flex w-full px-5 py-3 text-white rounded-full font-semibold text-sm transition-all hover:shadow-lg hover:scale-105 items-center justify-center gap-2"
+                                className={`hidden sm:flex w-full px-5 py-3 text-white rounded-full font-semibold text-sm transition-all items-center justify-center gap-2 ${!isMobile ? 'hover:shadow-lg hover:scale-105' : ''}`}
                                 style={{ backgroundColor: "#ab8754" }}
                               >
                                 <ShoppingCart className="w-4 h-4" />
@@ -631,16 +580,16 @@ const WineCollectionSection: React.FC = () => {
             
             {/* Slider dots */}
             {finalFilteredWines.length > itemsPerView && (
-              <div className="flex justify-center mt-6 sm:mt-8 gap-1 sm:gap-2">
+              <div className="flex justify-center mt-4 sm:mt-8 gap-1 sm:gap-2">
                 {Array.from({ length: Math.min(8, maxIndex + 1) }).map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrentIndex(i)}
-                    className={`h-2 rounded-full transition-all duration-300 ${
+                    className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 touch-manipulation ${
                       currentIndex === i 
-                        ? 'w-8 opacity-100' 
-                        : 'w-2 opacity-40 hover:opacity-70'
-                    }`}
+                        ? 'w-6 sm:w-8 opacity-100' 
+                        : 'w-1.5 sm:w-2 opacity-40'
+                    } ${!isMobile && currentIndex !== i ? 'hover:opacity-70' : ''}`}
                     style={{ backgroundColor: "#ab8754" }}
                     aria-label={`Přejít na slide ${i + 1}`}
                   />
@@ -651,33 +600,32 @@ const WineCollectionSection: React.FC = () => {
         </div>
       </section>
 
-      {/* Modal - stejný jako v původním kódu, zkráceno pro úsporu místa */}
+      {/* Modal - optimalizovaný pro mobil */}
       {isModalOpen && selectedWine && (
         <div 
           className="fixed inset-0 z-50 overflow-y-auto"
           onClick={closeModal}
         >
           <div className="min-h-screen px-4 flex items-center justify-center">
-            <div 
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-            />
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" />
             
             <div 
-              className="relative bg-white rounded-3xl max-w-5xl w-full mx-auto shadow-2xl overflow-hidden"
+              className="relative bg-white rounded-2xl sm:rounded-3xl max-w-5xl w-full mx-auto shadow-2xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-lg"
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-lg touch-manipulation"
               >
-                <X className="w-5 h-5 text-gray-600" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
               </button>
 
               <div className="grid md:grid-cols-2 gap-0">
-                <div className="relative bg-gradient-to-br from-gray-50 to-white p-8 sm:p-12 flex items-center justify-center border-r border-gray-100">
+                {/* Image Section */}
+                <div className="relative bg-gradient-to-br from-gray-50 to-white p-6 sm:p-12 flex items-center justify-center border-r border-gray-100">
                   {selectedWine.badge && (
                     <div 
-                      className="absolute top-6 left-6 px-4 py-2 rounded-full text-white text-sm font-semibold shadow-lg z-10"
+                      className="absolute top-4 left-4 sm:top-6 sm:left-6 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-white text-xs sm:text-sm font-semibold shadow-lg z-10"
                       style={{ backgroundColor: getBadgeStyle(selectedWine.badge)?.bg }}
                     >
                       {getBadgeStyle(selectedWine.badge)?.text}
@@ -692,25 +640,27 @@ const WineCollectionSection: React.FC = () => {
                       height={800}
                       className="w-full h-auto object-contain"
                       priority
+                      quality={isMobile ? 75 : 90}
                     />
                   </div>
                 </div>
 
-                <div className="p-6 sm:p-8 lg:p-12 overflow-y-scroll max-h-[80vh] custom-scrollbar">
-                  <div className="mb-6">
-                    <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+                {/* Content Section */}
+                <div className="p-4 sm:p-8 lg:p-12 overflow-y-scroll max-h-[80vh] custom-scrollbar">
+                  <div className="mb-4 sm:mb-6">
+                    <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
                       {selectedWine.name}
                     </h2>
-                    <p className="text-lg text-gray-600 mb-4">
+                    <p className="text-base sm:text-lg text-gray-600 mb-3 sm:mb-4">
                       {selectedWine.grapeVariety}
                     </p>
                     
-                    <div className="flex items-center gap-3">
-                      <div className="flex gap-1">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="flex gap-0.5 sm:gap-1">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-5 h-5 ${
+                            className={`w-4 h-4 sm:w-5 sm:h-5 ${
                               i < Math.floor(selectedWine.rating || 0)
                                 ? 'text-yellow-400 fill-current'
                                 : i < (selectedWine.rating || 0)
@@ -720,30 +670,30 @@ const WineCollectionSection: React.FC = () => {
                           />
                         ))}
                       </div>
-                      <span className="text-gray-600 font-medium">({selectedWine.rating?.toFixed(1) || '4.5'})</span>
+                      <span className="text-gray-600 font-medium text-sm sm:text-base">({selectedWine.rating?.toFixed(1) || '4.5'})</span>
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-[#ab875410] to-transparent p-4 sm:p-6 rounded-2xl mb-6">
-                    <p className="text-gray-600 mb-2">Cena</p>
-                    <p className="text-3xl sm:text-4xl font-bold text-gray-900">
-                      {selectedWine.price} <span className="text-xl sm:text-2xl">Kč</span>
+                  <div className="bg-gradient-to-r from-[#ab875410] to-transparent p-4 sm:p-6 rounded-xl sm:rounded-2xl mb-4 sm:mb-6">
+                    <p className="text-gray-600 mb-1 sm:mb-2 text-sm sm:text-base">Cena</p>
+                    <p className="text-2xl sm:text-4xl font-bold text-gray-900">
+                      {selectedWine.price} <span className="text-lg sm:text-2xl">Kč</span>
                     </p>
                     {selectedWine.volume && (
-                      <p className="text-gray-600 mt-2">
+                      <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
                         Objem: {selectedWine.volume}ml
                       </p>
                     )}
                   </div>
 
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Popis</h3>
-                    <p className="text-gray-600 leading-relaxed">
+                  <div className="mb-4 sm:mb-6">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Popis</h3>
+                    <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
                       {selectedWine.description}
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-4 sm:mb-6">
                     <div className="bg-gray-50 p-3 sm:p-4 rounded-xl">
                       <p className="text-gray-500 text-xs sm:text-sm mb-1">Ročník</p>
                       <p className="text-gray-900 font-semibold text-sm sm:text-base">{selectedWine.vintage}</p>
@@ -765,10 +715,10 @@ const WineCollectionSection: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-4 mb-8">
+                  <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                     {selectedWine.region && (
-                      <div className="flex items-start gap-3">
-                        <MapPin className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="text-gray-500 text-xs sm:text-sm">Region</p>
                           <p className="text-gray-900 text-sm sm:text-base">{selectedWine.region}</p>
@@ -777,8 +727,8 @@ const WineCollectionSection: React.FC = () => {
                     )}
                     
                     {selectedWine.servingTemp && (
-                      <div className="flex items-start gap-3">
-                        <Thermometer className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <Thermometer className="w-4 h-4 sm:w-5 sm:h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="text-gray-500 text-xs sm:text-sm">Teplota servírování</p>
                           <p className="text-gray-900 text-sm sm:text-base">{selectedWine.servingTemp}</p>
@@ -787,15 +737,15 @@ const WineCollectionSection: React.FC = () => {
                     )}
                     
                     {selectedWine.foodPairing && selectedWine.foodPairing.length > 0 && (
-                      <div className="flex items-start gap-3">
-                        <ChefHat className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <ChefHat className="w-4 h-4 sm:w-5 sm:h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
                         <div className="flex-1">
                           <p className="text-gray-500 text-xs sm:text-sm mb-2">Doporučujeme k</p>
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-1.5 sm:gap-2">
                             {selectedWine.foodPairing.map((food, index) => (
                               <span 
                                 key={index}
-                                className="px-2 sm:px-3 py-1 bg-[#ab875410] text-[#ab8754] rounded-full text-xs sm:text-sm font-medium"
+                                className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[#ab875410] text-[#ab8754] rounded-full text-xs sm:text-sm font-medium"
                               >
                                 {food}
                               </span>
@@ -806,8 +756,8 @@ const WineCollectionSection: React.FC = () => {
                     )}
                     
                     {selectedWine.winemaker && (
-                      <div className="flex items-start gap-3">
-                        <User className="w-5 h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <User className="w-4 h-4 sm:w-5 sm:h-5 text-[#ab8754] mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="text-gray-500 text-xs sm:text-sm">Vinařství</p>
                           <p className="text-gray-900 text-sm sm:text-base">{selectedWine.winemaker}</p>
@@ -817,20 +767,20 @@ const WineCollectionSection: React.FC = () => {
                   </div>
 
                   {selectedWine.notes && (
-                    <div className="bg-[#ab875410] p-4 rounded-xl mb-8">
-                      <p className="text-[#ab8754] font-semibold mb-2 text-sm sm:text-base">Poznámka vinaře</p>
+                    <div className="bg-[#ab875410] p-3 sm:p-4 rounded-xl mb-6 sm:mb-8">
+                      <p className="text-[#ab8754] font-semibold mb-1 sm:mb-2 text-sm sm:text-base">Poznámka vinaře</p>
                       <p className="text-gray-700 text-xs sm:text-sm">{selectedWine.notes}</p>
                     </div>
                   )}
 
-                  <div className="sticky bottom-0 left-0 right-0 bg-white pt-4 pb-safe">
+                  <div className="sticky bottom-0 left-0 right-0 bg-white pt-3 sm:pt-4 pb-safe">
                     <a
                       href={selectedWine.shopUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full px-6 py-4 bg-[#ab8754] text-white rounded-full font-semibold text-base sm:text-lg transition-all hover:shadow-lg hover:scale-105 flex items-center justify-center gap-2"
+                      className={`w-full px-5 sm:px-6 py-3 sm:py-4 bg-[#ab8754] text-white rounded-full font-semibold text-sm sm:text-lg transition-all flex items-center justify-center gap-2 touch-manipulation ${!isMobile ? 'hover:shadow-lg hover:scale-105' : 'active:scale-95'}`}
                     >
-                      <ShoppingCart className="w-5 h-5" />
+                      <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
                       Koupit na e-shopu
                     </a>
                   </div>
@@ -843,12 +793,8 @@ const WineCollectionSection: React.FC = () => {
 
       <style jsx>{`
         @keyframes pulse {
-          0%, 100% {
-            opacity: 0.4;
-          }
-          50% {
-            opacity: 0.6;
-          }
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.6; }
         }
 
         .animate-pulse {
@@ -865,6 +811,7 @@ const WineCollectionSection: React.FC = () => {
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
+        
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;
@@ -875,23 +822,10 @@ const WineCollectionSection: React.FC = () => {
         .pb-safe {
           padding-bottom: env(safe-area-inset-bottom, 1rem);
         }
-        
-        @keyframes bounce {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-        
-        .animate-bounce {
-          animation: bounce 2s infinite;
-        }
 
         /* Custom scrollbar for modal */
         .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
+          width: 6px;
         }
 
         .custom-scrollbar::-webkit-scrollbar-track {
@@ -908,10 +842,43 @@ const WineCollectionSection: React.FC = () => {
           background: #8b6d44;
         }
 
-        /* Firefox scrollbar */
         .custom-scrollbar {
           scrollbar-width: thin;
           scrollbar-color: #ab8754 #f1f1f1;
+        }
+
+        /* Touch optimalizace */
+        * {
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .touch-manipulation {
+          touch-action: manipulation;
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          user-select: none;
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          *,
+          *::before,
+          *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 767px) {
+          .animate-pulse {
+            animation: none;
+          }
+          
+          * {
+            will-change: auto !important;
+          }
         }
       `}</style>
     </>
