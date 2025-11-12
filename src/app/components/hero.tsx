@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -402,8 +403,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-6 sm:mb-8 md:mb-10 px-4"
             {...(isMobile || prefersReducedMotion ? {} : getMotionProps(0.6))}
           >
-            <a 
-              href="/vina"
+            <Link 
+              href="/vina/vsechna-vina"
               className={`relative group px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 bg-white rounded-full overflow-hidden transition-all duration-300 w-full sm:w-auto sm:min-w-[200px] md:min-w-[220px] text-center block cursor-pointer touch-manipulation ${isMobile ? 'active:scale-95' : ''}`}
             >
               <span className={`relative z-10 text-black transition-colors duration-300 font-semibold text-sm sm:text-base ${!isMobile ? 'group-hover:text-white' : ''}`}>
@@ -412,9 +413,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({
               {!isMobile && (
                 <div className="absolute -inset-1 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-bottom bg-[#ab8754]" />
               )}
-            </a>
+            </Link>
             
-            <a
+            <Link
               href="/mapa-vin"
               className={`relative group px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 bg-white rounded-full overflow-hidden transition-all duration-300 w-full sm:w-auto sm:min-w-[200px] md:min-w-[220px] text-center block cursor-pointer touch-manipulation ${isMobile ? 'active:scale-95' : ''}`}
             >
@@ -425,7 +426,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
               {!isMobile && (
                 <div className="absolute -inset-1 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-bottom bg-[#ab8754]" />
               )}
-            </a>
+            </Link>
           </MotionWrapper>
 
           {/* Location badge */}
