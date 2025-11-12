@@ -14,9 +14,7 @@ import {
   wines,
   createSlug, 
   slugToCategory, 
-  generateWineStructuredData,
-  generateBreadcrumbs
-} from '@/app/components/wineData';
+  generateWineStructuredData} from '@/app/components/wineData';
 
 const getDrynessLabel = (dryness?: string) => {
   const mapping: Record<string, string> = {
@@ -81,17 +79,14 @@ export default function WineDetailPage({ params }: PageProps) {
   }
 
   const badge = getBadgeStyle(wine.badge);
-  const breadcrumbs = generateBreadcrumbs(wine);
   const structuredData = generateWineStructuredData(wine);
 
   const relatedWines = wines
     .filter(w => w.category === wine.category && w.id !== wine.id)
     .slice(0, 4);
 
-  const categoryBreadcrumb = breadcrumbs[breadcrumbs.length - 2];
   
-  // ✅ OPRAVENO: URL pro návrat na dedikovanou stránku kategorie (ne query parametr)
-  const categoryBackUrl = `/vina/${getCategorySlug(wine.category)}`;
+
 
   return (
     <>
@@ -105,34 +100,15 @@ export default function WineDetailPage({ params }: PageProps) {
         <section className="min-h-screen py-20 lg:py-28 mt-12" style={{ backgroundColor: "#fefbea" }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            {/* Breadcrumb navigace - vede na dedikované URL kategorie */}
-            <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-              <Link href="/" className="hover:text-[#ab8754] transition-colors">
-                Domů
-              </Link>
-              <span>/</span>
-              <Link href="/vina" className="hover:text-[#ab8754] transition-colors">
-                Naše vína
-              </Link>
-              <span>/</span>
-              <Link 
-                href={categoryBackUrl}
-                className="hover:text-[#ab8754] transition-colors"
-              >
-                {categoryBreadcrumb.name}
-              </Link>
-              <span>/</span>
-              <span className="text-gray-900 font-medium">{wine.name}</span>
-            </nav>
+            
 
-            {/* Zpět na kategorii button - vede na dedikované URL kategorie */}
-            <Link 
-              href={categoryBackUrl}
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-[#ab8754] transition-colors mb-8"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Zpět na {categoryBreadcrumb.name}
-            </Link>
+           <Link 
+  href="/vina"
+  className="inline-flex items-center gap-2 text-gray-600 hover:text-[#ab8754] transition-colors mb-8"
+>
+  <ArrowLeft className="w-4 h-4" />
+  Zpět na vína
+</Link>
 
             <div className="bg-white rounded-3xl overflow-hidden shadow-xl">
               <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
