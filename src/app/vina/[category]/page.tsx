@@ -1,4 +1,4 @@
-"use client";
+
 
 import React from "react";
 import { notFound } from 'next/navigation';
@@ -14,7 +14,9 @@ const SLUG_TO_CATEGORY: Record<string, string> = {
   'ruzova-vina': 'rose',
   'perliva-vina': 'sparkling',
   'mimosa-specialni': 'special',
-  'darkove-sety': 'set'
+  'darkove-sety': 'set',
+  'all': 'all',
+  'novinky': 'new'
 };
 
 const CATEGORY_NAMES: Record<string, string> = {
@@ -23,7 +25,9 @@ const CATEGORY_NAMES: Record<string, string> = {
   'ruzova-vina': 'Růžová vína',
   'perliva-vina': 'Perlivá vína',
   'mimosa-specialni': 'MIMOSA speciální edice',
-  'darkove-sety': 'Dárkové sety'
+  'darkove-sety': 'Dárkové sety',
+  'all': 'Všechna vína',
+  'novinky': 'Novinky'
 };
 
 const CATEGORY_DESCRIPTIONS: Record<string, string> = {
@@ -32,7 +36,9 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   'ruzova-vina': 'Svěží a elegantní růžová vína ideální pro letní dny i slavnostní příležitosti.',
   'perliva-vina': 'Jemně perlivá vína Frizzante pro radostné okamžiky.',
   'mimosa-specialni': 'Unikátní vinný koktejl MIMOSA - kombinace suchého Sauvignonu Frizzante a 100% pomerančové šťávy.',
-  'darkove-sety': 'Elegantní dárkové sety mini vín - ideální dárek pro milovníky vína.'
+  'darkove-sety': 'Elegantní dárkové sety mini vín - ideální dárek pro milovníky vína.',
+  'all': 'Kompletní nabídka našich vín seřazená od nejsušších po nejsladší.',
+  'novinky': 'Nejnovější přírůstky do naší vinařské kolekce.'
 };
 
 interface PageProps {
@@ -40,14 +46,12 @@ interface PageProps {
 }
 
 export default function CategoryPage({ params }: PageProps) {
-  // Použij React.use() pro unwrap Promise
   const resolvedParams = use(params);
   const categorySlug = resolvedParams.category;
   const categoryKey = SLUG_TO_CATEGORY[categorySlug];
   const categoryName = CATEGORY_NAMES[categorySlug];
   const categoryDescription = CATEGORY_DESCRIPTIONS[categorySlug];
   
-  // Pokud kategorie neexistuje, zobraz 404
   if (!categoryKey || !categoryName) {
     notFound();
   }
@@ -65,4 +69,11 @@ export default function CategoryPage({ params }: PageProps) {
       <Footer />
     </>
   );
+}
+
+// Generování statických cest pro všechny kategorie
+export async function generateStaticParams() {
+  return Object.keys(SLUG_TO_CATEGORY).map((category) => ({
+    category: category,
+  }));
 }

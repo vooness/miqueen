@@ -306,7 +306,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             transition={{ duration: prefersReducedMotion || isMobile ? 0 : 0.6, delay: 0.6 }}
           >
             <a 
-              href="/vsechna-nase-vina"
+              href="/vina"
               className="relative group px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 bg-white rounded-full overflow-hidden transition-all duration-300 w-full sm:w-auto sm:min-w-[200px] md:min-w-[220px] text-center block cursor-pointer touch-manipulation"
             >
               <span className="relative z-10 text-black group-hover:text-white transition-colors duration-300 font-semibold text-sm sm:text-base">
