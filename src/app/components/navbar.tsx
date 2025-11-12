@@ -23,10 +23,16 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Adoptuj vinohrad', href: '/adoptuj-vinohrad' },
   { 
     label: 'Všechna vína', 
-    href: '/vina',
+    href: '/vina/vsechna-vina',
     subItems: [
-      { label: 'Všechna vína', href: '/vina' },
-      { label: 'Akční nabídka', href: '/akcni-nabidka' }
+      { label: 'Všechna vína', href: '/vina/vsechna-vina' },
+      { label: 'Novinky', href: '/vina/novinky' },
+      { label: 'Bílá vína', href: '/vina/bila-vina' },
+      { label: 'Červená vína', href: '/vina/cervena-vina' },
+      { label: 'Růžová vína', href: '/vina/ruzova-vina' },
+      { label: 'Perlivá vína', href: '/vina/perliva-vina' },
+      { label: 'Mimosa', href: '/vina/mimosa-special' },
+      { label: 'Dárkové sety', href: '/vina/darkove-sety' }
     ]
   },
   { label: 'Blog', href: '/blog' },
@@ -39,8 +45,15 @@ const NAV_ITEMS: NavItem[] = [
 
 const BREADCRUMB_MAP: Record<string, string> = {
   'adoptuj-vinohrad': 'Adoptuj vinohrad',
-  'vsechna-nase-vina': 'Všechna vína',
-  'akcni-nabidka': 'Akční nabídka',
+  'vina': 'Vína',
+  'vsechna-vina': 'Všechna vína',
+  'novinky': 'Novinky',
+  'bila-vina': 'Bílá vína',
+  'cervena-vina': 'Červená vína',
+  'ruzova-vina': 'Růžová vína',
+  'perliva-vina': 'Perlivá vína',
+  'mimosa-special': 'Mimosa',
+  'darkove-sety': 'Dárkové sety',
   'blog': 'Blog',
   'miqueen-mini': 'MiQueen mini',
   'poukazy': 'Poukazy',
