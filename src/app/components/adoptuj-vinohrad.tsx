@@ -681,7 +681,7 @@ const AdoptujVinohradPage = () => {
                   preload="metadata"
                 >
                   {/* ✅ VIDEO ZE SHOPTET CDN */}
-                  <source src="https://shop.miqueen.cz/user/documents/upload/promo2.mp4" type="video/mp4" />
+                  <source src="https://shop.miqueen.cz/user/documents/upload/promo2-2.webm" type="video/webm" />
                   Váš prohlížeč nepodporuje přehrávání videa.
                 </video>
               </div>
