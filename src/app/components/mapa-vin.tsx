@@ -15,8 +15,8 @@ const CONTACT_INFO = [
   {
     icon: Phone,
     title: "Telefon",
-    value: "+420 XXX XXX XXX",
-    link: "tel:+420XXXXXXXXX"
+    value: "+420 731 610 345",
+    link: "tel:+420 731 610 345"
   },
   {
     icon: Mail,
