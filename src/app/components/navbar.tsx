@@ -165,7 +165,7 @@ const Navbar = () => {
             {/* Logo - VLEVO */}
             <Link 
               href="/" 
-              className="flex items-center group cursor-pointer touch-manipulation z-50"
+              className="flex items-center group cursor-pointer touch-optimized z-50"
               prefetch={true}
             >
               <Image 
@@ -192,7 +192,7 @@ const Navbar = () => {
                   >
                     <Link
                       href={item.href}
-                      className="relative px-3 xl:px-4 py-2 text-stone-400 hover:text-stone-200 transition-all duration-300 font-medium text-sm xl:text-base tracking-wide group touch-manipulation block"
+                      className="relative px-3 xl:px-4 py-2 text-stone-400 hover:text-stone-200 transition-all duration-300 font-medium text-sm xl:text-base tracking-wide group touch-optimized block"
                       prefetch={true}
                     >
                       <span className="relative flex items-center gap-1">
@@ -260,7 +260,7 @@ const Navbar = () => {
             <div className="hidden lg:flex items-center gap-4">
               <Link 
                 href="https://shop.miqueen.cz"
-                className="group touch-manipulation"
+                className="group touch-optimized"
                 prefetch={false}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -281,7 +281,7 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <button 
               onClick={toggleMobileMenu}
-              className="lg:hidden p-2 rounded-lg text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-all duration-200 touch-manipulation"
+              className="lg:hidden p-2 rounded-lg text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-all duration-200 touch-optimized"
               aria-label="Otevřít menu"
               aria-expanded={isMobileMenuOpen}
             >
@@ -325,7 +325,7 @@ const Navbar = () => {
                     ) : (
                       <Link
                         href={item.href}
-                        className="text-stone-500 hover:text-stone-300 transition-colors duration-200 flex items-center gap-1.5 group touch-manipulation"
+                        className="text-stone-500 hover:text-stone-300 transition-colors duration-200 flex items-center gap-1.5 group touch-optimized"
                         prefetch={true}
                       >
                         {item.isHome && (
@@ -365,8 +365,7 @@ const Navbar = () => {
           <div 
             className="fixed top-0 right-0 h-full w-full max-w-sm z-50 shadow-2xl transform transition-transform duration-300 ease-out lg:hidden"
             style={{ 
-              background: 'linear-gradient(to bottom, rgb(28, 25, 23), rgb(0, 0, 0))',
-              willChange: 'transform'
+              background: 'linear-gradient(to bottom, rgb(28, 25, 23), rgb(0, 0, 0))'
             }}
           >
             
@@ -374,7 +373,7 @@ const Navbar = () => {
             <div className="flex items-center justify-between p-6 border-b border-stone-800">
               <Link 
                 href="/" 
-                className="flex items-center touch-manipulation" 
+                className="flex items-center touch-optimized" 
                 onClick={closeMobileMenu}
                 prefetch={true}
               >
@@ -392,7 +391,7 @@ const Navbar = () => {
               
               <button 
                 onClick={closeMobileMenu}
-                className="text-stone-400 hover:text-stone-200 transition-colors duration-200 p-2 rounded-lg hover:bg-stone-800/50 touch-manipulation"
+                className="text-stone-400 hover:text-stone-200 transition-colors duration-200 p-2 rounded-lg hover:bg-stone-800/50 touch-optimized"
                 aria-label="Zavřít menu"
               >
                 <X className="h-6 w-6" />
@@ -408,7 +407,7 @@ const Navbar = () => {
                     {item.subItems ? (
                       <button
                         onClick={() => setOpenMobileSubmenu(openMobileSubmenu === item.href ? null : item.href)}
-                        className="w-full flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 hover:bg-stone-800/50 active:bg-stone-800 text-stone-300 font-medium text-base tracking-wide touch-manipulation group"
+                        className="w-full flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 hover:bg-stone-800/50 active:bg-stone-800 text-stone-300 font-medium text-base tracking-wide touch-optimized group"
                       >
                         <span>{item.label}</span>
                         <ChevronRight 
@@ -422,7 +421,7 @@ const Navbar = () => {
                     ) : (
                       <Link 
                         href={item.href}
-                        className="flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 hover:bg-stone-800/50 active:bg-stone-800 text-stone-300 font-medium text-base tracking-wide touch-manipulation group"
+                        className="flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 hover:bg-stone-800/50 active:bg-stone-800 text-stone-300 font-medium text-base tracking-wide touch-optimized group"
                         onClick={closeMobileMenu}
                         prefetch={true}
                       >
@@ -442,7 +441,7 @@ const Navbar = () => {
                           <Link
                             key={subItem.href}
                             href={subItem.href}
-                            className="block p-3 pl-4 rounded-lg text-stone-400 hover:text-stone-200 hover:bg-stone-800/30 transition-all duration-200 text-sm font-medium touch-manipulation"
+                            className="block p-3 pl-4 rounded-lg text-stone-400 hover:text-stone-200 hover:bg-stone-800/30 transition-all duration-200 text-sm font-medium touch-optimized"
                             onClick={closeMobileMenu}
                             prefetch={true}
                           >
@@ -465,7 +464,7 @@ const Navbar = () => {
               <div className="p-4 pt-2">
                 <Link 
                   href="https://shop.miqueen.cz"
-                  className="w-full relative group block touch-manipulation"
+                  className="w-full relative group block touch-optimized"
                   onClick={closeMobileMenu}
                   prefetch={false}
                   target="_blank"
@@ -496,7 +495,7 @@ const Navbar = () => {
                     href="https://www.facebook.com/vinarstvi.miqueen/" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 touch-manipulation"
+                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 touch-optimized"
                     style={{ 
                       backgroundColor: 'rgba(171, 135, 84, 0.1)',
                       borderColor: 'rgba(171, 135, 84, 0.2)',
@@ -510,7 +509,7 @@ const Navbar = () => {
                     href="https://www.instagram.com/vinarstvi.miqueen/" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 touch-manipulation"
+                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 touch-optimized"
                     style={{ 
                       backgroundColor: 'rgba(171, 135, 84, 0.1)',
                       borderColor: 'rgba(171, 135, 84, 0.2)',
@@ -522,7 +521,7 @@ const Navbar = () => {
                   </a>
                   <a 
                     href="mailto:info@miqueen.cz" 
-                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 touch-manipulation"
+                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 touch-optimized"
                     style={{ 
                       backgroundColor: 'rgba(171, 135, 84, 0.1)',
                       borderColor: 'rgba(171, 135, 84, 0.2)',
@@ -551,16 +550,11 @@ const Navbar = () => {
       )}
 
       <style jsx>{`
-        /* Touch optimizations */
-        * {
+        .touch-optimized {
+          touch-action: manipulation;
           -webkit-tap-highlight-color: transparent;
         }
 
-        .touch-manipulation {
-          touch-action: manipulation;
-        }
-
-        /* Dropdown animations */
         @keyframes slideDown {
           from {
             opacity: 0;
@@ -580,4 +574,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default React.memo(Navbar);
