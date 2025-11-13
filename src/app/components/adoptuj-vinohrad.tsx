@@ -1,14 +1,40 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Heart, Grape, Wine, Calendar, Gift, User, Mail, MapPin, Users, FileText } from "lucide-react";
-import { motion, Variants } from "framer-motion";
+import { motion, Variants, useReducedMotion } from "framer-motion";
 
 const AdoptujVinohradPage = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
   const accentColor = "#ab8754";
   const paperColor = "#fefbea";
 
-  const packages = [
+  // Detekce mobilního zařízení
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+
+    const debouncedResize = () => {
+      clearTimeout((window as Window & { adoptResizeTimer?: number }).adoptResizeTimer);
+      (window as Window & { adoptResizeTimer?: number }).adoptResizeTimer = window.setTimeout(checkMobile, 150);
+    };
+
+    window.addEventListener('resize', debouncedResize, { passive: true });
+    return () => {
+      window.removeEventListener('resize', debouncedResize);
+      clearTimeout((window as Window & { adoptResizeTimer?: number }).adoptResizeTimer);
+    };
+  }, []);
+
+  // Vypni animace na mobilu
+  const shouldAnimate = !isMobile && !prefersReducedMotion;
+
+  // Memoizované balíčky
+  const packages = useMemo(() => [
     {
       heads: 12,
       bottles: 12,
@@ -30,9 +56,10 @@ const AdoptujVinohradPage = () => {
       price: "9 900 Kč",
       popular: false
     }
-  ];
+  ], []);
 
-  const benefits = [
+  // Memoizované benefity
+  const benefits = useMemo(() => [
     {
       icon: Grape,
       title: "Vlastní mikrovinohrad",
@@ -73,9 +100,10 @@ const AdoptujVinohradPage = () => {
       title: "Celoroční zážitek",
       description: "Délka adopce je na 1 rok. Zažij vinařský rok od jara do podzimu s námi."
     }
-  ];
+  ], []);
 
-  const steps = [
+  // Memoizované kroky
+  const steps = useMemo(() => [
     {
       number: "01",
       title: "Vyber si balíček",
@@ -96,18 +124,22 @@ const AdoptujVinohradPage = () => {
       title: "Užívej si víno",
       description: "Pravidelně dostáváš skvělá vína po celý rok"
     }
-  ];
+  ], []);
 
-  const fadeInUp: Variants = {
+  // Conditional animation variants
+  const fadeInUp: Variants = shouldAnimate ? {
     hidden: { opacity: 0, y: 40 },
     visible: { 
       opacity: 1, 
       y: 0,
       transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
     }
+  } : {
+    hidden: { opacity: 1, y: 0 },
+    visible: { opacity: 1, y: 0 }
   };
 
-  const staggerContainer: Variants = {
+  const staggerContainer: Variants = shouldAnimate ? {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -115,90 +147,106 @@ const AdoptujVinohradPage = () => {
         staggerChildren: 0.15
       }
     }
+  } : {
+    hidden: { opacity: 1 },
+    visible: { opacity: 1 }
   };
 
-  const scaleIn: Variants = {
+  const scaleIn: Variants = shouldAnimate ? {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { 
       opacity: 1, 
       scale: 1,
       transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
     }
+  } : {
+    hidden: { opacity: 1, scale: 1 },
+    visible: { opacity: 1, scale: 1 }
   };
+
+  // Conditional wrapper component
+  const MotionWrapper = shouldAnimate ? motion.div : 'div';
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: paperColor }}>
       
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 lg:py-32">
-        {/* Animated background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl opacity-40" 
-               style={{ background: `radial-gradient(circle, ${accentColor}30, transparent)`, animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}></div>
-          <div className="absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl opacity-40"
-               style={{ background: `radial-gradient(circle, ${accentColor}20, transparent)`, animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite 2s' }}></div>
-        </div>
+        {/* Animated background - pouze desktop */}
+        {!isMobile && (
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl opacity-40" 
+                 style={{ background: `radial-gradient(circle, ${accentColor}30, transparent)`, animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}></div>
+            <div className="absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl opacity-40"
+                 style={{ background: `radial-gradient(circle, ${accentColor}20, transparent)`, animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite 2s' }}></div>
+          </div>
+        )}
 
         <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-10">
           {/* Header */}
-          <motion.div 
+          <MotionWrapper 
             className="text-center mb-16"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
+            {...(shouldAnimate ? {
+              initial: "hidden",
+              whileInView: "visible",
+              viewport: { once: true, margin: "-100px" },
+              variants: staggerContainer
+            } : {})}
           >
-            <motion.div 
+            <MotionWrapper 
               className="inline-flex items-center gap-3 mb-6"
-              variants={fadeInUp}
+              {...(shouldAnimate ? { variants: fadeInUp } : {})}
             >
               <div className="h-px w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
               <Heart className="w-8 h-8" style={{ color: accentColor }} />
               <div className="h-px w-12 bg-gradient-to-l from-transparent via-gray-300 to-transparent"></div>
-            </motion.div>
+            </MotionWrapper>
 
-            <motion.h1 
+            <MotionWrapper 
               className="text-5xl lg:text-7xl font-light text-gray-800 mb-6"
-              variants={fadeInUp}
+              {...(shouldAnimate ? { variants: fadeInUp } : {})}
             >
               <span style={{ color: accentColor }}>Adoptuj</span> vinohrad
-            </motion.h1>
+            </MotionWrapper>
             
-            <motion.p 
+            <MotionWrapper 
               className="text-2xl lg:text-3xl font-light italic mb-8" 
               style={{ color: accentColor }}
-              variants={fadeInUp}
+              {...(shouldAnimate ? { variants: fadeInUp } : {})}
             >
               Tvůj relax kdykoliv a kdekoliv
-            </motion.p>
+            </MotionWrapper>
 
-            <motion.p 
+            <MotionWrapper 
               className="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed"
-              variants={fadeInUp}
+              {...(shouldAnimate ? { variants: fadeInUp } : {})}
             >
               Staň se virtuálním vinařem. Poznej fáze práce na vinohradu během celého roku, 
               vyzkoušej si práci vinohradníka, měj po celý rok skvělá moravská vína z Pálavy ve své sklénce, 
               pojmenuj svůj mikrovinohrad a zažij jeden velký celý rok trvající zážitek.
-            </motion.p>
-          </motion.div>
+            </MotionWrapper>
+          </MotionWrapper>
 
           {/* Video Section */}
-          <motion.div 
+          <MotionWrapper 
             className="max-w-5xl mx-auto mb-20"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={scaleIn}
+            {...(shouldAnimate ? {
+              initial: "hidden",
+              whileInView: "visible",
+              viewport: { once: true, margin: "-100px" },
+              variants: scaleIn
+            } : {})}
           >
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-2 border-gray-200">
               <div className="aspect-video bg-gradient-to-br from-gray-900 to-black">
                 <video
                   className="w-full h-full object-cover"
-                  autoPlay
+                  autoPlay={!isMobile}
                   muted
                   loop
                   playsInline
                   controls
+                  preload={isMobile ? "metadata" : "auto"}
                 >
                   <source src="/video/adoptuj-vinohrad.webm" type="video/webm" />
                   Váš prohlížeč nepodporuje přehrávání videa.
@@ -206,25 +254,15 @@ const AdoptujVinohradPage = () => {
               </div>
             </div>
             
-            <motion.div 
-              className="text-center mt-8"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-            >
+            <div className="text-center mt-8">
               <p className="text-lg text-gray-600 mb-6">
                 Adoptovat vinohrad můžeš <span className="font-semibold" style={{ color: accentColor }}>sám pro sebe</span> anebo jako <span className="font-semibold" style={{ color: accentColor }}>dárek</span>
               </p>
               
               {/* Upozornění o návštěvě vinohradu */}
-              <motion.div 
+              <div 
                 className="inline-flex items-start gap-3 px-6 py-4 bg-white rounded-2xl shadow-lg border-2 max-w-2xl mx-auto"
                 style={{ borderColor: accentColor }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.5, duration: 0.6 }}
               >
                 <MapPin className="w-6 h-6 flex-shrink-0 mt-1" style={{ color: accentColor }} />
                 <div className="text-left">
@@ -233,9 +271,9 @@ const AdoptujVinohradPage = () => {
                     Přijeď se podívat na svůj mikrovinohrad, poznej práci vinaře a užij si atmosféru Pálavských vinic
                   </p>
                 </div>
-              </motion.div>
-            </motion.div>
-          </motion.div>
+              </div>
+            </div>
+          </MotionWrapper>
         </div>
       </section>
 
@@ -248,42 +286,30 @@ const AdoptujVinohradPage = () => {
           height={176}
           className="w-full h-auto"
           style={{ display: 'block' }}
+          loading="lazy"
+          quality={isMobile ? 70 : 85}
         />
       </div>
 
       {/* Packages Section */}
       <section className="py-20 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            className="text-center mb-16"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeInUp}
-          >
+          <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-800 mb-4">
               Vyber si <span style={{ color: accentColor }}>balíček</span>
             </h2>
             <p className="text-xl text-gray-600">
               Každý balíček zahrnuje péči o révu po celý rok a pravidelné dodávky vína
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div 
-            className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {packages.map((pkg, index) => (
-              <motion.div
+              <div
                 key={index}
-                variants={fadeInUp}
-                whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
-                className={`relative bg-white rounded-3xl p-8 border-2 transition-all duration-500 hover:shadow-2xl ${
+                className={`relative bg-white rounded-3xl p-8 border-2 transition-all duration-300 ${
                   pkg.popular ? 'border-[#ab8754] shadow-xl scale-105' : 'border-gray-200'
-                }`}
+                } ${!isMobile ? 'hover:shadow-2xl' : ''}`}
               >
                 {pkg.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
@@ -319,18 +345,18 @@ const AdoptujVinohradPage = () => {
                   href="https://shop.miqueen.cz/adoptuj-vinohrad/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`block w-full py-4 rounded-2xl font-bold text-center transition-all hover:scale-105 ${
+                  className={`block w-full py-4 rounded-2xl font-bold text-center transition-all touch-manipulation ${
                     pkg.popular
                       ? 'text-white shadow-lg'
-                      : 'text-gray-700 border-2 border-gray-300 hover:border-gray-400'
-                  }`}
+                      : 'text-gray-700 border-2 border-gray-300'
+                  } ${!isMobile ? 'hover:scale-105' : 'active:scale-95'}`}
                   style={pkg.popular ? { backgroundColor: accentColor } : {}}
                 >
                   Adoptovat nyní
                 </a>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -343,6 +369,8 @@ const AdoptujVinohradPage = () => {
           height={176}
           className="w-full h-auto"
           style={{ display: 'block' }}
+          loading="lazy"
+          quality={isMobile ? 70 : 85}
         />
       </div>
 
@@ -351,13 +379,7 @@ const AdoptujVinohradPage = () => {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Header */}
-          <motion.div 
-            className="text-center mb-16"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeInUp}
-          >
+          <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style={{ backgroundColor: `${accentColor}20` }}>
               <Gift className="w-5 h-5" style={{ color: accentColor }} />
               <span className="font-bold text-sm" style={{ color: accentColor }}>SPECIÁLNÍ NABÍDKA</span>
@@ -370,43 +392,30 @@ const AdoptujVinohradPage = () => {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Děkujeme, že jste se rozhodli stát se součástí vinařské rodiny MiQueen
             </p>
-          </motion.div>
+          </div>
 
           {/* Main Content Card */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeInUp}
-            className="bg-white rounded-3xl overflow-hidden shadow-xl border-2 hover:shadow-2xl transition-all duration-500"
+          <div
+            className="bg-white rounded-3xl overflow-hidden shadow-xl border-2 transition-shadow duration-300"
             style={{ borderColor: accentColor }}
           >
             <div className="grid lg:grid-cols-2 gap-0">
               
               {/* Left side - Image */}
-              <motion.div 
-                className="relative h-[400px] lg:h-[600px] bg-gradient-to-br from-gray-50 to-gray-100"
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              >
+              <div className="relative h-[400px] lg:h-[600px] bg-gradient-to-br from-gray-50 to-gray-100">
                 <Image
                   src="https://shop.miqueen.cz/user/documents/upload/sklenicesvyvrtkou.jpg"
                   alt="Uvítací balíček - sklenice s vývrtkou"
                   fill
                   className="object-contain p-8"
+                  loading="lazy"
+                  quality={isMobile ? 70 : 85}
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                 />
-              </motion.div>
+              </div>
 
               {/* Right side - Content */}
-              <motion.div 
-                className="p-8 lg:p-12"
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-              >
+              <div className="p-8 lg:p-12">
                 <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
                   Co získáte zdarma k adopci?
                 </h3>
@@ -482,22 +491,22 @@ const AdoptujVinohradPage = () => {
                   </div>
                 </div>
 
-                <motion.a
+                <a
                   href="https://shop.miqueen.cz/adoptuj-vinohrad/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-8 py-4 text-white rounded-full font-bold text-lg shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+                  className={`inline-flex items-center gap-2 px-8 py-4 text-white rounded-full font-bold text-lg shadow-lg transition-all touch-manipulation ${
+                    !isMobile ? 'hover:scale-105 hover:shadow-xl' : 'active:scale-95'
+                  }`}
                   style={{ backgroundColor: accentColor }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
                 >
                   Adoptovat vinohrad
                   <Gift className="w-5 h-5" />
-                </motion.a>
-              </motion.div>
+                </a>
+              </div>
 
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -510,42 +519,32 @@ const AdoptujVinohradPage = () => {
           height={176}
           className="w-full h-auto"
           style={{ display: 'block' }}
+          loading="lazy"
+          quality={isMobile ? 70 : 85}
         />
       </div>
 
       {/* Benefits Section */}
       <section className="py-20" style={{ backgroundColor: paperColor }}>
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            className="text-center mb-16"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeInUp}
-          >
+          <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-800 mb-4">
               Co <span style={{ color: accentColor }}>získáš</span>?
             </h2>
             <p className="text-xl text-gray-600">
               Adopce vinohradu je celoroční zážitek plný výhod
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div 
-            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {benefits.map((benefit, index) => {
               const IconComponent = benefit.icon;
               return (
-                <motion.div
+                <div
                   key={index}
-                  variants={fadeInUp}
-                  whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                  className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-[#ab8754] hover:shadow-xl transition-all duration-500"
+                  className={`bg-white rounded-2xl p-6 border border-gray-200 transition-all duration-300 ${
+                    !isMobile ? 'hover:border-[#ab8754] hover:shadow-xl hover:-translate-y-2' : ''
+                  }`}
                 >
                   <div className="w-14 h-14 rounded-2xl mb-4 flex items-center justify-center" style={{ backgroundColor: `${accentColor}20` }}>
                     <IconComponent className="w-7 h-7" style={{ color: accentColor }} />
@@ -558,10 +557,10 @@ const AdoptujVinohradPage = () => {
                   <p className="text-gray-600 text-sm leading-relaxed">
                     {benefit.description}
                   </p>
-                </motion.div>
+                </div>
               );
             })}
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -574,48 +573,33 @@ const AdoptujVinohradPage = () => {
           height={176}
           className="w-full h-auto"
           style={{ display: 'block' }}
+          loading="lazy"
+          quality={isMobile ? 70 : 85}
         />
       </div>
 
       {/* How it Works */}
       <section className="py-20 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            className="text-center mb-16"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeInUp}
-          >
+          <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-800 mb-4">
               Jak to <span style={{ color: accentColor }}>funguje</span>?
             </h2>
             <p className="text-xl text-gray-600">
               4 jednoduché kroky k vlastnímu vinohradu
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div 
-            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((step, index) => (
-              <motion.div 
-                key={index} 
-                className="relative"
-                variants={fadeInUp}
-              >
+              <div key={index} className="relative">
                 <div className="text-center">
-                  <motion.div 
+                  <div 
                     className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 text-3xl font-bold text-white shadow-xl" 
                     style={{ backgroundColor: accentColor }}
-                    whileHover={{ rotate: 360, transition: { duration: 0.6 } }}
                   >
                     {step.number}
-                  </motion.div>
+                  </div>
                   
                   <h3 className="text-xl font-bold text-gray-900 mb-3">
                     {step.title}
@@ -629,9 +613,9 @@ const AdoptujVinohradPage = () => {
                 {index < steps.length - 1 && (
                   <div className="hidden lg:block absolute top-10 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-[#ab8754] to-transparent"></div>
                 )}
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -644,39 +628,30 @@ const AdoptujVinohradPage = () => {
           height={176}
           className="w-full h-auto"
           style={{ display: 'block' }}
+          loading="lazy"
+          quality={isMobile ? 70 : 85}
         />
       </div>
 
       {/* Video Gallery Section */}
       <section className="py-20" style={{ backgroundColor: paperColor }}>
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            className="text-center mb-16"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeInUp}
-          >
+          <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-800 mb-4">
               Podívej se <span style={{ color: accentColor }}>blíže</span>
             </h2>
             <p className="text-xl text-gray-600">
               Zážitky z vinohradu v pohybu
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div 
-            className="grid md:grid-cols-2 gap-6 lg:gap-8"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
             {[1, 2, 3, 4].map((num) => (
-              <motion.div
+              <div
                 key={num}
-                variants={fadeInUp}
-                className="relative rounded-2xl overflow-hidden shadow-lg border-2 border-gray-200 hover:shadow-2xl hover:border-[#ab8754] transition-all duration-500 group"
+                className={`relative rounded-2xl overflow-hidden shadow-lg border-2 border-gray-200 transition-all duration-300 ${
+                  !isMobile ? 'hover:shadow-2xl hover:border-[#ab8754]' : ''
+                }`}
               >
                 <div className="aspect-video bg-gradient-to-br from-gray-900 to-black">
                   <video
@@ -689,12 +664,9 @@ const AdoptujVinohradPage = () => {
                     Váš prohlížeč nepodporuje přehrávání videa.
                   </video>
                 </div>
-                
-                {/* Overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -707,84 +679,73 @@ const AdoptujVinohradPage = () => {
           height={176}
           className="w-full h-auto"
           style={{ display: 'block' }}
+          loading="lazy"
+          quality={isMobile ? 70 : 85}
         />
       </div>
 
       {/* CTA Section */}
       <section className="py-20" style={{ backgroundColor: paperColor }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div 
-            className="bg-white rounded-3xl p-12 shadow-xl border border-gray-200"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={scaleIn}
-          >
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              whileInView={{ scale: 1, rotate: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <Gift className="w-16 h-16 mx-auto mb-6" style={{ color: accentColor }} />
-            </motion.div>
+          <div className="bg-white rounded-3xl p-12 shadow-xl border border-gray-200">
+            <Gift className="w-16 h-16 mx-auto mb-6" style={{ color: accentColor }} />
             
-            <motion.h2 
-              className="text-4xl font-light text-gray-800 mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-            >
+            <h2 className="text-4xl font-light text-gray-800 mb-6">
               Perfektní <span style={{ color: accentColor }}>dárek</span>
-            </motion.h2>
+            </h2>
             
-            <motion.p 
-              className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-            >
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
               Chceš sobě nebo někomu jinému věnovat skvělý zážitek? 
               Vyber si svoji odrůdu a můžeš se s námi pustit do vinohradnického dobrodružství.
-            </motion.p>
+            </p>
 
-            <motion.div 
-              className="flex flex-col sm:flex-row gap-4 justify-center"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-            >
-              <motion.a
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
                 href="https://shop.miqueen.cz/adoptuj-vinohrad/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-10 py-5 text-white rounded-full font-bold text-lg transition-all shadow-xl"
+                className={`px-10 py-5 text-white rounded-full font-bold text-lg shadow-xl touch-manipulation transition-all ${
+                  !isMobile ? 'hover:scale-105' : 'active:scale-95'
+                }`}
                 style={{ backgroundColor: accentColor }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
               >
                 Adoptovat vinohrad
-              </motion.a>
+              </a>
               
-              <motion.a
+              <a
                 href="/kontakty/"
-                
                 rel="noopener noreferrer"
-                className="px-10 py-5 bg-white text-gray-700 rounded-full font-bold text-lg border-2 border-gray-300 transition-all hover:border-gray-400 hover:shadow-lg"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className={`px-10 py-5 bg-white text-gray-700 rounded-full font-bold text-lg border-2 border-gray-300 touch-manipulation transition-all ${
+                  !isMobile ? 'hover:border-gray-400 hover:shadow-lg hover:scale-105' : 'active:scale-95'
+                }`}
               >
                 Mám dotaz
-              </motion.a>
-            </motion.div>
-          </motion.div>
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
-      
+      <style jsx>{`
+        * {
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .touch-manipulation {
+          touch-action: manipulation;
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          user-select: none;
+        }
+
+        /* Vypni animace na mobilu */
+        @media (max-width: 767px) {
+          * {
+            animation: none !important;
+            transition-duration: 0.1s !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
