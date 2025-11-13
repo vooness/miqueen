@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ... vaše stávající konfigurace ...
-  
   images: {
+    unoptimized: true, // ✅ PŘIDÁNO - vypne Image Optimization
     remotePatterns: [
       {
         protocol: 'https',
@@ -17,7 +16,39 @@ const nextConfig = {
         pathname: '/user/documents/upload/**',
       },
     ],
+    formats: ['image/avif', 'image/webp'],
+    dangerouslyAllowSVG: true,
   },
-}
 
-module.exports = nextConfig
+  // Performance optimizations
+  compress: true,
+  reactStrictMode: true,
+  poweredByHeader: false,
+  swcMinify: true,
+
+  // Headers pro caching
+  async headers() {
+    return [
+      {
+        source: '/:all*(svg|jpg|jpeg|png|webp|avif|gif|ico)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
+};
+
+module.exports = nextConfig;
