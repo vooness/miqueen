@@ -949,7 +949,31 @@ export const wines: WineProduct[] = [
     notes: 'Zrálo 12 měsíců v dubových sudech.',
     sku: 'VMQ015',
     residualSugar: 0.9
-  }
+  },
+
+
+{
+  id: 41,
+  name: "Dárkový set Ryzlink vlašský PS 2023 a Frankovka VH 2023",
+  variety: "Mix",
+  grapeVariety: "Ryzlink vlašský, Frankovka",
+  vintage: 2023,
+  price: 410,
+  description: "Elegantní dárek pro milovníky moravského vína. Dárkový set vín z vinařství MiQueen – Mikulovská královna vín spojuje to nejlepší z naší produkce: svěží Ryzlink vlašský 2023 a charakterní Frankovku 2023. Obě vína pocházejí z vinic, kde klademe důraz na šetrné hospodaření, zdravou půdu a biodiverzitu. Součástí balení je stylový dárkový karton na dvě lahve – ideální pro firemní dary, poděkování klientům nebo sváteční příležitosti.",
+  category: 'set',
+  image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/222_navrh-bez-nazvu-2025-11-13t113942-342.png?6915b580',
+  shopUrl: 'https://shop.miqueen.cz/darkovy-set-ryzlink-vlassky-frankovka-2023/',
+  badge: 'new',
+  volume: 750,
+  servingTemp: '10-18°C',
+  winemaker: 'MiQueen Winery',
+  region: 'Mikulov, Pálava',
+  notes: 'Stylový dárkový karton, ideální pro firemní dary a poděkování',
+  foodPairing: ['Ryby', 'Kuřecí maso', 'Grilované maso', 'Sýry'],
+  sku: 'VMQ222',
+  residualSugar: null,
+  rating: 4.5
+},
 ];
 
 // Helper funkce

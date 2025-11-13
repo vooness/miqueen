@@ -40,7 +40,6 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images, alt }) => {
       
       {images.length > 1 && (
         <>
-          {/* Navigation Buttons */}
           <button
             onClick={prevImage}
             className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white shadow-lg z-10"
@@ -55,7 +54,6 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images, alt }) => {
             <ChevronRight className="w-5 h-5 text-gray-800" />
           </button>
           
-          {/* Dots Indicator */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
             {images.map((_, index) => (
               <button
@@ -154,7 +152,8 @@ const MiQueenCorporatePage: React.FC = () => {
       subtitle: "Rovensklípek",
       images: [
         "/fotky/chrlice.jpg"
-      ]
+      ],
+      video: "https://shop.miqueen.cz/user/documents/upload/vinarna%20brno.mp4"
     },
     {
       name: "Čejkovice",
@@ -162,7 +161,8 @@ const MiQueenCorporatePage: React.FC = () => {
       subtitle: "Vinařství MiQueen",
       images: [
         "/fotky/cejkoviceposledni.jpg"
-      ]
+      ],
+      video: "https://shop.miqueen.cz/user/documents/upload/čejkovice%20promo%20video.mp4"
     }
   ];
 
@@ -250,7 +250,7 @@ const MiQueenCorporatePage: React.FC = () => {
             </motion.p>
           </motion.div>
 
-          {/* Main Services - Large Cards with Gallery */}
+          {/* Main Services */}
           <motion.div 
             className="grid lg:grid-cols-2 gap-8 mb-20"
             initial="hidden"
@@ -266,12 +266,10 @@ const MiQueenCorporatePage: React.FC = () => {
                   whileHover={{ y: -8, transition: { duration: 0.3 } }}
                   className="group bg-white rounded-3xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-500"
                 >
-                  {/* Image Gallery Section */}
                   <div className="relative h-80 bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
                     <ImageGallery images={service.images} alt={service.title} />
                   </div>
 
-                  {/* Content */}
                   <div className="p-8 lg:p-10">
                     <h3 className="text-2xl font-semibold text-gray-900 mb-3">
                       {service.title}
@@ -302,7 +300,7 @@ const MiQueenCorporatePage: React.FC = () => {
             })}
           </motion.div>
 
-          {/* Wine Varieties Section */}
+          {/* Wine Varieties */}
           <motion.div 
             className="mb-20"
             initial="hidden"
@@ -334,7 +332,7 @@ const MiQueenCorporatePage: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Event Types with Galleries - 2x2 Grid */}
+          {/* Event Types */}
           <motion.div 
             className="mb-20"
             initial="hidden"
@@ -357,12 +355,10 @@ const MiQueenCorporatePage: React.FC = () => {
                   whileHover={{ y: -8, transition: { duration: 0.3 } }}
                   className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-[#ab8754] hover:shadow-xl transition-all duration-300 group"
                 >
-                  {/* Image Gallery - Increased Height */}
                   <div className="relative h-80 bg-gradient-to-br from-gray-100 to-gray-50">
                     <ImageGallery images={event.images} alt={event.name} />
                   </div>
                   
-                  {/* Content */}
                   <div className="p-8 text-center">
                     <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
                       {event.symbol}
@@ -419,7 +415,7 @@ const MiQueenCorporatePage: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Locations with Galleries */}
+          {/* Locations with Videos - FIXED HEIGHT */}
           <motion.div 
             className="bg-white rounded-3xl p-8 lg:p-12 border border-gray-200 shadow-xl mb-20"
             initial="hidden"
@@ -448,7 +444,23 @@ const MiQueenCorporatePage: React.FC = () => {
                     <MapPin className="w-12 h-12 mx-auto mb-4" style={{ color: accentColor }} />
                     <h3 className="text-2xl font-semibold text-gray-900 mb-2">{location.name}</h3>
                     <p className="text-gray-600 text-lg mb-1">{location.title}</p>
-                    <p className="text-sm text-gray-500">{location.subtitle}</p>
+                    <p className="text-sm text-gray-500 mb-6">{location.subtitle}</p>
+                    
+                    {/* ✅ VIDEO - JEDNOTNÁ VÝŠKA 400px + object-contain */}
+                    {location.video && (
+                      <div className="mt-6">
+                        <div className="relative w-full h-[400px] bg-black rounded-xl overflow-hidden shadow-lg">
+                          <video 
+                            controls 
+                            className="absolute inset-0 w-full h-full object-contain"
+                            poster={location.images[0]}
+                          >
+                            <source src={location.video} type="video/mp4" />
+                            Váš prohlížeč nepodporuje video.
+                          </video>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))}

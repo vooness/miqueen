@@ -116,7 +116,7 @@ const DegustaceSection: React.FC = () => {
       description: "Pravidelné degustace potmě, při kterých se zcela ponoříte do světa chutí a vůní. Bez zrakového vjemu vnímáte víno intenzivněji – a každý doušek se stává dobrodružstvím.",
       image: "/fotky/zazitek.webp",
       address: "Chrlické náměstí 1/4, Brno-Chrlice",
-
+      capacity: "",
       specialFeatures: [
         { icon: EyeOff, text: "Trénink smyslů" },
         { icon: Music, text: "Tichá atmosféra" },
@@ -124,8 +124,7 @@ const DegustaceSection: React.FC = () => {
       ],
       highlight: true,
       url: "https://shop.miqueen.cz/degustace-potme-brno/",
-      color: "#1F2937",
-      capacity: ""
+      color: "#1F2937"
     }
   ];
 
@@ -187,7 +186,7 @@ const DegustaceSection: React.FC = () => {
           </motion.p>
         </motion.div>
 
-        {/* Degustace Cards - 3 sekce */}
+        {/* Degustace Cards */}
         <motion.div 
           className="space-y-12"
           initial="hidden"
@@ -222,10 +221,12 @@ const DegustaceSection: React.FC = () => {
                         <MapPin className="w-4 h-4" style={{ color: card.color }} />
                         <span className="font-semibold text-gray-900 text-sm">{card.address}</span>
                       </div>
-                      <div className="px-4 py-2 bg-black/60 backdrop-blur-sm rounded-full flex items-center gap-2">
-                        <Users className="w-4 h-4 text-white" />
-                        <span className="text-white text-sm font-medium">{card.capacity}</span>
-                      </div>
+                      {card.capacity && (
+                        <div className="px-4 py-2 bg-black/60 backdrop-blur-sm rounded-full flex items-center gap-2">
+                          <Users className="w-4 h-4 text-white" />
+                          <span className="text-white text-sm font-medium">{card.capacity}</span>
+                        </div>
+                      )}
                       {card.price && (
                         <div className="px-4 py-2 backdrop-blur-sm rounded-full text-white font-bold text-lg" style={{ backgroundColor: card.color }}>
                           {card.price}
@@ -397,6 +398,70 @@ const DegustaceSection: React.FC = () => {
               </div>
             </motion.div>
           ))}
+        </motion.div>
+
+        {/* ✅ VIDEO SEKCE POD DEGUSTACEMI */}
+        <motion.div 
+          className="mt-20"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
+        >
+          <div className="text-center mb-12">
+            <h3 className="text-3xl lg:text-4xl font-light text-gray-800 mb-4">
+              Podívejte se na <span style={{ color: accentColor }}>atmosféru</span> našich degustací
+            </h3>
+            <p className="text-lg text-gray-600">
+              Přesvědčte se na vlastní oči, jak vypadají naše prostory
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Video 1 - Brno */}
+            <div className="bg-white rounded-3xl overflow-hidden shadow-xl">
+              <div className="p-6">
+                <h4 className="text-xl font-bold text-gray-900 mb-2">
+                  Sklepní vinárna Brno-Chrlice
+                </h4>
+                <p className="text-gray-600 mb-4">
+                  Prohlédněte si naši stylovou vinárnu pod radnicí
+                </p>
+              </div>
+              <div className="relative w-full h-[400px] bg-black">
+                <video 
+                  controls 
+                  className="absolute inset-0 w-full h-full object-contain"
+                  poster="/fotky/vinarna2.jpg"
+                >
+                  <source src="https://shop.miqueen.cz/user/documents/upload/vinarna%20brno.mp4" type="video/mp4" />
+                  Váš prohlížeč nepodporuje video.
+                </video>
+              </div>
+            </div>
+
+            {/* Video 2 - Čejkovice */}
+            <div className="bg-white rounded-3xl overflow-hidden shadow-xl">
+              <div className="p-6">
+                <h4 className="text-xl font-bold text-gray-900 mb-2">
+                  Moravský sklep Čejkovice
+                </h4>
+                <p className="text-gray-600 mb-4">
+                  Poznejte náš tradiční sklep s ubytováním
+                </p>
+              </div>
+              <div className="relative w-full h-[400px] bg-black">
+                <video 
+                  controls 
+                  className="absolute inset-0 w-full h-full object-contain"
+                  poster="/fotky/cejkoviceposledni.jpg"
+                >
+                  <source src="https://shop.miqueen.cz/user/documents/upload/čejkovice%20promo%20video.mp4" type="video/mp4" />
+                  Váš prohlížeč nepodporuje video.
+                </video>
+              </div>
+            </div>
+          </div>
         </motion.div>
 
         {/* Contact CTA */}

@@ -65,21 +65,6 @@ const CorporateWinesPage: React.FC = () => {
     },
     {
       id: 2,
-      title: "Kombinované možnosti",
-      subtitle: "Flexibilní řešení od 24 ks",
-      description: "Od 24 ks lahví 0,75 l pro vás rádi zrealizujeme medaile s logem v barvě, a to zdarma v ceně objednávky. Od 100 ks lahví 0,75 l jednoho druhu pro vás rádi zrealizujeme buď medaili s logem v barvě nebo vlastní personalizovanou etiketu včetně grafického návrhu.",
-      features: [
-        "Od 24 ks - medaile s logem zdarma",
-        "Od 100 ks - etiketa nebo medaile",
-        "Stylové krabičky na 1 nebo 2 lahve",
-        "Možnost zahrnout MIMOSU"
-      ],
-      minQuantity: "24-100 ks",
-      price: "Dle množství",
-      image: "/3.jpg"
-    },
-    {
-      id: 3,
       title: "Vlastní etiketa",
       subtitle: "Kompletní personalizace od 100 ks",
       description: "Vlastní personalizovanou etiketu pro vás rádi zrealizujeme od 100 ks lahví 0,75 l jednoho druhu. A to buď přidáním vašeho loga do stávající etikety anebo realizací etikety na míru. Rádi vám připravíme personalizovanou nabídku přímo na míru.",
@@ -90,8 +75,23 @@ const CorporateWinesPage: React.FC = () => {
         "Konzultace designu zdarma"
       ],
       minQuantity: "100 ks",
-      price: "Na vyžádání",
+      price: "ZDARMA",
       image: "/4.jpg"
+    },
+    {
+      id: 3,
+      title: "Dárkové balíčky na míru",
+      subtitle: "Flexibilní kombinace vín a balení",
+      description: "Vytvořte originální dárkový balíček přesně podle své chuti. Kombinujte tichá vína, perlivé lahůdky nebo oblíbenou Mimosu MiQueen do elegantních krabiček – na 1 nebo 2 lahve 0,75 l, případně set 4 mini lahviček. Ideální volba pro dárky k oslavám, svátkům i jen tak – protože víno říká víc než slova.",
+      features: [
+        "Od 24 ks - medaile s logem zdarma",
+        "Od 100 ks - etiketa nebo medaile",
+        "Stylové krabičky na 1 nebo 2 lahve",
+        "Možnost zahrnout MIMOSU"
+      ],
+      minQuantity: "Flexibilní",
+      price: "Dle složení",
+      image: "/3.jpg"
     }
   ];
 
@@ -193,7 +193,7 @@ const CorporateWinesPage: React.FC = () => {
             </motion.div>
           </motion.div>
 
-          {/* Wine Sets Section - VĚTŠÍ OBRÁZKY */}
+          {/* Wine Sets Section */}
           <motion.div 
             className="mb-20"
             initial="hidden"
@@ -216,7 +216,6 @@ const CorporateWinesPage: React.FC = () => {
                   whileHover={{ y: -8 }}
                   className="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500"
                 >
-                  {/* Image - VĚTŠÍ */}
                   <div className="relative h-80 lg:h-96 bg-gradient-to-br from-gray-50 to-gray-100">
                     <Image
                       src={set.image}
@@ -227,13 +226,11 @@ const CorporateWinesPage: React.FC = () => {
                     />
                   </div>
 
-                  {/* Content */}
                   <div className="p-8">
                     <h3 className="text-2xl font-semibold text-gray-900 mb-2">{set.name}</h3>
                     <p className="text-gray-600 mb-2">{set.subtitle}</p>
                     <p className="text-sm text-gray-500 mb-6">{set.volume}</p>
 
-                    {/* Prices */}
                     <div className="space-y-3 mb-6 p-4 bg-gray-50 rounded-xl">
                       {set.prices.map((price, idx) => (
                         <div key={idx} className="flex justify-between items-center">
@@ -252,7 +249,6 @@ const CorporateWinesPage: React.FC = () => {
                       ))}
                     </div>
 
-                    {/* Features */}
                     <div className="space-y-2">
                       {set.features.map((feature, idx) => (
                         <div key={idx} className="flex items-start gap-2">
@@ -267,7 +263,7 @@ const CorporateWinesPage: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Personalization Options - VĚTŠÍ OBRÁZKY */}
+          {/* Personalization Options */}
           <motion.div 
             className="mb-20"
             initial="hidden"
@@ -283,7 +279,7 @@ const CorporateWinesPage: React.FC = () => {
             </motion.h2>
 
             <div className="grid md:grid-cols-2 gap-8">
-              {/* First two items in top row - VĚTŠÍ OBRÁZKY */}
+              {/* First two items */}
               {personalizations.slice(0, 2).map((item) => (
                 <motion.div
                   key={item.id}
@@ -299,7 +295,6 @@ const CorporateWinesPage: React.FC = () => {
                       className="object-contain p-4"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
-                    {/* Badge */}
                     <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-white text-sm font-semibold"
                          style={{ backgroundColor: accentColor }}>
                       {item.minQuantity}
@@ -331,7 +326,7 @@ const CorporateWinesPage: React.FC = () => {
               ))}
             </div>
 
-            {/* Third item spanning full width - VĚTŠÍ OBRÁZEK */}
+            {/* Third item - Dárkové balíčky */}
             <motion.div
               variants={fadeInUp}
               whileHover={{ scale: 1.01 }}
