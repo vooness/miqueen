@@ -44,15 +44,16 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
 
     checkMobile();
 
+    let resizeTimer: number;
     const debouncedResize = () => {
-      clearTimeout((window as Window & { gridResizeTimer?: number }).gridResizeTimer);
-      (window as Window & { gridResizeTimer?: number }).gridResizeTimer = window.setTimeout(checkMobile, 150);
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(checkMobile, 150) as unknown as number;
     };
 
     window.addEventListener("resize", debouncedResize, { passive: true });
     return () => {
       window.removeEventListener("resize", debouncedResize);
-      clearTimeout((window as Window & { gridResizeTimer?: number }).gridResizeTimer);
+      clearTimeout(resizeTimer);
     };
   }, []);
 
@@ -227,7 +228,7 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
                     </p>
                     <Link
                       href="/mapa-vin"
-                      className="inline-flex items-center gap-2 text-xs sm:text-base font-semibold hover:underline transition-colors touch-manipulation"
+                      className="inline-flex items-center gap-2 text-xs sm:text-base font-semibold hover:underline transition-colors touch-optimized"
                       style={{ color: "#ab8754" }}
                     >
                       <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -255,7 +256,7 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
                   href={`/vina/${categorySlug}`}
                   onClick={() => setSelectedCategory(category.id)}
                   className={`
-                    flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base touch-manipulation
+                    flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base touch-optimized
                     ${isSelected ? "text-white border-transparent shadow-lg" : "bg-white/90 text-gray-700 border-gray-200 active:scale-95"}
                     ${!isMobile && !isSelected ? "hover:bg-white hover:border-gray-300 hover:shadow-md" : ""}
                   `}
@@ -310,8 +311,8 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
                   isMobile ? "active:scale-95" : "hover:border-[#ab8754]/50 hover:shadow-2xl hover:-translate-y-2"
                 }`}
               >
-                {/* Image Container - KLIKATELNÝ */}
-                <Link href={wineUrl} className="block">
+                {/* Image Container - KLIKATELNÝ - OPRAVENÝ */}
+                <Link href={wineUrl} className="block relative">
                   <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
                     <Image
                       src={wine.image}
@@ -325,17 +326,17 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
 
                     {badge && (
                       <div
-                        className="absolute top-2 sm:top-3 left-2 sm:left-3 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold text-white z-10 shadow-lg pointer-events-none"
+                        className="absolute top-2 sm:top-3 left-2 sm:left-3 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold text-white z-10 shadow-lg"
                         style={{ backgroundColor: badge.bg }}
                       >
                         {badge.text}
                       </div>
                     )}
 
-                    {/* Overlay - pouze desktop */}
+                    {/* Overlay - pouze desktop - OPRAVENÝ */}
                     {!isMobile && (
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-                        <div className="flex px-6 py-3 bg-white text-gray-900 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all transform hover:scale-105 items-center gap-2 shadow-xl">
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
+                        <div className="px-6 py-3 bg-white text-gray-900 rounded-full font-semibold text-sm flex items-center gap-2 shadow-xl pointer-events-none">
                           <Wine className="w-4 h-4" />
                           Zobrazit produkt
                         </div>
@@ -410,7 +411,7 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
                         href={wine.shopUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="sm:hidden w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation"
+                        className="sm:hidden w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90 touch-optimized"
                         style={{ backgroundColor: "#ab8754" }}
                       >
                         <ShoppingCart className="w-4 h-4 text-white" />
@@ -465,7 +466,7 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Link
                 href="/kontakty/"
-                className={`px-6 sm:px-8 py-3 sm:py-4 text-white rounded-full font-medium text-sm sm:text-lg transition-all shadow-lg inline-flex items-center justify-center gap-2 touch-manipulation ${
+                className={`px-6 sm:px-8 py-3 sm:py-4 text-white rounded-full font-medium text-sm sm:text-lg transition-all shadow-lg inline-flex items-center justify-center gap-2 touch-optimized ${
                   isMobile ? "active:scale-95" : "hover:scale-105"
                 }`}
                 style={{ backgroundColor: "#ab8754" }}
@@ -477,7 +478,7 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
                 href="https://shop.miqueen.cz/vsechna-vina/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`px-6 sm:px-8 py-3 sm:py-4 bg-white text-gray-700 rounded-full font-medium text-sm sm:text-lg border-2 border-gray-300 transition-all inline-flex items-center justify-center gap-2 touch-manipulation ${
+                className={`px-6 sm:px-8 py-3 sm:py-4 bg-white text-gray-700 rounded-full font-medium text-sm sm:text-lg border-2 border-gray-300 transition-all inline-flex items-center justify-center gap-2 touch-optimized ${
                   isMobile ? "active:scale-95" : "hover:border-gray-400 hover:shadow-lg"
                 }`}
               >
@@ -503,19 +504,13 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
           overflow: hidden;
         }
 
-        * {
-          -webkit-tap-highlight-color: transparent;
-        }
-
-        .touch-manipulation {
+        .touch-optimized {
           touch-action: manipulation;
-          -webkit-touch-callout: none;
-          -webkit-user-select: none;
-          user-select: none;
+          -webkit-tap-highlight-color: transparent;
         }
       `}</style>
     </section>
   );
 };
 
-export default WineGridPage;
+export default React.memo(WineGridPage);

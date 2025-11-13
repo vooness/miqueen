@@ -72,15 +72,16 @@ const WineCollectionSection: React.FC = () => {
 
     checkMobile();
     
+    let resizeTimer: number;
     const debouncedResize = () => {
-      clearTimeout((window as Window & { wineResizeTimer?: number }).wineResizeTimer);
-      (window as Window & { wineResizeTimer?: number }).wineResizeTimer = window.setTimeout(checkMobile, 150);
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(checkMobile, 150) as unknown as number;
     };
     
     window.addEventListener('resize', debouncedResize, { passive: true });
     return () => {
       window.removeEventListener('resize', debouncedResize);
-      clearTimeout((window as Window & { wineResizeTimer?: number }).wineResizeTimer);
+      clearTimeout(resizeTimer);
     };
   }, []);
 
@@ -305,7 +306,7 @@ const WineCollectionSection: React.FC = () => {
                       </p>
                       <a 
                         href="/mapa-vin"
-                        className="inline-flex items-center gap-2 text-xs sm:text-base font-semibold hover:underline transition-colors touch-manipulation"
+                        className="inline-flex items-center gap-2 text-xs sm:text-base font-semibold hover:underline transition-colors touch-optimized"
                         style={{ color: "#ab8754" }}
                       >
                         <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -331,7 +332,7 @@ const WineCollectionSection: React.FC = () => {
                     key={category.id}
                     onClick={() => setSelectedCategory(category.id)}
                     className={`
-                      flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base touch-manipulation
+                      flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base touch-optimized
                       ${isSelected 
                         ? 'text-white border-transparent shadow-lg' 
                         : 'bg-white/90 text-gray-700 border-gray-200 active:scale-95'
@@ -390,7 +391,7 @@ const WineCollectionSection: React.FC = () => {
                 disabled={currentIndex === 0}
                 className={`
                   absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 z-10
-                  w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-lg touch-manipulation
+                  w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-lg touch-optimized
                   ${currentIndex === 0 
                     ? 'opacity-30 cursor-not-allowed' 
                     : 'active:scale-90'}
@@ -406,7 +407,7 @@ const WineCollectionSection: React.FC = () => {
                 disabled={currentIndex >= maxIndex}
                 className={`
                   absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 z-10
-                  w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-lg touch-manipulation
+                  w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-lg touch-optimized
                   ${currentIndex >= maxIndex 
                     ? 'opacity-30 cursor-not-allowed' 
                     : 'active:scale-90'}
@@ -428,7 +429,6 @@ const WineCollectionSection: React.FC = () => {
                   style={{ 
                     gap: `${gap}px`,
                     transform: `translateX(calc(-${currentIndex} * (${100 / itemsPerView}% + ${gap / itemsPerView}px)))`,
-                    willChange: 'transform'
                   }}
                 >
                   {finalFilteredWines.map((wine) => {
@@ -468,10 +468,10 @@ const WineCollectionSection: React.FC = () => {
 
                             {/* Quick view overlay - pouze desktop */}
                             {!isMobile && (
-                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10 pointer-events-none group-hover:pointer-events-auto">
+                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
                                 <button
                                   onClick={() => openModal(wine)}
-                                  className="px-4 sm:px-6 py-2 sm:py-3 bg-white text-gray-900 rounded-full font-semibold text-xs sm:text-sm hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center gap-2 shadow-xl"
+                                  className="px-4 sm:px-6 py-2 sm:py-3 bg-white text-gray-900 rounded-full font-semibold text-xs sm:text-sm hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center gap-2 shadow-xl pointer-events-auto"
                                 >
                                   <Wine className="w-3 h-3 sm:w-4 sm:h-4" />
                                   Zobrazit produkt
@@ -543,7 +543,7 @@ const WineCollectionSection: React.FC = () => {
                                   href={wine.shopUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="sm:hidden w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation"
+                                  className="sm:hidden w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90 touch-optimized"
                                   style={{ backgroundColor: "#ab8754" }}
                                 >
                                   <ShoppingCart className="w-4 h-4 text-white" />
@@ -585,7 +585,7 @@ const WineCollectionSection: React.FC = () => {
                   <button
                     key={i}
                     onClick={() => setCurrentIndex(i)}
-                    className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 touch-manipulation ${
+                    className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 touch-optimized ${
                       currentIndex === i 
                         ? 'w-6 sm:w-8 opacity-100' 
                         : 'w-1.5 sm:w-2 opacity-40'
@@ -600,7 +600,7 @@ const WineCollectionSection: React.FC = () => {
         </div>
       </section>
 
-      {/* Modal - optimalizovaný pro mobil */}
+      {/* Modal - OPRAVENÝ */}
       {isModalOpen && selectedWine && (
         <div 
           className="fixed inset-0 z-50 overflow-y-auto"
@@ -615,13 +615,13 @@ const WineCollectionSection: React.FC = () => {
             >
               <button
                 onClick={closeModal}
-                className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-lg touch-manipulation"
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-lg touch-optimized"
               >
                 <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
               </button>
 
               <div className="grid md:grid-cols-2 gap-0">
-                {/* Image Section */}
+                {/* Image Section - OPRAVENÝ */}
                 <div className="relative bg-gradient-to-br from-gray-50 to-white p-6 sm:p-12 flex items-center justify-center border-r border-gray-100">
                   {selectedWine.badge && (
                     <div 
@@ -632,15 +632,15 @@ const WineCollectionSection: React.FC = () => {
                     </div>
                   )}
                   
-                  <div className="relative w-full max-w-sm">
+                  <div className="relative w-full max-w-sm aspect-[1/2]">
                     <Image
                       src={selectedWine.image}
                       alt={selectedWine.name}
-                      width={400}
-                      height={800}
-                      className="w-full h-auto object-contain"
+                      fill
+                      className="object-contain"
                       priority
                       quality={isMobile ? 75 : 90}
+                      sizes="(max-width: 768px) 100vw, 400px"
                     />
                   </div>
                 </div>
@@ -778,7 +778,7 @@ const WineCollectionSection: React.FC = () => {
                       href={selectedWine.shopUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`w-full px-5 sm:px-6 py-3 sm:py-4 bg-[#ab8754] text-white rounded-full font-semibold text-sm sm:text-lg transition-all flex items-center justify-center gap-2 touch-manipulation ${!isMobile ? 'hover:shadow-lg hover:scale-105' : 'active:scale-95'}`}
+                      className={`w-full px-5 sm:px-6 py-3 sm:py-4 bg-[#ab8754] text-white rounded-full font-semibold text-sm sm:text-lg transition-all flex items-center justify-center gap-2 touch-optimized ${!isMobile ? 'hover:shadow-lg hover:scale-105' : 'active:scale-95'}`}
                     >
                       <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
                       Koupit na e-shopu
@@ -823,7 +823,6 @@ const WineCollectionSection: React.FC = () => {
           padding-bottom: env(safe-area-inset-bottom, 1rem);
         }
 
-        /* Custom scrollbar for modal */
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }
@@ -847,19 +846,11 @@ const WineCollectionSection: React.FC = () => {
           scrollbar-color: #ab8754 #f1f1f1;
         }
 
-        /* Touch optimalizace */
-        * {
+        .touch-optimized {
+          touch-action: manipulation;
           -webkit-tap-highlight-color: transparent;
         }
 
-        .touch-manipulation {
-          touch-action: manipulation;
-          -webkit-touch-callout: none;
-          -webkit-user-select: none;
-          user-select: none;
-        }
-
-        /* Reduced motion */
         @media (prefers-reduced-motion: reduce) {
           *,
           *::before,
@@ -870,14 +861,9 @@ const WineCollectionSection: React.FC = () => {
           }
         }
 
-        /* Mobile optimizations */
         @media (max-width: 767px) {
           .animate-pulse {
             animation: none;
-          }
-          
-          * {
-            will-change: auto !important;
           }
         }
       `}</style>
@@ -885,4 +871,4 @@ const WineCollectionSection: React.FC = () => {
   );
 };
 
-export default WineCollectionSection;
+export default React.memo(WineCollectionSection);
