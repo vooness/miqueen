@@ -197,7 +197,7 @@ const MapaVinPage: React.FC = () => {
                   </a>
                   
                   <a
-                    href="/vsechna-nase-vina"
+                    href="/vina"
                     className="px-8 py-4 bg-white text-gray-700 rounded-full font-semibold text-base border-2 border-gray-300 transition-all hover:border-gray-400 hover:shadow-lg"
                   >
                     Prohlédnout vína
