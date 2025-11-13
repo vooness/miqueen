@@ -26,6 +26,7 @@ const NAV_ITEMS: NavItem[] = [
     href: '/vina/vsechna-vina',
     subItems: [
       { label: 'Všechna vína', href: '/vina/vsechna-vina' },
+      { label: 'Akční nabídka', href: '/akcni-nabidka' },
       { label: 'Novinky', href: '/vina/novinky' },
       { label: 'Bílá vína', href: '/vina/bila-vina' },
       { label: 'Červená vína', href: '/vina/cervena-vina' },
@@ -45,6 +46,7 @@ const NAV_ITEMS: NavItem[] = [
 
 const BREADCRUMB_MAP: Record<string, string> = {
   'adoptuj-vinohrad': 'Adoptuj vinohrad',
+  'akcni-nabidka': 'Akční nabídka',
   'vina': 'Vína',
   'vsechna-vina': 'Všechna vína',
   'novinky': 'Novinky',

@@ -310,40 +310,39 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
                   isMobile ? "active:scale-95" : "hover:border-[#ab8754]/50 hover:shadow-2xl hover:-translate-y-2"
                 }`}
               >
-                {/* Image Container */}
-                <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
-                  <Image
-                    src={wine.image}
-                    alt={wine.name}
-                    fill
-                    className={`object-cover ${!isMobile ? "group-hover:scale-110 transition-transform duration-700" : ""}`}
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    loading="lazy"
-                    quality={isMobile ? 70 : 85}
-                  />
+                {/* Image Container - KLIKATELNÝ */}
+                <Link href={wineUrl} className="block">
+                  <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
+                    <Image
+                      src={wine.image}
+                      alt={wine.name}
+                      fill
+                      className={`object-cover ${!isMobile ? "group-hover:scale-110 transition-transform duration-700" : ""}`}
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      loading="lazy"
+                      quality={isMobile ? 70 : 85}
+                    />
 
-                  {badge && (
-                    <div
-                      className="absolute top-2 sm:top-3 left-2 sm:left-3 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold text-white z-10 shadow-lg"
-                      style={{ backgroundColor: badge.bg }}
-                    >
-                      {badge.text}
-                    </div>
-                  )}
-
-                  {/* Overlay - pouze desktop */}
-                  {!isMobile && (
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <Link
-                        href={wineUrl}
-                        className="flex px-6 py-3 bg-white text-gray-900 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all transform hover:scale-105 items-center gap-2 shadow-xl"
+                    {badge && (
+                      <div
+                        className="absolute top-2 sm:top-3 left-2 sm:left-3 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold text-white z-10 shadow-lg pointer-events-none"
+                        style={{ backgroundColor: badge.bg }}
                       >
-                        <Wine className="w-4 h-4" />
-                        Zobrazit produkt
-                      </Link>
-                    </div>
-                  )}
-                </div>
+                        {badge.text}
+                      </div>
+                    )}
+
+                    {/* Overlay - pouze desktop */}
+                    {!isMobile && (
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                        <div className="flex px-6 py-3 bg-white text-gray-900 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all transform hover:scale-105 items-center gap-2 shadow-xl">
+                          <Wine className="w-4 h-4" />
+                          Zobrazit produkt
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Link>
 
                 {/* Content */}
                 <div className="p-3 sm:p-5">
