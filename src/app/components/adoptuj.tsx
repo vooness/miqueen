@@ -247,8 +247,10 @@ const AdoptujVinohrad: React.FC = () => {
                   controls
                   preload={isMobile ? "metadata" : "auto"}
                 >
-                  <source src="/video/adoptuj-vinohrad.webm" type="video/webm" />
-                  <source src="/video/adoptuj-vinohrad.mp4" type="video/mp4" />
+                  {/* ✅ VIDEO ZE SHOPTET CDN - NEPOČÍTÁ SE DO VERCEL BANDWIDTH */}
+                  <source src="https://shop.miqueen.cz/user/documents/upload/adoptuj-vinohrad.webm" type="video/webm" />
+                  {/* Fallback MP4 pokud máš i tu verzi na Shoptetu */}
+                  {/* <source src="https://shop.miqueen.cz/user/documents/upload/adoptuj-vinohrad.mp4" type="video/mp4" /> */}
                   Váš prohlížeč nepodporuje přehrávání videa.
                 </video>
                 

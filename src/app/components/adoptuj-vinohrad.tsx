@@ -227,7 +227,7 @@ const AdoptujVinohradPage = () => {
             </MotionWrapper>
           </MotionWrapper>
 
-          {/* Video Section */}
+          {/* Video Section - SHOPTET CDN */}
           <MotionWrapper 
             className="max-w-5xl mx-auto mb-20"
             {...(shouldAnimate ? {
@@ -248,7 +248,8 @@ const AdoptujVinohradPage = () => {
                   controls
                   preload={isMobile ? "metadata" : "auto"}
                 >
-                  <source src="/video/adoptuj-vinohrad.webm" type="video/webm" />
+                  {/* ✅ VIDEO ZE SHOPTET CDN - NEPOČÍTÁ SE DO VERCEL BANDWIDTH */}
+                  <source src="https://shop.miqueen.cz/user/documents/upload/adoptuj-vinohrad.webm" type="video/webm" />
                   Váš prohlížeč nepodporuje přehrávání videa.
                 </video>
               </div>
@@ -633,7 +634,7 @@ const AdoptujVinohradPage = () => {
         />
       </div>
 
-      {/* Video Gallery Section */}
+      {/* Video Gallery Section - VŠECHNA VIDEA ZE SHOPTET CDN */}
       <section className="py-20" style={{ backgroundColor: paperColor }}>
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -646,26 +647,85 @@ const AdoptujVinohradPage = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-            {[1, 2, 3, 4].map((num) => (
-              <div
-                key={num}
-                className={`relative rounded-2xl overflow-hidden shadow-lg border-2 border-gray-200 transition-all duration-300 ${
-                  !isMobile ? 'hover:shadow-2xl hover:border-[#ab8754]' : ''
-                }`}
-              >
-                <div className="aspect-video bg-gradient-to-br from-gray-900 to-black">
-                  <video
-                    className="w-full h-full object-cover"
-                    controls
-                    playsInline
-                    preload="metadata"
-                  >
-                    <source src={`/video/promo${num}.mp4`} type="video/mp4" />
-                    Váš prohlížeč nepodporuje přehrávání videa.
-                  </video>
-                </div>
+            {/* Video 1 */}
+            <div
+              className={`relative rounded-2xl overflow-hidden shadow-lg border-2 border-gray-200 transition-all duration-300 ${
+                !isMobile ? 'hover:shadow-2xl hover:border-[#ab8754]' : ''
+              }`}
+            >
+              <div className="aspect-video bg-gradient-to-br from-gray-900 to-black">
+                <video
+                  className="w-full h-full object-cover"
+                  controls
+                  playsInline
+                  preload="metadata"
+                >
+                  {/* ✅ VIDEO ZE SHOPTET CDN */}
+                  <source src="https://shop.miqueen.cz/user/documents/upload/promo1.mp4" type="video/mp4" />
+                  Váš prohlížeč nepodporuje přehrávání videa.
+                </video>
               </div>
-            ))}
+            </div>
+
+            {/* Video 2 */}
+            <div
+              className={`relative rounded-2xl overflow-hidden shadow-lg border-2 border-gray-200 transition-all duration-300 ${
+                !isMobile ? 'hover:shadow-2xl hover:border-[#ab8754]' : ''
+              }`}
+            >
+              <div className="aspect-video bg-gradient-to-br from-gray-900 to-black">
+                <video
+                  className="w-full h-full object-cover"
+                  controls
+                  playsInline
+                  preload="metadata"
+                >
+                  {/* ✅ VIDEO ZE SHOPTET CDN */}
+                  <source src="https://shop.miqueen.cz/user/documents/upload/promo2.mp4" type="video/mp4" />
+                  Váš prohlížeč nepodporuje přehrávání videa.
+                </video>
+              </div>
+            </div>
+
+            {/* Video 3 */}
+            <div
+              className={`relative rounded-2xl overflow-hidden shadow-lg border-2 border-gray-200 transition-all duration-300 ${
+                !isMobile ? 'hover:shadow-2xl hover:border-[#ab8754]' : ''
+              }`}
+            >
+              <div className="aspect-video bg-gradient-to-br from-gray-900 to-black">
+                <video
+                  className="w-full h-full object-cover"
+                  controls
+                  playsInline
+                  preload="metadata"
+                >
+                  {/* ✅ VIDEO ZE SHOPTET CDN */}
+                  <source src="https://shop.miqueen.cz/user/documents/upload/promo3.mp4" type="video/mp4" />
+                  Váš prohlížeč nepodporuje přehrávání videa.
+                </video>
+              </div>
+            </div>
+
+            {/* Video 4 */}
+            <div
+              className={`relative rounded-2xl overflow-hidden shadow-lg border-2 border-gray-200 transition-all duration-300 ${
+                !isMobile ? 'hover:shadow-2xl hover:border-[#ab8754]' : ''
+              }`}
+            >
+              <div className="aspect-video bg-gradient-to-br from-gray-900 to-black">
+                <video
+                  className="w-full h-full object-cover"
+                  controls
+                  playsInline
+                  preload="metadata"
+                >
+                  {/* ✅ VIDEO ZE SHOPTET CDN */}
+                  <source src="https://shop.miqueen.cz/user/documents/upload/promo4.mp4" type="video/mp4" />
+                  Váš prohlížeč nepodporuje přehrávání videa.
+                </video>
+              </div>
+            </div>
           </div>
         </div>
       </section>

@@ -191,20 +191,19 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             )}
           </div>
         ) : (
-          // Video pozadí s optimalizací
+          // Video pozadí ze Shoptet CDN - OPTIMALIZOVANÉ
           <div className="relative w-full h-full" style={{ transform: 'translateZ(0)' }}>
             {/* Poster image jako placeholder */}
             {!videoLoaded && !videoError && (
               <div 
-                className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+                className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat bg-gray-900"
                 style={{
-                  backgroundImage: 'url(/video-poster.jpg)',
                   backgroundPosition: '50% 35%'
                 }}
               />
             )}
 
-            {/* Video element */}
+            {/* Video element - SHOPTET CDN */}
             <video
               ref={videoRef}
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
@@ -222,18 +221,24 @@ const HeroSection: React.FC<HeroSectionProps> = ({
               loop
               playsInline
               preload="metadata"
-              poster="/video-poster.jpg"
             >
-              <source src="/video.webm" type="video/webm" />
-              <source src="/video.mp4" type="video/mp4" />
+              {/* ✅ VIDEO ZE SHOPTET CDN - NEPOČÍTÁ SE DO VERCEL BANDWIDTH */}
+              <source 
+                src="https://shop.miqueen.cz/user/documents/upload/video.webm" 
+                type="video/webm" 
+              />
+              {/* Fallback MP4 pokud máš i tu verzi na Shoptetu */}
+              {/* <source 
+                src="https://shop.miqueen.cz/user/documents/upload/video.mp4" 
+                type="video/mp4" 
+              /> */}
             </video>
 
             {/* Fallback pro chybu načtení videa */}
             {videoError && (
               <div 
-                className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+                className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat bg-gray-900"
                 style={{
-                  backgroundImage: 'url(/video-poster.jpg)',
                   backgroundPosition: '50% 35%'
                 }}
               />
