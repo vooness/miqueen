@@ -3,7 +3,7 @@ title: "Jak správně degustovat víno: Průvodce pro začátečníky"
 date: "2024-11-01"
 excerpt: "Naučte se základy vinařské degustace a objevte tajemství hodnocení vína jako profesionál. Od správného držení sklenice po rozpoznávání aromat."
 author: "MiQueen Vinařství"
-image: "/blog/degustace-vina.jpg"
+image: "/blog/zacatecnik.webp"
 tags: ["Degustace", "Tipy", "Víno pro začátečníky"]
 ---
 

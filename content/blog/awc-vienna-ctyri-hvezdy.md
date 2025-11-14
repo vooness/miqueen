@@ -3,7 +3,7 @@ title: "AWC Vienna 2025: Čtyři hvězdy a osm ocenění"
 date: "2024-11-02"
 excerpt: "Zařadili jsme se mezi čtyřhvězdičková vinařství AWC Vienna s 5 zlatými medailemi, 1 stříbrnou a 2 diplomy. Všechna vína z ekologického vinohradnictví."
 author: "MiQueen Vinařství"
-image: "/blog/images/awc-vienna-2025.jpg"
+image: "/blog/awc.webp"
 tags: ["Ocenění", "AWC Vienna", "Ekologické vinařství", "Mezinárodní soutěž"]
 ---
 

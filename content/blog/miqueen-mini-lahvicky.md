@@ -3,7 +3,7 @@ title: "MiQueen mini: Malé lahvičky, velký zážitek"
 date: "2024-11-01"
 excerpt: "Představujeme MiQueen mini - malé lahvičky 187-200 ml ve všech stylech. Ideální na degustaci, dárky i kdykoli chcete otevřít čerstvou láhev."
 author: "MiQueen Vinařství"
-image: "/blog/images/miqueen-mini.jpg"
+image: "/blog/mini.webp"
 tags: ["MiQueen mini", "Novinky", "Dárky", "Degustace"]
 ---
 

@@ -3,7 +3,7 @@ title: "Rulandské bílé v TOP 15 Krále vín 2025"
 date: "2024-10-15"
 excerpt: "Naše Rulandské bílé pozdní sběr 2023 se dostalo mezi 15 nejlépe hodnocených vín prestižní soutěže KRÁL VÍN 2025 a objíždí celou republiku v rámci Turné."
 author: "MiQueen Vinařství"
-image: "/blog/images/kral-vin-2025.jpg"
+image: "/blog/kralvin.webp"
 tags: ["Ocenění", "Rulandské bílé", "Soutěže"]
 ---
 

@@ -3,7 +3,7 @@ title: "Ryzlink rýnský vyhrál soutěž Nejlepší biopotravina roku"
 date: "2024-09-20"
 excerpt: "Náš Ryzlink rýnský suchý získal první místo v kategorii bílé suché víno v celostátní soutěži pořádané PRO-BIO Svazem ekologických zemědělců."
 author: "MiQueen Vinařství"
-image: "/blog/images/biopotravina-roku.jpg"
+image: "/blog/bio.webp"
 tags: ["Ocenění", "Ryzlink rýnský", "Bio", "Ekologické vinařství"]
 ---
 

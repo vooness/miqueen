@@ -3,7 +3,7 @@ title: "MiQueen Mimosa: Perlivá citrusová novinka"
 date: "2024-10-25"
 excerpt: "Představujeme MiQueen Mimosa - spojení suchého Sauvignon Frizzante a 100% pomerančové šťávy. Svěží, minerální, bez zbytečností."
 author: "MiQueen Vinařství"
-image: "/blog/images/mimosa.jpg"
+image: "/blog/mimosa.webp"
 tags: ["Novinky", "Mimosa", "Frizzante", "Brunch"]
 ---
 

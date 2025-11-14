@@ -3,7 +3,7 @@ title: "Velká zlatá pro Frankovku rosé v Národní soutěži vín"
 date: "2024-10-28"
 excerpt: "Frankovka rosé 2023 získala velkou zlatou a dalších 6 našich vín bere zlaté medaile v Národní soutěži vín 2025. Celkem 17 vín postupuje do dalšího kola."
 author: "MiQueen Vinařství"
-image: "/blog/images/narodni-soutez-2025.jpg"
+image: "/blog/vino.webp"
 tags: ["Ocenění", "Frankovka rosé", "Národní soutěž vín", "Zlaté medaile"]
 ---
 

@@ -3,7 +3,7 @@ title: "Diplom rektora MU za Ryzlink rýnský PS 2023"
 date: "2024-10-01"
 excerpt: "Vinařství MiQueen převzalo prestižní Diplom rektora Masarykovy univerzity za vynikající víno Ryzlink rýnský, pozdní sběr 2023."
 author: "MiQueen Vinařství"
-image: "/blog/images/diplom-mu-ryzlink.jpg"
+image: "/blog/diplom.webp"
 tags: ["Ocenění", "Ryzlink rýnský", "Pozdní sběr", "Masarykova univerzita"]
 ---
 

@@ -3,7 +3,7 @@ title: "Podzimní zelené hnojení: Ředkev, vikev a žito"
 date: "2024-10-10"
 excerpt: "Proč jsme do vinice zaseli trojkombinaci ředkev olejná + vikev ozimá + žito ozimé? Ochrana půdy, lepší struktura a chytré hospodaření s dusíkem."
 author: "MiQueen Vinařství"
-image: "/blog/images/zelene-hnojeni.jpg"
+image: "/blog/zelene.webp"
 tags: ["Ekologické vinařství", "Půda", "Zelené hnojení", "Vinohrad"]
 ---
 
