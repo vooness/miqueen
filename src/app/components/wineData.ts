@@ -974,6 +974,31 @@ export const wines: WineProduct[] = [
   residualSugar: null,
   rating: 4.5
 },
+{
+  id: 42,
+  name: "Hvězdná medailová šestka",
+  variety: "Dárkový set",
+  grapeVariety: "Ryzlink vlašský, Ryzlink rýnský, Sauvignon, Chardonnay, Tramín červený, Rulandské bílé",
+  vintage: 2023,
+  price: 1490,
+  description: "Hvězdná medailová šestka je kolekce šesti oceněných vín z vinařství MiQueen, která získala zlaté a stříbrné medaile na prestižních vinařských soutěžích. Set obsahuje: Ryzlink vlašský 2023 (zlatá medaile), Ryzlink rýnský 2023 (zlatá medaile), Sauvignon 2023 (zlatá medaile), Chardonnay 2023 (zlatá medaile), Tramín červený 2023 (stříbrná medaile), Rulandské bílé 2023 (stříbrná medaile). Elegantní dárkové balení je ideální pro firemní dary, výročí nebo jako exkluzivní pozornost pro milovníky kvalitních moravských vín.",
+  category: 'set',
+  image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/225_hvezdna-sestka--1.jpg?69178948',
+  shopUrl: 'https://shop.miqueen.cz/hvezdna-medailova-sestka',
+  badge: 'award',
+  quality: 'pozdni-sber',
+  dryness: 'suche',
+  alcohol: 12.5,
+  volume: 750,
+  servingTemp: '8-12°C',
+  winemaker: 'MiQueen Winery',
+  region: 'Mikulovská podoblast, Pálava',
+  notes: 'Exkluzivní dárkový set obsahující 6 oceněných vín (4x zlatá medaile, 2x stříbrná medaile). Baleno v prémiové dárkové krabici.',
+  foodPairing: ['Předkrmy', 'Ryby', 'Drůbež', 'Měkké sýry', 'Dezerty'],
+  sku: 'VMQ225',
+  residualSugar: null,
+  rating: 5.0
+}
 ];
 
 // Helper funkce

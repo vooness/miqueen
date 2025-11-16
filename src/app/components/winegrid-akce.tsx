@@ -12,9 +12,8 @@ const WineGridAkce = () => {
   const accentColor = "#ab8754";
   const paperColor = "#fefbea";
 
-  // Načtení mini setů z databáze (ID 38 a 39)
-  const giftSets = wines.filter(wine => wine.id === 38 || wine.id === 39);
-
+ // Načtení mini setů z databáze (ID 38, 39, 41 a 42)
+const giftSets = wines.filter(wine => [38, 39, 41, 42].includes(wine.id));
   // Vánoční sekce s mini sety
   const ChristmasGiftSection = () => (
     <div className="relative py-20 lg:py-24" style={{ backgroundColor: paperColor }}>
@@ -59,7 +58,7 @@ const WineGridAkce = () => {
         </motion.div>
 
         {/* Gift Sets Grid */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 max-w-8xl mx-auto">
           {giftSets.map((set, index) => {
             // VYTVOŘIT URL PRO DETAIL PRODUKTU
             const productUrl = `/vina/darkove-sety/${createSlug(set.name)}`;

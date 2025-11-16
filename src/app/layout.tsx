@@ -4,6 +4,7 @@ import { Cormorant_Garamond, Marcellus } from "next/font/google";
 import "./globals.css";
 import SimpleCookieBanner from "./components/cookies";
 import AgeVerification from "./components/AgeVerification";
+import TopBar from "./components/TopBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -636,6 +637,9 @@ export default function RootLayout({
       <body className={`${geistSans.className} ${cormorant.variable} ${marcellus.variable} bg-[#faf8f5]`}>
         {/* Age Verification Modal - zobrazí se při první návštěvě */}
         <AgeVerification />
+        
+        {/* Top Bar - Dárkové nabídky */}
+        <TopBar />
         
         {children}
         <SimpleCookieBanner />
