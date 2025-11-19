@@ -167,11 +167,7 @@ nav a,
 
 
 
-/* Smooth scrolling s GPU acceleration */
-html {
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
+
 
 /* Vypni animace na low-end zařízeních */
 @media (prefers-reduced-motion: reduce) {
@@ -185,3 +181,13 @@ html {
   }
 }
 
+
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden; /* zakáže scroll do stran */
+}
+
+body {
+  overflow-x: hidden; /* pojistka */
+}
