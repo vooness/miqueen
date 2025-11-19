@@ -264,28 +264,7 @@ export const wines: WineProduct[] = [
 
   // ========== FRIZZANTE (750ml) - 5 produktů ==========
   
-  // ID 11: Frizzante Ryzlink rýnský 2023
-  {
-    id: 11,
-    name: "Frizzante Ryzlink rýnský 2023",
-    variety: "Ryzlink rýnský",
-    grapeVariety: "Ryzlink rýnský",
-    vintage: 2023,
-    price: 189,
-    rating: 4.7,
-    description: "Nádherné jemně perlivé víno zlatavé barvy. Vůně je svěží s jemným ovocným aroma a lehkou kořenitostí. Chuť je mohutná s velmi jemným zbytkovým cukrem, harmonická s příjemnými tóny citrusových plodů.",
-    category: 'sparkling',
-    image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/63_frr23.png?66472f37',
-    shopUrl: 'https://shop.miqueen.cz/frizzante-ryzlink-rynsky-2023/',
-    quality: 'moravske-zemske',
-    dryness: 'polosuche',
-    alcohol: 11.5,
-    volume: 750,
-    region: 'Mikulovská podoblast',
-    winemaker: 'MiQueen Winery',
-    sku: 'VMQ007',
-    residualSugar: 14.5
-  },
+ 
   
   // ID 12: Frizzante Ryzlink vlašský 2023
   {
@@ -925,31 +904,7 @@ export const wines: WineProduct[] = [
     residualSugar: null
   },
 
-  // ID 40: Pinot Noir 2022
-  {
-    id: 40,
-    name: "Pinot Noir 2022",
-    variety: "Pinot Noir",
-    grapeVariety: "Pinot Noir",
-    vintage: 2022,
-    price: 399,
-    rating: 5.0,
-    description: "Nádherné víno cihlovo-rubínové barvy. Ve vůni nalezneme marmeládové a borůvkové tóny. Chuť je výrazně mnohovrstvá s tóny lesního ovoce, sušených brusinek, hořké čokolády s nekončícím závěrem.",
-    category: 'red',
-    image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/detail/66_pn22-zostreno.png',
-    shopUrl: 'https://shop.miqueen.cz/pinot-noir-2022/',
-    quality: 'vyber-z-hroznu',
-    dryness: 'suche',
-    alcohol: 15.5,
-    volume: 750,
-    badge: 'award',
-    region: 'Mikulovská podoblast',
-    servingTemp: '16-18°C',
-    winemaker: 'MiQueen Winery',
-    notes: 'Zrálo 12 měsíců v dubových sudech.',
-    sku: 'VMQ015',
-    residualSugar: 0.9
-  },
+  
 
 
 {
