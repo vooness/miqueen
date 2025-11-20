@@ -328,3 +328,31 @@ a, button, input, select, textarea, [role="button"] {
   scrollbar-width: thin;
   scrollbar-color: #ab8754 #f1f1f1;
 }
+
+
+@media (max-width: 768px) {
+  
+  /* Vypnutí rozmazání (Backdrop Blur) - Největší žrout baterie a výkonu */
+  [class*="backdrop-blur-"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    /* Místo blur uděláme pozadí téměř neprůhledné, aby byl text čitelný */
+    --tw-bg-opacity: 0.95 !important; 
+  }
+
+  /* Zjednodušení stínů (velké stíny jsou drahé na výpočet) */
+  .shadow-xl, .shadow-2xl {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
+  }
+
+  /* Vypnutí zbytečných animací (např. skeleton loading pulse) */
+  .animate-pulse {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  /* Vypnutí 3D perspektivy */
+  .perspective {
+    perspective: none !important;
+  }
+}
