@@ -53,23 +53,34 @@ const HeroSection: React.FC<HeroSectionProps> = ({ useAnimation = false }) => {
     };
   }, [isMounted]);
 
-  // ✅ Video autoplay
+  // ✅ Video autoplay fix pro mobil
   useEffect(() => {
     if (!isMounted || useAnimation || !videoRef.current) return;
     
+    const video = videoRef.current;
+
+    // Zkusíme přehrát video, jakmile je to možné
     const playVideo = async () => {
       try {
-        await videoRef.current?.play();
+        // Některé prohlížeče vyžadují muted pro autoplay (máte nastaveno, ale pro jistotu)
+        video.muted = true; 
+        await video.play();
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        // Tiché selhání autoplay
-        console.log('Video autoplay was prevented');
+        console.log('Video autoplay blocked by browser policy (likely Low Power Mode or Data Saver)');
       }
     };
 
-    // Delay pro lepší kompatibilitu
-    const timeout = setTimeout(playVideo, 100);
-    return () => clearTimeout(timeout);
+    // Event listener pro případ, že se video načte později
+    if (video.readyState >= 3) {
+        playVideo();
+    } else {
+        video.addEventListener('canplay', playVideo, { once: true });
+    }
+
+    return () => {
+        video.removeEventListener('canplay', playVideo);
+    };
   }, [isMounted, useAnimation]);
 
   // ✅ FIX: Správně typovaný callback
@@ -103,8 +114,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ useAnimation = false }) => {
           <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-red-900 to-yellow-900" />
         ) : (
           <div className={videoContainerClass}>
-            {/* Placeholder vždy viditelný při načítání */}
-            <div className={placeholderClass} />
+            {/* Placeholder vždy viditelný při načítání - ideálně sem dejte IMAGE místo barvy */}
+            <div className={placeholderClass}>
+                {/* Doporučuji sem dát <Image /> komponentu jako fallback, kdyby video nejelo */}
+            </div>
             
             {/* Video element - renderuje se vždy stejně */}
             <video
@@ -119,8 +132,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({ useAnimation = false }) => {
               muted
               loop
               playsInline
-              preload="none"
+              // OPRAVA: Změněno z 'none' na 'auto'. Mobil musí vědět, že má video začít načítat.
+              preload="auto" 
+              // DOPORUČENÍ: Přidejte cestu k obrázku (poster), který se zobrazí, než se video načte, nebo pokud je blokováno.
+              // poster="/cesta-k-obrazku-z-videa.jpg" 
             >
+              {/* Doporučuji přidat i MP4 zdroj jako první pro maximální kompatibilitu na iPhonech */}
+              {/* <source src="...video.mp4" type="video/mp4" /> */}
+              
               <source 
                 src="https://shop.miqueen.cz/user/documents/upload/video.webm" 
                 type="video/webm" 
@@ -217,39 +236,39 @@ const HeroSection: React.FC<HeroSectionProps> = ({ useAnimation = false }) => {
             ))}
           </div>
 
-{/* CTA Buttons - TAILWIND HOVER */}
-<div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-  <Link 
-    href="/vina/vsechna-vina" 
-    className="
-      px-8 py-3 rounded-full font-semibold 
-      w-full sm:w-auto sm:min-w-[200px] text-center
-      bg-white text-black
-      transition-all duration-300
-      hover:bg-[#ab8754] hover:text-white
-      active:opacity-90
-    "
-  >
-    Objevte naše vína
-  </Link>
-  
-  <Link 
-    href="/mapa-vin" 
-    className="
-      px-8 py-3 rounded-full font-semibold 
-      w-full sm:w-auto sm:min-w-[200px] text-center
-      flex items-center justify-center gap-2
-      bg-white text-black
-      transition-all duration-300
-      hover:bg-[#ab8754] hover:text-white
-      active:opacity-90
-      group
-    "
-  >
-    <MapPin className="h-4 w-4 transition-colors duration-300 group-hover:text-white" />
-    Kde koupíte vína
-  </Link>
-</div>
+          {/* CTA Buttons - TAILWIND HOVER */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+            <Link 
+              href="/vina/vsechna-vina" 
+              className="
+                px-8 py-3 rounded-full font-semibold 
+                w-full sm:w-auto sm:min-w-[200px] text-center
+                bg-white text-black
+                transition-all duration-300
+                hover:bg-[#ab8754] hover:text-white
+                active:opacity-90
+              "
+            >
+              Objevte naše vína
+            </Link>
+            
+            <Link 
+              href="/mapa-vin" 
+              className="
+                px-8 py-3 rounded-full font-semibold 
+                w-full sm:w-auto sm:min-w-[200px] text-center
+                flex items-center justify-center gap-2
+                bg-white text-black
+                transition-all duration-300
+                hover:bg-[#ab8754] hover:text-white
+                active:opacity-90
+                group
+              "
+            >
+              <MapPin className="h-4 w-4 transition-colors duration-300 group-hover:text-white" />
+              Kde koupíte vína
+            </Link>
+          </div>
 
           {/* Location Badge */}
           <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-black/20 backdrop-blur-sm border border-white/20 rounded-full">

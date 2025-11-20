@@ -188,6 +188,23 @@ html {
   overflow-x: hidden; /* zakáže scroll do stran */
 }
 
+/* Optimalizace pro mobilní scrollování */
+html, body {
+  overscroll-behavior-y: none; /* Zabrání "gumovému" efektu na konci stránky, který může lagovat */
+}
+
+/* Content Visibility - EXTRÉMNÍ ZRYCHLENÍ */
+/* Použijte tuto třídu na velké sekce (např. <section className="content-visibility-auto ...">) */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 1000px; /* Odhadovaná výška sekce */
+}
+
+/* Odstranění 300ms delay na kliknutí pro celou aplikaci */
+* {
+  touch-action: manipulation;
+}
+
 body {
   overflow-x: hidden; /* pojistka */
 }
@@ -228,4 +245,86 @@ body {
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+tml {
+  /* 1. Plynulé scrollování pro kotvy (např. kliknutí na "O nás" sjede dolů) */
+  scroll-behavior: smooth;
+  
+  /* Zabraňuje automatickému zvětšování textu při otočení mobilu */
+  -webkit-text-size-adjust: 100%;
+  
+  /* Zajišťuje správnou výšku pro scrollování */
+  height: 100%;
+}
+
+body {
+  /* 2. MOMENTUM SCROLLING (Naprosto kritické pro iOS) */
+  /* Zapne setrvačnost při scrollování (jako v nativních aplikacích) */
+  -webkit-overflow-scrolling: touch;
+  
+  /* 3. ZÁKAZ "GUMOVÉHO EFEKTU" (Rubber-banding) */
+  /* Zabraňuje prohlížeči "pružit" na konci stránky, což šetří výkon a působí profesionálněji */
+  overscroll-behavior-y: none;
+  
+  /* Lepší renderování písma */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Prevence výběru textu při rychlém klikání (volitelné, ale na mobilu příjemné) */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 4. ZRYCHLENÍ KLIKÁNÍ (Touch Action) */
+/* Odstraní 300ms prodlevu na kliknutí u interaktivních prvků (čekání na double-tap) */
+a, button, input, select, textarea, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* 5. GPU AKCELERACE (Utility třída) */
+/* Přidejte třídu 'gpu-accelerated' na elementy, které se při animaci sekají */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform, opacity;
+}
+
+/* 6. CONTENT VISIBILITY (Extrémní optimalizace pro dlouhé stránky) */
+/* Prohlížeč nebude vykreslovat obsah sekcí, které jsou mimo obrazovku.
+   Použijte na hlavní <section> tagy: <section className="content-visibility-auto ..."> */
+.content-visibility-auto {
+  content-visibility: auto;
+  /* Důležité: Odhadovaná výška sekce (aby neskákal scrollbar). 
+     Hodnota 800px je průměrná výška sekce na mobilu. */
+  contain-intrinsic-size: 1px 800px; 
+}
+
+/* 7. SKRYTÍ SCROLLBARU (ale zachování funkčnosti) */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE a Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* 8. VLASTNÍ SCROLLBAR (pro modální okna atd.) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #ab8754;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #8b6d44;
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #ab8754 #f1f1f1;
 }

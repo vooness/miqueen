@@ -78,15 +78,19 @@ const Navbar = () => {
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
+      // Prevence "overscroll" efektu na iOS
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
     } else {
       document.body.style.overflow = '';
-      document.body.style.touchAction = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
     }
     
     return () => {
       document.body.style.overflow = '';
-      document.body.style.touchAction = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
     };
   }, [isMobileMenuOpen]);
 
@@ -126,7 +130,10 @@ const Navbar = () => {
     <>
       {/* STICKY NAVBAR */}
       <nav 
-        className="fixed top-0 left-0 right-0 z-50 bg-stone-950/98 backdrop-blur-md shadow-2xl will-change-transform"
+        // OPTIMALIZACE: Na mobilu vypneme backdrop-blur (žere výkon GPU) a použijeme plnou barvu
+        // LG (Desktop): backdrop-blur-md pro hezký efekt
+        className="fixed top-0 left-0 right-0 z-50 bg-stone-950 lg:bg-stone-950/90 lg:backdrop-blur-md shadow-xl will-change-transform"
+        style={{ transform: 'translateZ(0)' }} // Vynucení GPU vrstvy
       >
         <div className="h-px bg-gradient-to-r from-transparent via-amber-700/40 to-transparent" />
         
@@ -243,7 +250,7 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <button 
               onClick={toggleMobileMenu}
-              className="lg:hidden p-2 -mr-2 rounded-lg text-stone-400 hover:text-stone-200 transition-all duration-200 touch-manipulation"
+              className="lg:hidden p-2 -mr-2 rounded-lg text-stone-400 hover:text-stone-200 transition-all duration-200 touch-manipulation active:scale-95"
               aria-label="Otevřít menu"
               aria-expanded={isMobileMenuOpen}
             >
@@ -262,7 +269,7 @@ const Navbar = () => {
 
       {/* BREADCRUMBS */}
       {breadcrumbs && (
-        <div className="fixed left-0 right-0 z-40 bg-stone-950/95 backdrop-blur-sm top-[64px] lg:top-[80px]">
+        <div className="fixed left-0 right-0 z-40 bg-stone-950 lg:bg-stone-950/95 lg:backdrop-blur-sm top-[64px] lg:top-[80px]">
           <div className="max-w-[1600px] mx-auto px-6 lg:px-12">
             <div className="py-3">
               <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs lg:text-sm">
@@ -308,16 +315,17 @@ const Navbar = () => {
       )}
 
       {/* MOBILE MENU */}
-      {/* Backdrop */}
+      {/* Backdrop - BEZ BLURU PRO VÝKON */}
       <div 
-        className={`fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
+        className={`fixed inset-0 z-[60] bg-black/90 transition-opacity duration-300 lg:hidden ${
           isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={closeMobileMenu}
         aria-hidden="true"
+        style={{ willChange: 'opacity' }}
       />
 
-      {/* Sliding Panel */}
+      {/* Sliding Panel - OPTIMALIZOVÁNO */}
       <div 
         className={`fixed top-0 right-0 h-full w-full sm:max-w-sm z-[61] shadow-2xl transform transition-transform duration-300 ease-out lg:hidden flex flex-col bg-stone-950 ${
           isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
@@ -359,7 +367,7 @@ const Navbar = () => {
                   <div className="space-y-1">
                     <button
                       onClick={() => setOpenMobileSubmenu(openMobileSubmenu === item.href ? null : item.href)}
-                      className="w-full flex items-center justify-between p-4 rounded-xl transition-colors duration-200 hover:bg-stone-800/50 text-stone-300 font-medium text-base tracking-wide touch-manipulation"
+                      className="w-full flex items-center justify-between p-4 rounded-xl transition-colors duration-200 hover:bg-stone-800/50 text-stone-300 font-medium text-base tracking-wide touch-manipulation active:bg-stone-800"
                     >
                       <span>{item.label}</span>
                       <ChevronRight 
@@ -370,7 +378,7 @@ const Navbar = () => {
                       />
                     </button>
                     
-                    {/* OPRAVA ZDE: Zvýšena max-h pro animaci submenu */}
+                    {/* Submenu */}
                     <div 
                       className={`overflow-hidden transition-all duration-300 ease-in-out ${
                         openMobileSubmenu === item.href ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
@@ -381,7 +389,7 @@ const Navbar = () => {
                           <Link
                             key={subItem.href}
                             href={subItem.href}
-                            className="block py-3 px-4 pl-8 text-stone-400 hover:text-stone-200 transition-colors duration-200 text-sm font-medium touch-manipulation"
+                            className="block py-3 px-4 pl-8 text-stone-400 hover:text-stone-200 transition-colors duration-200 text-sm font-medium touch-manipulation active:bg-stone-800/50"
                             onClick={closeMobileMenu}
                           >
                             <span className="flex items-center gap-3">
@@ -399,7 +407,7 @@ const Navbar = () => {
                 ) : (
                   <Link 
                     href={item.href}
-                    className="flex items-center justify-between p-4 rounded-xl transition-colors duration-200 hover:bg-stone-800/50 text-stone-300 font-medium text-base tracking-wide touch-manipulation group"
+                    className="flex items-center justify-between p-4 rounded-xl transition-colors duration-200 hover:bg-stone-800/50 text-stone-300 font-medium text-base tracking-wide touch-manipulation group active:bg-stone-800"
                     onClick={closeMobileMenu}
                   >
                     <span>{item.label}</span>
@@ -443,7 +451,7 @@ const Navbar = () => {
                     href={social.href}
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-200"
+                    className="w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-200 active:scale-95"
                     style={{ 
                       backgroundColor: 'rgba(171, 135, 84, 0.1)',
                       border: '1px solid rgba(171, 135, 84, 0.2)'
