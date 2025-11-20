@@ -4,7 +4,7 @@ import { Cormorant_Garamond, Marcellus } from "next/font/google";
 import "./globals.css";
 import SimpleCookieBanner from "./components/cookies";
 import AgeVerification from "./components/AgeVerification";
-import TopBar from "./components/TopBar";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -612,14 +612,7 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "FAQPage",
                 "mainEntity": [
-                  {
-                    "@type": "Question",
-                    "name": "Jaké jsou vaše otevírací hodiny?",
-                    "acceptedAnswer": {
-                      "@type": "Answer",
-                      "text": "Vinařství je otevřeno Po-Pá 9:00-18:00, So 9:00-16:00. Degustace doporučujeme rezervovat předem."
-                    }
-                  },
+                  
                   {
                     "@type": "Question",
                     "name": "Nabízíte degustace vín?",
@@ -638,8 +631,7 @@ export default function RootLayout({
         {/* Age Verification Modal - zobrazí se při první návštěvě */}
         <AgeVerification />
         
-        {/* Top Bar - Dárkové nabídky */}
-        <TopBar />
+       
         
         {children}
         <SimpleCookieBanner />
