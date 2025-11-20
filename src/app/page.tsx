@@ -1,150 +1,84 @@
-"use client"
+"use client";
 import React, { Suspense } from 'react';
 import dynamic from 'next/dynamic';
+import LazySection from './components/LazySection'; // Import našeho nového wrapperu
 
-// Kritické komponenty - načtou se okamžitě
+// 1. KRITICKÉ KOMPONENTY (Above the fold)
+// Tyto se importují staticky nebo dynamicky s vysokou prioritou
 import Navbar from './components/navbar';
 import PromoBar from './components/promobar';
 
-// ✅ FIX: HeroSection musí být dynamická BEZ SSR aby se vyřešila hydratace!
-const HeroSection = dynamic(
-  () => import('./components/hero'),
-  {
-    ssr: false, // ← KRITICKÉ! Vypne SSR a vyřeší hydration problém
-    loading: () => (
-      <div className="relative min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          
-          
-        </div>
-      </div>
-    ),
-  }
+// HeroSection musí být vidět hned, ale řešíme hydrataci přes dynamic
+const HeroSection = dynamic(() => import('./components/hero'), {
+  ssr: false,
+  loading: () => <div className="min-h-screen bg-gray-900" />, // Placeholder pro Hero
+});
+
+// 2. ODLOŽENÉ KOMPONENTY (Below the fold)
+// Důležité: U dynamických importů níže už nepotřebujeme 'ssr: false',
+// protože LazySection zajistí, že se na serveru stejně nevykreslí (nejsou vidět).
+// Tím šetříme JS bundle.
+
+const WineSeriesSection = dynamic(() => import('./components/WineSeriesSection-Enhanced'));
+const WineShowcase = dynamic(() => import('./components/wine'));
+const AboutWinerySection = dynamic(() => import('./components/vinartsvi'));
+const AdoptujVinohrad = dynamic(() => import('./components/adoptuj'));
+const Footer = dynamic(() => import('./components/footer'));
+
+// Skeleton pro loading stavy (aby uživatel věděl, že se něco děje, kdyby scrolloval super rychle)
+const SectionSkeleton = () => (
+  <div className="w-full h-full flex items-center justify-center bg-[#fefbea]/50">
+    <div className="animate-pulse text-[#ab8754] font-light">Načítání...</div>
+  </div>
 );
-
-// Lazy loaded komponenty s custom loading states
-const WineSeriesSection = dynamic(
-  () => import('./components/WineSeriesSection-Enhanced'),
-  {
-    loading: () => (
-      <div className="min-h-[400px] bg-[#fefbea] flex items-center justify-center">
-        <div className="animate-pulse text-[#ab8754]">Načítání...</div>
-      </div>
-    ),
-    ssr: true,
-  }
-);
-
-const WineShowcase = dynamic(
-  () => import('./components/wine'),
-  {
-    loading: () => (
-      <div className="min-h-[500px] bg-white flex items-center justify-center">
-        <div className="animate-pulse text-[#ab8754]">Načítání vín...</div>
-      </div>
-    ),
-    ssr: true,
-  }
-);
-
-const AboutWinerySection = dynamic(
-  () => import('./components/vinartsvi'),
-  {
-    loading: () => (
-      <div className="min-h-[400px] bg-[#fefbea] flex items-center justify-center">
-        <div className="animate-pulse text-[#ab8754]">Načítání...</div>
-      </div>
-    ),
-    ssr: true,
-  }
-);
-
-const AdoptujVinohrad = dynamic(
-  () => import('./components/adoptuj'),
-  {
-    loading: () => (
-      <div className="min-h-[400px] bg-white flex items-center justify-center">
-        <div className="animate-pulse text-[#ab8754]">Načítání...</div>
-      </div>
-    ),
-    ssr: true,
-  }
-);
-
-const Footer = dynamic(
-  () => import('./components/footer'),
-  {
-    loading: () => (
-      <div className="min-h-[300px] bg-stone-950 flex items-center justify-center">
-        <div className="animate-pulse text-[#ab8754]">Načítání...</div>
-      </div>
-    ),
-    ssr: true,
-  }
-);
-
-
 
 export default function Home() {
   return (
-    <main className="relative">
-      {/* Kritické komponenty - načtou se okamžitě */}
+    <main className="relative bg-[#fefbea]">
+      {/* Navbar a PromoBar jsou statické = okamžité */}
       <Navbar />
       <PromoBar />
       
-      {/* ✅ HeroSection je teď dynamická bez SSR */}
+      {/* Hero je kritický pro LCP (Largest Contentful Paint), načítáme ho hned */}
       <HeroSection />
 
-      {/* Lazy loaded komponenty se Suspense */}
-      <Suspense
-        fallback={
-          <div className="min-h-[400px] bg-[#fefbea] flex items-center justify-center">
-            <div className="animate-pulse text-[#ab8754] text-lg">Načítání obsahu...</div>
-          </div>
-        }
-      >
-        <WineSeriesSection />
-      </Suspense>
+      {/* --- ZDE ZAČÍNÁ LAZY LOADING --- */}
+      {/* Každá sekce je obalena v LazySection s odhadovanou výškou */}
 
-      <Suspense
-        fallback={
-          <div className="min-h-[500px] bg-white flex items-center justify-center">
-            <div className="animate-pulse text-[#ab8754] text-lg">Načítání vín...</div>
-          </div>
-        }
-      >
-        <WineShowcase />
-      </Suspense>
+      {/* 1. Kolekce vín (cca 600px výška) */}
+      <LazySection height={600}>
+        <Suspense fallback={<SectionSkeleton />}>
+          <WineSeriesSection />
+        </Suspense>
+      </LazySection>
 
-      <Suspense
-        fallback={
-          <div className="min-h-[400px] bg-[#fefbea] flex items-center justify-center">
-            <div className="animate-pulse text-[#ab8754] text-lg">Načítání...</div>
-          </div>
-        }
-      >
-        <AboutWinerySection />
-      </Suspense>
+      {/* 2. Výpis vín (cca 800px výška) */}
+      <LazySection height={800}>
+        <Suspense fallback={<SectionSkeleton />}>
+          <WineShowcase />
+        </Suspense>
+      </LazySection>
 
-      <Suspense
-        fallback={
-          <div className="min-h-[400px] bg-white flex items-center justify-center">
-            <div className="animate-pulse text-[#ab8754] text-lg">Načítání...</div>
-          </div>
-        }
-      >
-        <AdoptujVinohrad />
-      </Suspense>
+      {/* 3. O vinařství (cca 700px výška) */}
+      <LazySection height={700}>
+        <Suspense fallback={<SectionSkeleton />}>
+          <AboutWinerySection />
+        </Suspense>
+      </LazySection>
 
-      <Suspense
-        fallback={
-          <div className="min-h-[300px] bg-stone-950 flex items-center justify-center">
-            <div className="animate-pulse text-[#ab8754] text-lg">Načítání...</div>
-          </div>
-        }
-      >
-        <Footer />
-      </Suspense>
+      {/* 4. Adoptuj vinohrad (cca 600px výška) */}
+      <LazySection height={600}>
+        <Suspense fallback={<SectionSkeleton />}>
+          <AdoptujVinohrad />
+        </Suspense>
+      </LazySection>
+
+      {/* 5. Footer (cca 400px výška) */}
+      <LazySection height={400} rootMargin="200px"> 
+        <Suspense fallback={<div className="h-[400px] bg-stone-950" />}>
+          <Footer />
+        </Suspense>
+      </LazySection>
     </main>
   );
 }
