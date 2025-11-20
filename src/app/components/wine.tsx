@@ -9,11 +9,6 @@ import { wines, getWinesByCategorySortedBySweetness, getWineCountByCategory, Win
 // Import WineFilterBar komponenty
 import WineFilterBar, { WineFilters } from "@/app/components/WineFilterBar";
 
-// Debug log - pouze v dev módu
-if (process.env.NODE_ENV === 'development') {
-  console.log('Celkový počet vín v databázi:', wines.length);
-}
-
 const WineCollectionSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -87,6 +82,11 @@ const WineCollectionSection: React.FC = () => {
 
   // Memoizace filtrovaných vín s optimalizací
   const filteredWines = useMemo(() => {
+    // OPRAVA: Pokud je vybráno 'all', vrátíme přímo wines (obsahuje vše vč. setů = 42 položek)
+    if (selectedCategory === 'all') {
+      return wines;
+    }
+
     const baseWines = selectedCategory === 'new' 
       ? wines.filter(w => w.badge === 'new').sort((a, b) => {
           const aHasSugar = a.residualSugar !== null && a.residualSugar !== undefined;
@@ -259,23 +259,23 @@ const WineCollectionSection: React.FC = () => {
   return (
     <>
       <section 
-        className="relative min-h-screen py-12 sm:py-20 lg:py-28 overflow-hidden"
-        style={{ backgroundColor: "#fefbea" }}
+        className="relative min-h-screen py-12 sm:py-20 lg:py-28 overflow-hidden bg-[#fefbea]"
+        suppressHydrationWarning={true}
       >
         {/* Animated background - pouze desktop */}
         {!isMobile && (
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl animate-pulse" 
+            <div className="hidden md:block absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl animate-pulse opacity-60" 
                  style={{ background: `radial-gradient(circle, #ab875415, transparent)` }}></div>
-            <div className="absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl animate-pulse animation-delay-2000"
-                 style={{ background: `radial-gradient(circle, #ab875410, transparent)` }}></div>
+            <div className="hidden md:block absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl animate-pulse opacity-60"
+                 style={{ background: `radial-gradient(circle, #ab875410, transparent)`, animationDelay: '2s' }}></div>
           </div>
         )}
         
         <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           
-          {/* Header */}
-          <div className="text-center mb-12 sm:mb-16 px-4">
+          {/* Header - Zmenšená mezera z mb-16 na mb-8 */}
+          <div className="text-center mb-8 sm:mb-12 px-4">
             <div className="space-y-4 sm:space-y-6">
               <div className="inline-flex items-center gap-2 sm:gap-3 mb-4">
                 <div className="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
@@ -306,7 +306,7 @@ const WineCollectionSection: React.FC = () => {
                       </p>
                       <a 
                         href="/mapa-vin"
-                        className="inline-flex items-center gap-2 text-xs sm:text-base font-semibold hover:underline transition-colors touch-optimized"
+                        className="inline-flex items-center gap-2 text-xs sm:text-base font-semibold hover:underline transition-colors touch-manipulation"
                         style={{ color: "#ab8754" }}
                       >
                         <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -319,8 +319,8 @@ const WineCollectionSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Kategorie */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-16">
+          {/* Kategorie - Zmenšená mezera z mb-16 na mb-8 */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 sm:mb-10">
             <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2 sm:gap-3">
               {categories.map((category) => {
                 const Icon = category.icon;
@@ -332,7 +332,7 @@ const WineCollectionSection: React.FC = () => {
                     key={category.id}
                     onClick={() => setSelectedCategory(category.id)}
                     className={`
-                      flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base touch-optimized
+                      flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base touch-manipulation
                       ${isSelected 
                         ? 'text-white border-transparent shadow-lg' 
                         : 'bg-white/90 text-gray-700 border-gray-200 active:scale-95'
@@ -352,8 +352,8 @@ const WineCollectionSection: React.FC = () => {
             </div>
           </div>
 
-          {/* WineFilterBar */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8">
+          {/* WineFilterBar - Zmenšená mezera z mb-8 na mb-6 */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
             <WineFilterBar 
               filters={filters}
               onFiltersChange={handleFiltersChange}
@@ -391,7 +391,7 @@ const WineCollectionSection: React.FC = () => {
                 disabled={currentIndex === 0}
                 className={`
                   absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 z-10
-                  w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-lg touch-optimized
+                  w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-lg touch-manipulation
                   ${currentIndex === 0 
                     ? 'opacity-30 cursor-not-allowed' 
                     : 'active:scale-90'}
@@ -407,7 +407,7 @@ const WineCollectionSection: React.FC = () => {
                 disabled={currentIndex >= maxIndex}
                 className={`
                   absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 z-10
-                  w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-lg touch-optimized
+                  w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-lg touch-manipulation
                   ${currentIndex >= maxIndex 
                     ? 'opacity-30 cursor-not-allowed' 
                     : 'active:scale-90'}
@@ -543,7 +543,7 @@ const WineCollectionSection: React.FC = () => {
                                   href={wine.shopUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="sm:hidden w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90 touch-optimized"
+                                  className="sm:hidden w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation"
                                   style={{ backgroundColor: "#ab8754" }}
                                 >
                                   <ShoppingCart className="w-4 h-4 text-white" />
@@ -585,7 +585,7 @@ const WineCollectionSection: React.FC = () => {
                   <button
                     key={i}
                     onClick={() => setCurrentIndex(i)}
-                    className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 touch-optimized ${
+                    className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 touch-manipulation ${
                       currentIndex === i 
                         ? 'w-6 sm:w-8 opacity-100' 
                         : 'w-1.5 sm:w-2 opacity-40'
@@ -600,7 +600,7 @@ const WineCollectionSection: React.FC = () => {
         </div>
       </section>
 
-      {/* Modal - OPRAVENÝ */}
+      {/* Modal */}
       {isModalOpen && selectedWine && (
         <div 
           className="fixed inset-0 z-50 overflow-y-auto"
@@ -615,13 +615,13 @@ const WineCollectionSection: React.FC = () => {
             >
               <button
                 onClick={closeModal}
-                className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-lg touch-optimized"
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-lg touch-manipulation"
               >
                 <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
               </button>
 
               <div className="grid md:grid-cols-2 gap-0">
-                {/* Image Section - OPRAVENÝ */}
+                {/* Image Section */}
                 <div className="relative bg-gradient-to-br from-gray-50 to-white p-6 sm:p-12 flex items-center justify-center border-r border-gray-100">
                   {selectedWine.badge && (
                     <div 

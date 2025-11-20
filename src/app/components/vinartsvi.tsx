@@ -1,8 +1,7 @@
 "use client"
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import { Award, Leaf, MapPin, Users, Wine, Star, Crown, Trophy, Sparkles, ChevronRight, Grape } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
 
 const AboutWinerySection = () => {
   const storyImageUrl = "/frontpage.webp";
@@ -10,25 +9,24 @@ const AboutWinerySection = () => {
   const accentColor = "#ab8754";
   const paperColor = "#fefbea";
 
-  // Detekce mobilního zařízení pro optimalizaci
-  const [isMobile, setIsMobile] = useState(false);
-  const prefersReducedMotion = useReducedMotion();
+  // Refs pro Intersection Observer (animace při scrollování)
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    const checkMobile = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-    };
-    checkMobile();
-    const debouncedResize = () => {
-      clearTimeout((window as Window & { resizeTimer?: number }).resizeTimer);
-      (window as Window & { resizeTimer?: number }).resizeTimer = window.setTimeout(checkMobile, 150);
-    };
-    window.addEventListener('resize', debouncedResize, { passive: true });
-    return () => {
-      window.removeEventListener('resize', debouncedResize);
-      clearTimeout((window as Window & { resizeTimer?: number }).resizeTimer);
-    };
+    // Jednoduchý observer pro přidání třídy .in-view
+    observerRef.current = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in-view");
+          observerRef.current?.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: "50px" });
+
+    const elements = document.querySelectorAll(".reveal-on-scroll");
+    elements.forEach((el) => observerRef.current?.observe(el));
+
+    return () => observerRef.current?.disconnect();
   }, []);
 
   const galleryPhotos = useMemo(() => [
@@ -277,55 +275,72 @@ const AboutWinerySection = () => {
     achievements.reduce((sum, achievement) => sum + achievement.silverMedals, 0)
   , [achievements]);
 
-  // State pro filtrování podle roku
   const [selectedYear, setSelectedYear] = useState<string>("Vše");
 
-  // Získání všech unikátních roků seřazených od nejnovějšího
   const years = useMemo(() => 
     ["Vše", ...Array.from(new Set(achievements.map(a => a.year))).sort((a, b) => b.localeCompare(a))]
   , [achievements]);
 
-  // Filtrování podle vybraného roku
   const filteredAchievements = useMemo(() => 
     selectedYear === "Vše" 
       ? achievements 
       : achievements.filter(a => a.year === selectedYear)
   , [selectedYear, achievements]);
 
-  // Optimalizace: méně duplikací na mobilu
+  // Důležité: Zduplikujeme data 3x, aby slider běžel plynule nekonečně
   const duplicatedAchievements = useMemo(() => 
-    isMobile 
-      ? [...filteredAchievements, ...filteredAchievements]
-      : [...filteredAchievements, ...filteredAchievements, ...filteredAchievements]
-  , [isMobile, filteredAchievements]);
-
-  // Optimalizované motion props pro mobil
-  const getMotionProps = (delay = 0) => {
-    if (isMobile || prefersReducedMotion) {
-      return {
-        initial: { opacity: 1 },
-        whileinview: { opacity: 1 },
-        transition: { duration: 0 }
-      };
-    }
-    return {
-      initial: { opacity: 0, y: 20 },
-      whileInView: { opacity: 1, y: 0 },
-      viewport: { once: true, margin: "-100px" },
-      transition: { duration: 0.6, delay }
-    };
-  };
-
-  const MotionDiv = isMobile ? 'div' : motion.div;
+    [...filteredAchievements, ...filteredAchievements, ...filteredAchievements]
+  , [filteredAchievements]);
 
   return (
     <section 
+      suppressHydrationWarning={true}
       className="relative overflow-hidden" 
-      style={{ 
-        backgroundColor: paperColor
-      }}
+      style={{ backgroundColor: paperColor }}
     >
-      
+      {/* --- CSS STYLES (ŽÁDNÉ JSX) --- */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes pulse-slow {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.6; }
+        }
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-33.333%); }
+        }
+        .animate-pulse-slow {
+          animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .animate-marquee {
+          animation: marquee 60s linear infinite;
+        }
+        /* Pause on hover (pouze pokud zařízení podporuje hover) */
+        @media (hover: hover) {
+          .animate-marquee:hover {
+            animation-play-state: paused;
+          }
+        }
+        /* Reveal classes */
+        .reveal-on-scroll {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .reveal-on-scroll.in-view {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        .delay-100 { transition-delay: 0.1s; }
+        .delay-200 { transition-delay: 0.2s; }
+        .delay-300 { transition-delay: 0.3s; }
+
+        /* Slider mask */
+        .awards-mask {
+          mask: linear-gradient(90deg, transparent, white 5%, white 95%, transparent);
+          -webkit-mask: linear-gradient(90deg, transparent, white 5%, white 95%, transparent);
+        }
+      `}} />
+
       {/* Top Border */}
       <div className="relative w-full h-auto">
         <Image 
@@ -335,26 +350,20 @@ const AboutWinerySection = () => {
           height={176}
           className="w-full h-auto object-contain"
           priority
-          quality={isMobile ? 60 : 90}
         />
       </div>
 
       <div className="py-12 md:py-20 lg:py-32">
-        {/* Animated background elements - pouze desktop */}
-        {!isMobile && (
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl animate-pulse" 
-                 style={{ background: `radial-gradient(circle, ${accentColor}15, transparent)` }}></div>
-            <div className="absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl animate-pulse animation-delay-2000"
-                 style={{ background: `radial-gradient(circle, ${accentColor}10, transparent)` }}></div>
-          </div>
-        )}
+        {/* Background blobs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="hidden md:block absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl animate-pulse-slow opacity-40" 
+               style={{ background: `radial-gradient(circle, ${accentColor}15, transparent)` }}></div>
+          <div className="hidden md:block absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl animate-pulse-slow opacity-40"
+               style={{ background: `radial-gradient(circle, ${accentColor}10, transparent)` }}></div>
+        </div>
 
-        {/* Header Section */}
-        <MotionDiv 
-          className="relative z-10 text-center mb-12 md:mb-20 px-4"
-          {...getMotionProps()}
-        >
+        {/* Header */}
+        <div className="reveal-on-scroll relative z-10 text-center mb-12 md:mb-20 px-4">
           <div className="inline-flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
             <div className="h-px w-8 md:w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
             <Grape className="w-6 h-6 md:w-8 md:h-8" style={{ color: accentColor }} />
@@ -364,156 +373,91 @@ const AboutWinerySection = () => {
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-light text-gray-800 mb-4 md:mb-6">
             Náš <span className="font-normal" style={{ color: accentColor }}>příběh</span>
           </h2>
-          
           <p className="text-base md:text-xl text-gray-600 font-light max-w-3xl mx-auto leading-relaxed">
-            Vinařství MiQueen v sobě snoubí moderní prvky s mnohaletou tradicí a zkušeností
+            Vínařství MiQueen v sobě snoubí moderní prvky s mnohaletou tradicí a zkušeností
           </p>
-        </MotionDiv>
+        </div>
 
         {/* Main Content */}
-        <MotionDiv 
-          className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 mb-20 md:mb-32"
-          {...getMotionProps(0.2)}
-        >
+        <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 mb-20 md:mb-32">
           <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8 md:gap-12 lg:gap-20">
             
-            {/* Left Column - Story with Image */}
-            <MotionDiv 
-              className="space-y-6 md:space-y-8"
-              {...(isMobile ? {} : {
-                initial: { opacity: 0, x: -30 },
-                whileInView: { opacity: 1, x: 0 },
-                viewport: { once: true, margin: "-100px" },
-                transition: { duration: 0.6 }
-              })}
-            >
-              {/* Hero Image */}
-              <div className="relative group overflow-hidden rounded-2xl md:rounded-3xl shadow-2xl touch-manipulation">
+            {/* Left Column - Story */}
+            <div className="reveal-on-scroll space-y-6 md:space-y-8 delay-100">
+              <div className="relative group overflow-hidden rounded-2xl md:rounded-3xl shadow-2xl">
                 <Image 
                   src={storyImageUrl} 
                   alt="Vinařství MiQueen"
                   width={900}
                   height={600}
-                  className={`w-full h-auto object-contain ${!isMobile ? 'group-hover:scale-105 transition-transform duration-700' : ''}`}
+                  className="w-full h-auto object-contain md:group-hover:scale-105 transition-transform duration-700"
                   loading="lazy"
-                  quality={isMobile ? 60 : 90}
                   sizes="(max-width: 1024px) 100vw, 60vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
               </div>
 
-              {/* Story Text */}
               <div className="space-y-4 md:space-y-5 text-gray-700 max-w-4xl">
                 <p className="text-base md:text-lg lg:text-xl leading-relaxed">
                   Kolébkou všeho byla rodinná výroba vína, časem umocněna zkušenostmi ze srdce velké vinařské firmy. 
                   <span className="text-gray-900 font-medium"> Od roku 2006</span> jsme rostli s láskou k vínu a tradicím.
                 </p>
-                
                 <p className="text-base md:text-lg lg:text-xl leading-relaxed">
                   V roce <span className="text-gray-900 font-medium">2009</span> vznikla samostatná rodinná firma 
                   s výrobní kapacitou 30 000 lahví. Dnes je vinařství MiQueen 
                   <span className="font-medium" style={{ color: accentColor }}> kompletně ekologicky hospodařící</span> na 
                   téměř 32 hektarech vinic.
                 </p>
-                
                 <p className="text-base md:text-lg lg:text-xl leading-relaxed">
                   Naše vína získávají typický mikulovský minerální charakter díky 
                   <span className="text-gray-900 font-medium"> minerálnímu podloží z jurského vápence s jíly</span> v 
                   lokalitě Za cihelnou.
                 </p>
               </div>
-            </MotionDiv>
+            </div>
 
-            {/* Right Column - Stats & CTA */}
-            <MotionDiv 
-              className="space-y-6 md:space-y-8 lg:sticky lg:top-8 lg:self-start"
-              {...(isMobile ? {} : {
-                initial: { opacity: 0, x: 30 },
-                whileInView: { opacity: 1, x: 0 },
-                viewport: { once: true, margin: "-100px" },
-                transition: { duration: 0.6, delay: 0.2 }
-              })}
-            >
-              {/* Stats Grid */}
+            {/* Right Column - Stats */}
+            <div className="reveal-on-scroll space-y-6 md:space-y-8 lg:sticky lg:top-8 lg:self-start delay-200">
               <div className="grid grid-cols-2 gap-3 md:gap-4">
                 {highlights.map((highlight, index) => {
                   const IconComponent = highlight.icon;
-                  const CardWrapper = isMobile ? 'div' : motion.div;
                   return (
-                    <CardWrapper 
+                    <div 
                       key={index}
-                      className={`group relative bg-gradient-to-br from-white via-white to-gray-50 rounded-2xl md:rounded-3xl p-4 md:p-6 border border-gray-100 transition-all duration-300 overflow-hidden touch-manipulation ${!isMobile ? 'hover:border-transparent hover:shadow-2xl' : 'active:scale-95'}`}
-                      {...(isMobile ? {} : {
-                        initial: { opacity: 0, scale: 0.9 },
-                        whileInView: { opacity: 1, scale: 1 },
-                        viewport: { once: true },
-                        transition: { duration: 0.4, delay: index * 0.1 },
-                        whileHover: { y: -4 }
-                      })}
+                      className="group relative bg-gradient-to-br from-white via-white to-gray-50 rounded-2xl md:rounded-3xl p-4 md:p-6 border border-gray-100 transition-all duration-300 md:hover:border-transparent md:hover:shadow-2xl active:scale-95"
                     >
-                      {/* Gradient overlay - pouze desktop */}
-                      {!isMobile && (
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                             style={{ 
-                               background: `linear-gradient(135deg, ${accentColor}15, transparent)`,
-                             }}></div>
-                      )}
-                      
-                      {/* Animated border - pouze desktop */}
-                      {!isMobile && (
-                        <div className="absolute inset-0 rounded-2xl md:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                             style={{ 
-                               boxShadow: `0 0 0 1px ${accentColor}40`,
-                             }}></div>
-                      )}
+                      <div className="hidden md:block absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                           style={{ background: `linear-gradient(135deg, ${accentColor}15, transparent)` }}></div>
+                      <div className="hidden md:block absolute inset-0 rounded-2xl md:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                           style={{ boxShadow: `0 0 0 1px ${accentColor}40` }}></div>
                       
                       <div className="relative z-10">
-                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl mb-3 md:mb-4 flex items-center justify-center ${!isMobile ? 'transition-all duration-500 group-hover:scale-110' : ''}`}
-                             style={{ 
-                               background: `linear-gradient(135deg, ${accentColor}20, ${accentColor}10)`,
-                             }}>
+                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl mb-3 md:mb-4 flex items-center justify-center md:transition-all md:duration-500 md:group-hover:scale-110"
+                             style={{ background: `linear-gradient(135deg, ${accentColor}20, ${accentColor}10)` }}>
                           <IconComponent className="w-5 h-5 md:w-6 md:h-6" style={{ color: accentColor }} />
                         </div>
-                        
                         <div className="text-2xl md:text-4xl font-bold mb-1 md:mb-2 bg-gradient-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent">
                           {highlight.stat}
                         </div>
-                        
                         <h3 className="text-gray-900 text-sm md:text-base font-semibold mb-1 md:mb-2">
                           {highlight.title}
                         </h3>
-                        
                         <p className="text-gray-600 text-xs md:text-sm leading-relaxed">
                           {highlight.description}
                         </p>
                       </div>
-                    </CardWrapper>
+                    </div>
                   );
                 })}
               </div>
 
-              {/* CTA Card */}
-              <MotionDiv 
-                className={`relative bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 border border-gray-100 shadow-lg overflow-hidden group transition-all duration-300 touch-manipulation ${!isMobile ? 'hover:shadow-2xl' : 'active:scale-95'}`}
-                {...(isMobile ? {} : {
-                  initial: { opacity: 0, y: 20 },
-                  whileInView: { opacity: 1, y: 0 },
-                  viewport: { once: true },
-                  transition: { duration: 0.5, delay: 0.4 }
-                })}
-              >
-                {/* Background pattern - pouze desktop */}
-                {!isMobile && (
-                  <div className="absolute inset-0 opacity-5"
-                       style={{
-                         backgroundImage: `radial-gradient(circle at 2px 2px, ${accentColor} 1px, transparent 0)`,
-                         backgroundSize: '24px 24px'
-                       }}></div>
-                )}
-                
-                {/* Gradient overlay */}
+              <div className="reveal-on-scroll relative bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 border border-gray-100 shadow-lg overflow-hidden group transition-all duration-300 md:hover:shadow-2xl active:scale-95 delay-300">
+                <div className="hidden md:block absolute inset-0 opacity-5"
+                     style={{
+                       backgroundImage: `radial-gradient(circle at 2px 2px, ${accentColor} 1px, transparent 0)`,
+                       backgroundSize: '24px 24px'
+                     }}></div>
                 <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-gray-50/50"></div>
-                
                 <div className="relative z-10">
                   <h3 className="text-xl md:text-2xl font-light text-gray-900 mb-2 md:mb-3">
                     Objevte naši filozofii
@@ -525,96 +469,58 @@ const AboutWinerySection = () => {
                     href="/blog"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`group/btn inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 text-white text-sm md:text-base font-medium rounded-full transition-all duration-300 shadow-lg touch-manipulation ${!isMobile ? 'hover:shadow-xl transform hover:scale-105' : ''} active:scale-95`}
-                    style={{ 
-                      background: `linear-gradient(135deg, ${accentColor}, ${accentColor}dd)`,
-                    }}
+                    className="group/btn inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 text-white text-sm md:text-base font-medium rounded-full transition-all duration-300 shadow-lg md:hover:shadow-xl md:hover:scale-105 active:scale-95"
+                    style={{ background: `linear-gradient(135deg, ${accentColor}, ${accentColor}dd)` }}
                   >
                     <span>Více v blogu vinařství</span>
-                    <ChevronRight className={`w-4 h-4 ${!isMobile ? 'group-hover/btn:translate-x-1 transition-transform' : ''}`} />
+                    <ChevronRight className="w-4 h-4 md:group-hover/btn:translate-x-1 transition-transform" />
                   </a>
                 </div>
-              </MotionDiv>
-            </MotionDiv>
+              </div>
+            </div>
           </div>
-        </MotionDiv>
+        </div>
 
-        {/* PHOTO GALLERY SECTION */}
-        <MotionDiv 
-          className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 mb-20 md:mb-32"
-          {...getMotionProps()}
-        >
+        {/* Gallery */}
+        <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 mb-20 md:mb-32">
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
-            {galleryPhotos.map((photo, index) => {
-              const PhotoWrapper = isMobile ? 'div' : motion.div;
-              return (
-                <PhotoWrapper
-                  key={index}
-                  className={`photo-card group relative overflow-hidden rounded-2xl md:rounded-3xl shadow-lg transition-all duration-300 touch-manipulation ${!isMobile ? 'hover:shadow-2xl' : 'active:scale-95'}`}
-                  {...(isMobile ? {} : {
-                    initial: { opacity: 0, y: 20 },
-                    whileInView: { opacity: 1, y: 0 },
-                    viewport: { once: true, margin: "-50px" },
-                    transition: { duration: 0.5, delay: index * 0.1 }
-                  })}
-                >
-                  <div className="aspect-[4/3] relative overflow-hidden">
-                    <Image
-                      src={photo.src}
-                      alt={photo.alt}
-                      width={600}
-                      height={450}
-                      className={`w-full h-full object-cover ${!isMobile ? 'group-hover:scale-110 transition-transform duration-700' : ''}`}
-                      loading="lazy"
-                      quality={isMobile ? 60 : 90}
-                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                    {/* Subtle overlay - pouze desktop */}
-                    {!isMobile && (
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    )}
-                  </div>
-                  
-                  {/* Decorative border - pouze desktop */}
-                  {!isMobile && (
-                    <div 
-                      className="absolute inset-0 rounded-2xl md:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                      style={{ 
-                        boxShadow: `inset 0 0 0 2px ${accentColor}40`,
-                      }}
-                    ></div>
-                  )}
-                </PhotoWrapper>
-              );
-            })}
+            {galleryPhotos.map((photo, index) => (
+              <div
+                key={index}
+                className="reveal-on-scroll group relative overflow-hidden rounded-2xl md:rounded-3xl shadow-lg transition-all duration-300 md:hover:shadow-2xl active:scale-95"
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                <div className="aspect-[4/3] relative overflow-hidden">
+                  <Image
+                    src={photo.src}
+                    alt={photo.alt}
+                    width={600}
+                    height={450}
+                    className="w-full h-full object-cover md:group-hover:scale-110 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                  <div className="hidden md:block absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+              </div>
+            ))}
           </div>
-        </MotionDiv>
+        </div>
 
         {/* Awards Section */}
-        <MotionDiv 
-          className="relative w-full overflow-hidden"
-          {...getMotionProps()}
-        >
-          {/* Section Header */}
-          <MotionDiv 
-            className="text-center mb-8 md:mb-16 px-4"
-            {...getMotionProps()}
-          >
+        <div className="reveal-on-scroll relative w-full overflow-hidden">
+          <div className="text-center mb-8 md:mb-16 px-4">
             <div className="inline-flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
               <div className="h-px w-8 md:w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
               <Trophy className="w-6 h-6 md:w-8 md:h-8" style={{ color: accentColor }} />
               <div className="h-px w-8 md:w-12 bg-gradient-to-l from-transparent via-gray-300 to-transparent"></div>
             </div>
-            
             <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-light text-gray-800 mb-4 md:mb-6">
               Naše <span className="font-normal" style={{ color: accentColor }}>ocenění</span>
             </h3>
-            
             <p className="text-base md:text-xl text-gray-600 font-light max-w-2xl mx-auto mb-6 md:mb-8">
               Na významných soutěžích získáváme krásná ocenění
             </p>
 
-            {/* Stats Bar */}
             <div className="flex justify-center">
               <div className="inline-flex flex-col sm:flex-row items-center bg-white/90 backdrop-blur-md rounded-2xl sm:rounded-full p-2 border border-gray-200 shadow-lg">
                 <div className="px-6 md:px-8 py-3 md:py-4 text-center">
@@ -633,31 +539,19 @@ const AboutWinerySection = () => {
                 </div>
               </div>
             </div>
-          </MotionDiv>
+          </div>
 
-          {/* Filtrování podle roku */}
-          <MotionDiv 
-            className="flex justify-center mb-8 md:mb-12 px-4"
-            {...(isMobile ? {} : {
-              initial: { opacity: 0, y: 20 },
-              whileInView: { opacity: 1, y: 0 },
-              viewport: { once: true },
-              transition: { duration: 0.5, delay: 0.2 }
-            })}
-          >
+          {/* Filter Buttons */}
+          <div className="flex justify-center mb-8 md:mb-12 px-4">
             <div className="inline-flex flex-wrap justify-center gap-2 md:gap-3 bg-white/80 backdrop-blur-sm rounded-2xl p-2 border border-gray-200 shadow-lg">
               {years.map((year) => (
                 <button
                   key={year}
                   onClick={() => setSelectedYear(year)}
                   className={`
-                    px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium text-sm md:text-base
-                    transition-all duration-300 touch-manipulation
-                    ${selectedYear === year 
-                      ? 'text-white shadow-lg' 
-                      : 'text-gray-700 active:scale-95'
-                    }
-                    ${!isMobile && selectedYear !== year ? 'hover:bg-gray-100 hover:scale-105' : ''}
+                    px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium text-sm md:text-base transition-all duration-300
+                    ${selectedYear === year ? 'text-white shadow-lg' : 'text-gray-700 active:scale-95'}
+                    ${selectedYear !== year ? 'md:hover:bg-gray-100 md:hover:scale-105' : ''}
                   `}
                   style={selectedYear === year ? { 
                     backgroundColor: accentColor,
@@ -673,115 +567,85 @@ const AboutWinerySection = () => {
                 </button>
               ))}
             </div>
-          </MotionDiv>
+          </div>
 
-          {/* Awards Slider Container */}
-          <MotionDiv 
-            className="awards-slider-container overflow-hidden relative py-4 md:py-8"
-            {...(isMobile ? {} : {
-              initial: { opacity: 0 },
-              whileInView: { opacity: 1 },
-              viewport: { once: true },
-              transition: { duration: 0.8 }
-            })}
-            key={selectedYear}
-          >
-            <div 
-              className={`awards-slider flex gap-4 md:gap-6 ${isMobile || prefersReducedMotion ? 'awards-slider-paused' : ''}`}
-              style={{
-                animationDuration: isMobile ? '80s' : '60s'
-              }}
-            >
-              {duplicatedAchievements.map((achievement, index) => {
-                return (
-                  <div 
-                    key={`${achievement.id}-${index}`}
-                    className={`award-card group relative flex-shrink-0 w-[260px] sm:w-[280px] md:w-[320px] bg-white rounded-2xl md:rounded-3xl border border-gray-200 transition-all duration-300 overflow-hidden shadow-lg touch-manipulation ${!isMobile ? 'hover:border-gray-300 hover:shadow-2xl' : 'active:scale-95'}`}
-                    style={{ 
-                      borderColor: achievement.highlight ? `${accentColor}` : undefined
-                    }}
-                  >
-                    {/* Year badge */}
-                    <div className="absolute top-3 right-3 md:top-4 md:right-4 z-20 px-2.5 py-1 md:px-3 md:py-1 rounded-full"
-                         style={{ backgroundColor: `${accentColor}` }}>
-                      <span className="text-white text-xs font-bold">{achievement.year}</span>
-                    </div>
+          {/* Awards Infinite Slider */}
+          <div className="awards-mask overflow-hidden relative py-4 md:py-8">
+            <div className="animate-marquee flex gap-4 md:gap-6 w-max">
+              {duplicatedAchievements.map((achievement, index) => (
+                <div 
+                  key={`${achievement.id}-${index}`}
+                  className={`group relative flex-shrink-0 w-[260px] sm:w-[280px] md:w-[320px] bg-white rounded-2xl md:rounded-3xl border border-gray-200 transition-all duration-300 overflow-hidden shadow-lg md:hover:border-gray-300 md:hover:shadow-2xl active:scale-95`}
+                  style={{ 
+                    borderColor: achievement.highlight ? `${accentColor}` : undefined
+                  }}
+                >
+                  <div className="absolute top-3 right-3 md:top-4 md:right-4 z-20 px-2.5 py-1 md:px-3 md:py-1 rounded-full"
+                       style={{ backgroundColor: `${accentColor}` }}>
+                    <span className="text-white text-xs font-bold">{achievement.year}</span>
+                  </div>
 
-                    {/* Background accent gradient - pouze desktop */}
-                    {!isMobile && (
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                           style={{ background: `linear-gradient(135deg, ${accentColor}10, transparent)` }}></div>
+                  <div className="hidden md:block absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                       style={{ background: `linear-gradient(135deg, ${accentColor}10, transparent)` }}></div>
+
+                  <div className="relative h-24 md:h-32 mb-4 md:mb-6 flex items-center justify-center mt-6 md:mt-8">
+                    {achievement.image && (
+                      <Image 
+                        src={achievement.image}
+                        alt={achievement.title}
+                        width={100}
+                        height={100}
+                        className="object-contain drop-shadow-2xl rounded-xl md:rounded-2xl md:group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
+                      />
                     )}
-
-                    {/* Medal Image */}
-                    <div className="relative h-24 md:h-32 mb-4 md:mb-6 flex items-center justify-center mt-6 md:mt-8">
-                      {achievement.image && (
-                        <Image 
-                          src={achievement.image}
-                          alt={achievement.title}
-                          width={100}
-                          height={100}
-                          className={`object-contain drop-shadow-2xl rounded-xl md:rounded-2xl ${!isMobile ? 'group-hover:scale-110 transition-transform duration-500' : ''}`}
-                          loading="lazy"
-                          quality={isMobile ? 60 : 85}
-                        />
+                  </div>
+                  
+                  <div className="relative z-10 px-5 md:px-8 pb-5 md:pb-8">
+                    <h4 className="text-gray-900 text-sm md:text-lg font-medium mb-3 md:mb-4 min-h-[2.5rem] md:min-h-[3rem]">
+                      {achievement.title}
+                    </h4>
+                    <div className="flex items-center gap-2 md:gap-4 mb-3 md:mb-4">
+                      {achievement.goldMedals > 0 && (
+                        <div className="flex items-center gap-1.5 md:gap-2">
+                          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-xl">
+                            <span className="text-white text-xs md:text-sm font-bold">{achievement.goldMedals}</span>
+                          </div>
+                          <span className="text-amber-600 text-xs md:text-sm font-medium">zlaté</span>
+                        </div>
+                      )}
+                      {achievement.silverMedals > 0 && (
+                        <div className="flex items-center gap-1.5 md:gap-2">
+                          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center shadow-xl">
+                            <span className="text-white text-xs md:text-sm font-bold">{achievement.silverMedals}</span>
+                          </div>
+                          <span className="text-gray-600 text-xs md:text-sm font-medium">stříbrné</span>
+                        </div>
                       )}
                     </div>
-                    
-                    <div className="relative z-10 px-5 md:px-8 pb-5 md:pb-8">
-                      {/* Title */}
-                      <h4 className="text-gray-900 text-sm md:text-lg font-medium mb-3 md:mb-4 min-h-[2.5rem] md:min-h-[3rem]">
-                        {achievement.title}
-                      </h4>
-
-                      {/* Medals */}
-                      <div className="flex items-center gap-2 md:gap-4 mb-3 md:mb-4">
-                        {achievement.goldMedals > 0 && (
-                          <div className="flex items-center gap-1.5 md:gap-2">
-                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-xl">
-                              <span className="text-white text-xs md:text-sm font-bold">{achievement.goldMedals}</span>
-                            </div>
-                            <span className="text-amber-600 text-xs md:text-sm font-medium">zlaté</span>
-                          </div>
-                        )}
-                        {achievement.silverMedals > 0 && (
-                          <div className="flex items-center gap-1.5 md:gap-2">
-                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center shadow-xl">
-                              <span className="text-white text-xs md:text-sm font-bold">{achievement.silverMedals}</span>
-                            </div>
-                            <span className="text-gray-600 text-xs md:text-sm font-medium">stříbrné</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Total medals text */}
-                      <p className="text-xs md:text-sm font-medium mb-3 md:mb-4" style={{ color: accentColor }}>
-                        {achievement.totalMedals}
-                      </p>
-                    </div>
+                    <p className="text-xs md:text-sm font-medium mb-3 md:mb-4" style={{ color: accentColor }}>
+                      {achievement.totalMedals}
+                    </p>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
-          </MotionDiv>
+          </div>
 
           {/* Final CTA */}
-          <MotionDiv 
-            className="text-center mt-12 md:mt-20 px-4"
-            {...getMotionProps()}
-          >
+          <div className="reveal-on-scroll text-center mt-12 md:mt-20 px-4 delay-200">
             <a 
               href="/vina/"
               target="_blank"
               rel="noopener noreferrer"
-              className={`group inline-flex items-center gap-2 md:gap-3 px-8 md:px-10 py-4 md:py-5 text-white text-base md:text-lg font-medium rounded-full transition-all duration-300 shadow-xl touch-manipulation ${!isMobile ? 'hover:shadow-2xl hover:scale-105' : ''} active:scale-95`}
+              className="group inline-flex items-center gap-2 md:gap-3 px-8 md:px-10 py-4 md:py-5 text-white text-base md:text-lg font-medium rounded-full transition-all duration-300 shadow-xl md:hover:shadow-2xl md:hover:scale-105 active:scale-95"
               style={{ backgroundColor: accentColor }}
             >
               <span>Objevte oceněná vína</span>
-              <ChevronRight className={`w-4 h-4 md:w-5 md:h-5 ${!isMobile ? 'group-hover:translate-x-1 transition-transform' : ''}`} />
+              <ChevronRight className="w-4 h-4 md:w-5 md:h-5 md:group-hover:translate-x-1 transition-transform" />
             </a>
-          </MotionDiv>
-        </MotionDiv>
+          </div>
+        </div>
       </div>
 
       {/* Bottom Border */}
@@ -791,120 +655,10 @@ const AboutWinerySection = () => {
           alt=""
           width={1920}
           height={176}
-          className="w-full h-auto"
-          style={{ display: 'block' }}
+          className="w-full h-auto block"
           loading="lazy"
-          quality={isMobile ? 60 : 90}
         />
       </div>
-
-      {/* CSS Animations */}
-      <style jsx>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 0.6; }
-        }
-
-        @keyframes slide {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-33.333%); }
-        }
-
-        .animate-pulse {
-          animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-          will-change: opacity;
-        }
-
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-
-        /* Photo Gallery - pouze desktop hover */
-        @media (hover: hover) and (min-width: 768px) {
-          .photo-card {
-            will-change: transform;
-          }
-          .photo-card:hover {
-            transform: translateY(-8px);
-          }
-        }
-
-        /* Awards slider */
-        .awards-slider-container {
-          mask: linear-gradient(90deg, transparent, white 5%, white 95%, transparent);
-          -webkit-mask: linear-gradient(90deg, transparent, white 5%, white 95%, transparent);
-        }
-
-        .awards-slider {
-          animation: slide 60s linear infinite;
-          width: fit-content;
-        }
-
-        /* Pause animace na mobilu */
-        .awards-slider-paused {
-          animation-play-state: paused;
-        }
-
-        /* Pause při touch na mobilu */
-        @media (hover: none) {
-          .awards-slider-container:active .awards-slider {
-            animation-play-state: paused;
-          }
-        }
-
-        /* Hover pause pouze na desktopu */
-        @media (hover: hover) and (min-width: 768px) {
-          .awards-slider:hover {
-            animation-play-state: paused;
-          }
-        }
-
-        /* Award cards - pouze desktop hover */
-        @media (hover: hover) and (min-width: 768px) {
-          .award-card {
-            will-change: transform;
-            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-          }
-          .award-card:hover {
-            transform: translateY(-8px) scale(1.02);
-          }
-        }
-
-        /* Touch optimalizace */
-        * {
-          -webkit-tap-highlight-color: transparent;
-        }
-
-        .touch-manipulation {
-          touch-action: manipulation;
-          -webkit-touch-callout: none;
-          -webkit-user-select: none;
-          user-select: none;
-        }
-
-        /* Reduced motion - respektování uživatelských preferencí */
-        @media (prefers-reduced-motion: reduce) {
-          *,
-          *::before,
-          *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-          }
-        }
-
-        /* Optimalizace pro low-end zařízení */
-        @media (max-width: 767px) {
-          .animate-pulse,
-          .awards-slider {
-            animation: none;
-          }
-          
-          * {
-            will-change: auto !important;
-          }
-        }
-      `}</style>
     </section>
   );
 };

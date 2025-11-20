@@ -1,11 +1,26 @@
+"use client"
 import React, { Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import { Metadata } from 'next';
 
 // Kritické komponenty - načtou se okamžitě
 import Navbar from './components/navbar';
 import PromoBar from './components/promobar';
-import HeroSection from './components/hero';
+
+// ✅ FIX: HeroSection musí být dynamická BEZ SSR aby se vyřešila hydratace!
+const HeroSection = dynamic(
+  () => import('./components/hero'),
+  {
+    ssr: false, // ← KRITICKÉ! Vypne SSR a vyřeší hydration problém
+    loading: () => (
+      <div className="relative min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          
+          
+        </div>
+      </div>
+    ),
+  }
+);
 
 // Lazy loaded komponenty s custom loading states
 const WineSeriesSection = dynamic(
@@ -16,7 +31,7 @@ const WineSeriesSection = dynamic(
         <div className="animate-pulse text-[#ab8754]">Načítání...</div>
       </div>
     ),
-    ssr: true, // Server-side render pro SEO
+    ssr: true,
   }
 );
 
@@ -68,12 +83,7 @@ const Footer = dynamic(
   }
 );
 
-// Metadata pro SEO
-export const metadata: Metadata = {
-  title: 'MiQueen - Mikulovská královna vín | Vinařství Mikulov',
-  description: 'Prémiové moravské víno z vinařství MiQueen v Mikulově. Objevte naše oceněná vína, adoptujte vinohrad a ochutnejte kvalitu jižní Moravy.',
-  keywords: ['vinařství', 'Mikulov', 'moravská vína', 'MiQueen', 'bílá vína', 'červená vína', 'degustace vín'],
-};
+
 
 export default function Home() {
   return (
@@ -81,6 +91,8 @@ export default function Home() {
       {/* Kritické komponenty - načtou se okamžitě */}
       <Navbar />
       <PromoBar />
+      
+      {/* ✅ HeroSection je teď dynamická bez SSR */}
       <HeroSection />
 
       {/* Lazy loaded komponenty se Suspense */}

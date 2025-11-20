@@ -70,35 +70,9 @@ const GOLD_COLOR = '#d4a574';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [, setIsScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [openMobileSubmenu, setOpenMobileSubmenu] = useState<string | null>(null);
   const pathname = usePathname();
-
-  // Optimalizovaný scroll handler s throttling
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout | null = null;
-    let lastScrollY = window.scrollY;
-
-    const handleScroll = () => {
-      if (timeoutId) return;
-      
-      timeoutId = setTimeout(() => {
-        const currentScrollY = window.scrollY;
-        if (Math.abs(currentScrollY - lastScrollY) > 10) {
-          setIsScrolled(currentScrollY > 50);
-          lastScrollY = currentScrollY;
-        }
-        timeoutId = null;
-      }, 100);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, []);
 
   // Zamezení scrollování při otevřeném menu
   useEffect(() => {
@@ -116,17 +90,15 @@ const Navbar = () => {
     };
   }, [isMobileMenuOpen]);
 
-  // Memoizované callbacky
   const toggleMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(prev => !prev);
   }, []);
 
   const closeMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(false);
-    setOpenMobileSubmenu(null);
+    setTimeout(() => setOpenMobileSubmenu(null), 300);
   }, []);
 
-  // Memoizované breadcrumbs
   const breadcrumbs = useMemo((): BreadcrumbItem[] | null => {
     if (pathname === '/') return null;
 
@@ -152,21 +124,20 @@ const Navbar = () => {
 
   return (
     <>
-      {/* STICKY NAVBAR - DARK THEME MATCHING FOOTER */}
+      {/* STICKY NAVBAR */}
       <nav 
-        className="fixed top-0 left-0 right-0 z-50 bg-stone-950/98 backdrop-blur-md shadow-2xl"
+        className="fixed top-0 left-0 right-0 z-50 bg-stone-950/98 backdrop-blur-md shadow-2xl will-change-transform"
       >
-        {/* Top decorative border */}
         <div className="h-px bg-gradient-to-r from-transparent via-amber-700/40 to-transparent" />
         
         <div className="max-w-[1600px] mx-auto px-6 lg:px-12">
           <div className="flex items-center justify-between h-16 lg:h-20">
             
-            {/* Logo - VLEVO */}
+            {/* Logo */}
             <Link 
               href="/" 
-              className="flex items-center group cursor-pointer touch-optimized z-50"
-              prefetch={true}
+              className="flex items-center group cursor-pointer touch-manipulation z-50"
+              onClick={closeMobileMenu}
             >
               <Image 
                 src="/logo-white.png" 
@@ -180,7 +151,7 @@ const Navbar = () => {
               />
             </Link>
 
-            {/* Desktop Navigation - UPROSTŘED */}
+            {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center justify-center flex-1 mx-8">
               <div className="flex items-center gap-1 xl:gap-2">
                 {NAV_ITEMS.map((item) => (
@@ -192,8 +163,7 @@ const Navbar = () => {
                   >
                     <Link
                       href={item.href}
-                      className="relative px-3 xl:px-4 py-2 text-stone-400 hover:text-stone-200 transition-all duration-300 font-medium text-sm xl:text-base tracking-wide group touch-optimized block"
-                      prefetch={true}
+                      className="relative px-3 xl:px-4 py-2 text-stone-400 hover:text-stone-200 transition-all duration-300 font-medium text-sm xl:text-base tracking-wide group touch-manipulation block"
                     >
                       <span className="relative flex items-center gap-1">
                         {item.label}
@@ -206,7 +176,6 @@ const Navbar = () => {
                         />
                       </span>
                       
-                      {/* Active indicator */}
                       {pathname === item.href && (
                         <span 
                           className="absolute -bottom-1 left-0 right-0 h-0.5"
@@ -217,14 +186,9 @@ const Navbar = () => {
 
                     {/* Dropdown Menu */}
                     {item.subItems && openDropdown === item.href && (
-                      <div 
-                        className="absolute top-full left-0 pt-1 w-56 z-50"
-                      >
+                      <div className="absolute top-full left-0 pt-1 w-56 z-50">
                         <div
-                          className="bg-stone-900/98 backdrop-blur-md rounded-xl shadow-2xl border border-stone-800/50 overflow-hidden"
-                          style={{ 
-                            animation: 'slideDown 0.2s ease-out'
-                          }}
+                          className="bg-stone-900/98 backdrop-blur-md rounded-xl shadow-2xl border border-stone-800/50 overflow-hidden animate-in slide-in-from-top-2 duration-200"
                         >
                           <div className="py-2">
                             {item.subItems.map((subItem) => (
@@ -232,7 +196,6 @@ const Navbar = () => {
                                 key={subItem.href}
                                 href={subItem.href}
                                 className="block px-4 py-3 text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-all duration-200 font-medium text-sm relative group/item"
-                                prefetch={true}
                               >
                                 <span className="flex items-center justify-between">
                                   <span>{subItem.label}</span>
@@ -256,12 +219,11 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* E-shop button - VPRAVO */}
+            {/* E-shop button - Desktop */}
             <div className="hidden lg:flex items-center gap-4">
               <Link 
                 href="https://shop.miqueen.cz"
-                className="group touch-optimized"
-                prefetch={false}
+                className="group touch-manipulation"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -281,16 +243,15 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <button 
               onClick={toggleMobileMenu}
-              className="lg:hidden p-2 rounded-lg text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-all duration-200 touch-optimized"
+              className="lg:hidden p-2 -mr-2 rounded-lg text-stone-400 hover:text-stone-200 transition-all duration-200 touch-manipulation"
               aria-label="Otevřít menu"
               aria-expanded={isMobileMenuOpen}
             >
-              <Menu className="w-6 h-6" />
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Bottom decorative border - golden */}
         <div 
           className="h-[2px]" 
           style={{ 
@@ -299,11 +260,9 @@ const Navbar = () => {
         />
       </nav>
 
-      {/* BREADCRUMBS - POD NAVBAREM */}
+      {/* BREADCRUMBS */}
       {breadcrumbs && (
-        <div 
-          className="fixed left-0 right-0 z-40 bg-stone-950/95 backdrop-blur-sm top-[64px] lg:top-[80px]"
-        >
+        <div className="fixed left-0 right-0 z-40 bg-stone-950/95 backdrop-blur-sm top-[64px] lg:top-[80px]">
           <div className="max-w-[1600px] mx-auto px-6 lg:px-12">
             <div className="py-3">
               <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs lg:text-sm">
@@ -325,8 +284,7 @@ const Navbar = () => {
                     ) : (
                       <Link
                         href={item.href}
-                        className="text-stone-500 hover:text-stone-300 transition-colors duration-200 flex items-center gap-1.5 group touch-optimized"
-                        prefetch={true}
+                        className="text-stone-500 hover:text-stone-300 transition-colors duration-200 flex items-center gap-1.5 group touch-manipulation"
                       >
                         {item.isHome && (
                           <Home className="h-3.5 w-3.5 group-hover:scale-110 transition-transform duration-200" aria-hidden="true" />
@@ -349,105 +307,86 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* MOBILE MENU - DARK THEME */}
-      {isMobileMenuOpen && (
-        <>
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm transition-opacity duration-300 lg:hidden"
+      {/* MOBILE MENU */}
+      {/* Backdrop */}
+      <div 
+        className={`fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
+          isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={closeMobileMenu}
+        aria-hidden="true"
+      />
+
+      {/* Sliding Panel */}
+      <div 
+        className={`fixed top-0 right-0 h-full w-full sm:max-w-sm z-[61] shadow-2xl transform transition-transform duration-300 ease-out lg:hidden flex flex-col bg-stone-950 ${
+          isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+        style={{ willChange: 'transform' }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 h-16 border-b border-stone-800 flex-shrink-0">
+          <Link 
+            href="/" 
+            className="flex items-center" 
             onClick={closeMobileMenu}
-            role="button"
-            aria-label="Zavřít menu"
-            style={{ touchAction: 'none' }}
-          />
-
-          {/* Menu Panel */}
-          <div 
-            className="fixed top-0 right-0 h-full w-full max-w-sm z-50 shadow-2xl transform transition-transform duration-300 ease-out lg:hidden"
-            style={{ 
-              background: 'linear-gradient(to bottom, rgb(28, 25, 23), rgb(0, 0, 0))'
-            }}
           >
-            
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-stone-800">
-              <Link 
-                href="/" 
-                className="flex items-center touch-optimized" 
-                onClick={closeMobileMenu}
-                prefetch={true}
-              >
-                <Image 
-                  src="/logo-white.png" 
-                  alt="MiQueen Logo" 
-                  width={120}
-                  height={48}
-                  className="h-10 w-auto"
-                  style={{ objectFit: 'contain' }}
-                  priority
-                  quality={85}
-                />
-              </Link>
-              
-              <button 
-                onClick={closeMobileMenu}
-                className="text-stone-400 hover:text-stone-200 transition-colors duration-200 p-2 rounded-lg hover:bg-stone-800/50 touch-optimized"
-                aria-label="Zavřít menu"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
+            <Image 
+              src="/logo-white.png" 
+              alt="MiQueen Logo" 
+              width={100}
+              height={40}
+              className="h-8 w-auto"
+              style={{ objectFit: 'contain' }}
+            />
+          </Link>
+          
+          <button 
+            onClick={closeMobileMenu}
+            className="text-stone-400 hover:text-stone-200 p-2 -mr-2 rounded-lg hover:bg-stone-800/50 touch-manipulation"
+            aria-label="Zavřít menu"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
 
-            {/* Navigation */}
-            <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
-              <nav className="p-4 space-y-1">
-                {NAV_ITEMS.map((item) => (
-                  <div key={item.href}>
-                    {/* Hlavní položka */}
-                    {item.subItems ? (
-                      <button
-                        onClick={() => setOpenMobileSubmenu(openMobileSubmenu === item.href ? null : item.href)}
-                        className="w-full flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 hover:bg-stone-800/50 active:bg-stone-800 text-stone-300 font-medium text-base tracking-wide touch-optimized group"
-                      >
-                        <span>{item.label}</span>
-                        <ChevronRight 
-                          className={`h-5 w-5 transition-all duration-200 ${
-                            openMobileSubmenu === item.href ? 'rotate-90' : ''
-                          }`}
-                          style={{ color: BRAND_COLOR }}
-                          aria-hidden="true"
-                        />
-                      </button>
-                    ) : (
-                      <Link 
-                        href={item.href}
-                        className="flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 hover:bg-stone-800/50 active:bg-stone-800 text-stone-300 font-medium text-base tracking-wide touch-optimized group"
-                        onClick={closeMobileMenu}
-                        prefetch={true}
-                      >
-                        <span>{item.label}</span>
-                        <ChevronRight 
-                          className="h-5 w-5 transition-transform group-hover:translate-x-1" 
-                          style={{ color: BRAND_COLOR }}
-                          aria-hidden="true"
-                        />
-                      </Link>
-                    )}
-
-                    {/* Submenu */}
-                    {item.subItems && openMobileSubmenu === item.href && (
-                      <div className="ml-4 mt-1 space-y-1 animate-slideDown">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
+          <nav className="p-4 space-y-1">
+            {NAV_ITEMS.map((item) => (
+              <div key={item.href}>
+                {item.subItems ? (
+                  <div className="space-y-1">
+                    <button
+                      onClick={() => setOpenMobileSubmenu(openMobileSubmenu === item.href ? null : item.href)}
+                      className="w-full flex items-center justify-between p-4 rounded-xl transition-colors duration-200 hover:bg-stone-800/50 text-stone-300 font-medium text-base tracking-wide touch-manipulation"
+                    >
+                      <span>{item.label}</span>
+                      <ChevronRight 
+                        className={`h-5 w-5 transition-transform duration-300 ${
+                          openMobileSubmenu === item.href ? 'rotate-90' : ''
+                        }`}
+                        style={{ color: BRAND_COLOR }}
+                      />
+                    </button>
+                    
+                    {/* OPRAVA ZDE: Zvýšena max-h pro animaci submenu */}
+                    <div 
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        openMobileSubmenu === item.href ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+                      }`}
+                    >
+                      <div className="bg-stone-900/50 rounded-xl mt-1 py-2">
                         {item.subItems.map((subItem) => (
                           <Link
                             key={subItem.href}
                             href={subItem.href}
-                            className="block p-3 pl-4 rounded-lg text-stone-400 hover:text-stone-200 hover:bg-stone-800/30 transition-all duration-200 text-sm font-medium touch-optimized"
+                            className="block py-3 px-4 pl-8 text-stone-400 hover:text-stone-200 transition-colors duration-200 text-sm font-medium touch-manipulation"
                             onClick={closeMobileMenu}
-                            prefetch={true}
                           >
-                            <span className="flex items-center gap-2">
+                            <span className="flex items-center gap-3">
                               <span 
-                                className="w-1.5 h-1.5 rounded-full" 
+                                className="w-1.5 h-1.5 rounded-full flex-shrink-0" 
                                 style={{ backgroundColor: BRAND_COLOR }}
                               />
                               {subItem.label}
@@ -455,121 +394,73 @@ const Navbar = () => {
                           </Link>
                         ))}
                       </div>
-                    )}
+                    </div>
                   </div>
+                ) : (
+                  <Link 
+                    href={item.href}
+                    className="flex items-center justify-between p-4 rounded-xl transition-colors duration-200 hover:bg-stone-800/50 text-stone-300 font-medium text-base tracking-wide touch-manipulation group"
+                    onClick={closeMobileMenu}
+                  >
+                    <span>{item.label}</span>
+                    <ChevronRight 
+                      className="h-5 w-5 transition-transform group-hover:translate-x-1" 
+                      style={{ color: BRAND_COLOR }}
+                    />
+                  </Link>
+                )}
+              </div>
+            ))}
+          </nav>
+
+          {/* Mobile Footer Info */}
+          <div className="p-6 border-t border-stone-800 mt-4 space-y-6">
+            <Link 
+              href="https://shop.miqueen.cz"
+              className="w-full block touch-manipulation"
+              onClick={closeMobileMenu}
+              target="_blank"
+            >
+              <div 
+                className="text-white p-4 rounded-2xl font-semibold text-base tracking-wide flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-transform" 
+                style={{ background: `linear-gradient(135deg, ${BRAND_COLOR}, #c49a5e)` }}
+              >
+                <ShoppingBag className="h-5 w-5" />
+                <span>Navštívit E-shop</span>
+              </div>
+            </Link>
+
+            <div className="text-center">
+              <div className="font-medium mb-4 text-sm" style={{ color: GOLD_COLOR }}>Sledujte nás</div>
+              <div className="flex justify-center gap-4">
+                {[
+                  { icon: Facebook, href: "https://www.facebook.com/vinarstvi.miqueen/" },
+                  { icon: Instagram, href: "https://www.instagram.com/vinarstvi.miqueen/" },
+                  { icon: Mail, href: "mailto:info@miqueen.cz" }
+                ].map((social, i) => (
+                  <a 
+                    key={i}
+                    href={social.href}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-200"
+                    style={{ 
+                      backgroundColor: 'rgba(171, 135, 84, 0.1)',
+                      border: '1px solid rgba(171, 135, 84, 0.2)'
+                    }}
+                  >
+                    <social.icon className="h-5 w-5" style={{ color: GOLD_COLOR }} />
+                  </a>
                 ))}
-              </nav>
-
-              {/* CTA Button */}
-              <div className="p-4 pt-2">
-                <Link 
-                  href="https://shop.miqueen.cz"
-                  className="w-full relative group block touch-optimized"
-                  onClick={closeMobileMenu}
-                  prefetch={false}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <div 
-                    className="text-white p-4 rounded-2xl transition-all duration-200 font-semibold text-base tracking-wide flex items-center justify-center gap-2 shadow-xl active:shadow-lg active:scale-95" 
-                    style={{ background: `linear-gradient(135deg, ${BRAND_COLOR}, #c49a5e)` }}
-                  >
-                    <ShoppingBag className="h-5 w-5" aria-hidden="true" />
-                    <span>Navštívit E-shop</span>
-                  </div>
-                </Link>
               </div>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t border-stone-800 p-6">
-              <div className="text-center mb-4">
-                <div 
-                  className="font-medium mb-3 text-sm" 
-                  style={{ color: GOLD_COLOR }}
-                >
-                  Sledujte nás
-                </div>
-                <div className="flex justify-center gap-3">
-                  <a 
-                    href="https://www.facebook.com/vinarstvi.miqueen/" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 touch-optimized"
-                    style={{ 
-                      backgroundColor: 'rgba(171, 135, 84, 0.1)',
-                      borderColor: 'rgba(171, 135, 84, 0.2)',
-                      borderWidth: '1px'
-                    }}
-                    aria-label="Facebook"
-                  >
-                    <Facebook className="h-5 w-5" style={{ color: GOLD_COLOR }} />
-                  </a>
-                  <a 
-                    href="https://www.instagram.com/vinarstvi.miqueen/" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 touch-optimized"
-                    style={{ 
-                      backgroundColor: 'rgba(171, 135, 84, 0.1)',
-                      borderColor: 'rgba(171, 135, 84, 0.2)',
-                      borderWidth: '1px'
-                    }}
-                    aria-label="Instagram"
-                  >
-                    <Instagram className="h-5 w-5" style={{ color: GOLD_COLOR }} />
-                  </a>
-                  <a 
-                    href="mailto:info@miqueen.cz" 
-                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 touch-optimized"
-                    style={{ 
-                      backgroundColor: 'rgba(171, 135, 84, 0.1)',
-                      borderColor: 'rgba(171, 135, 84, 0.2)',
-                      borderWidth: '1px'
-                    }}
-                    aria-label="Email"
-                  >
-                    <Mail className="h-5 w-5" style={{ color: GOLD_COLOR }} />
-                  </a>
-                </div>
-              </div>
-              
-              <div className="text-center text-stone-500 text-xs">
-                <div>Mikulov, Česká republika</div>
-                <a 
-                  href="mailto:info@miqueen.cz"
-                  className="hover:underline transition-colors"
-                  style={{ color: BRAND_COLOR }}
-                >
-                  info@miqueen.cz
-                </a>
+              <div className="mt-6 text-stone-500 text-xs">
+                <p>Mikulov, Česká republika</p>
+                <a href="mailto:info@miqueen.cz" className="hover:text-stone-300 transition-colors">info@miqueen.cz</a>
               </div>
             </div>
           </div>
-        </>
-      )}
-
-      <style jsx>{`
-        .touch-optimized {
-          touch-action: manipulation;
-          -webkit-tap-highlight-color: transparent;
-        }
-
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-slideDown {
-          animation: slideDown 0.2s ease-out;
-        }
-      `}</style>
+        </div>
+      </div>
     </>
   );
 };
