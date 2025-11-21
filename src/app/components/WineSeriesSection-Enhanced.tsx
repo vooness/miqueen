@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 
@@ -56,7 +62,7 @@ const WineSeriesSection: React.FC = () => {
   const autoPlayTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // autoplay – čistě client-side, neovlivňuje SSR HTML
+  // Autoplay – čistě client-side, nezasahuje do SSR HTML
   useEffect(() => {
     if (!isAutoPlay) return;
 
@@ -84,7 +90,7 @@ const WineSeriesSection: React.FC = () => {
     }, 30000);
   }, []);
 
-  // cleanup timerů
+  // Cleanup při unmountu
   useEffect(() => {
     return () => {
       if (autoPlayTimerRef.current) clearInterval(autoPlayTimerRef.current);
@@ -129,7 +135,7 @@ const WineSeriesSection: React.FC = () => {
 
         <div className="container mx-auto px-2 sm:px-4 lg:px-12 relative z-10">
           {/* Header */}
-          <div className="text-center mb-8 sm:mb-12 md:mb-20 transition-all duration-700 opacity-100 translate-y-0">
+          <div className="text-center mb-8 sm:mb-12 md:mb-20">
             <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-gray-800 mb-3 sm:mb-4 px-4">
               Naše{" "}
               <span className="font-normal" style={{ color: accentColor }}>
@@ -153,7 +159,7 @@ const WineSeriesSection: React.FC = () => {
                     onClick={() => handleSeriesClick(index)}
                     className={`
                       relative w-full text-left py-1 sm:py-2 md:py-3 
-                      transition-all duration-300
+                      transition-transform duration-300
                       hover:translate-x-1
                       ${isActive ? "translate-x-2" : ""}
                     `}
@@ -185,7 +191,7 @@ const WineSeriesSection: React.FC = () => {
               })}
             </div>
 
-            {/* Wine Image */}
+            {/* Wine Image – jen jeden obrázek v DOM */}
             <div className="col-span-1 lg:col-span-5 flex justify-center items-center py-4 md:py-8 lg:py-0 mb-12 sm:mb-20">
               <div className="relative">
                 <div
@@ -193,27 +199,17 @@ const WineSeriesSection: React.FC = () => {
                   style={{ backgroundColor: accentColor }}
                 />
                 <div className="relative z-10">
-                  {wineSeries.map((wine, index) => (
-                    <Image
-                      key={wine.id}
-                      src={wine.image}
-                      alt={wine.name}
-                      width={600}
-                      height={1200}
-                      className={`
-                        w-full scale-[2] sm:scale-100 h-auto object-contain drop-shadow-2xl
-                        transition-opacity duration-700
-                        ${
-                          index === selectedIndex
-                            ? "opacity-100"
-                            : "opacity-0 absolute inset-0"
-                        }
-                      `}
-                      priority={index === 0}
-                      quality={70}
-                      sizes="(max-width: 768px) 50vw, 33vw"
-                    />
-                  ))}
+                  <Image
+                    key={currentWine.id}
+                    src={currentWine.image}
+                    alt={currentWine.name}
+                    width={600}
+                    height={1200}
+                    className="w-full scale-[2] sm:scale-100 h-auto object-contain drop-shadow-2xl"
+                    priority={selectedIndex === 0}
+                    quality={70}
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                  />
                 </div>
               </div>
             </div>
@@ -226,7 +222,7 @@ const WineSeriesSection: React.FC = () => {
                     {currentWine.subtitle}
                   </p>
                   <h3
-                    className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-light mb-4 sm:mb-6 transition-all duration-500"
+                    className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-light mb-4 sm:mb-6"
                     style={{ color: accentColor }}
                   >
                     {currentWine.name}
@@ -234,7 +230,7 @@ const WineSeriesSection: React.FC = () => {
                 </div>
 
                 <div className="flex-1">
-                  <p className="text-xs sm:text-base md:text-lg text-gray-700 leading-relaxed transition-opacity duration-500">
+                  <p className="text-xs sm:text-base md:text-lg text-gray-700 leading-relaxed">
                     {currentWine.description}
                   </p>
                 </div>
