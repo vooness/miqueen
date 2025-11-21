@@ -1,31 +1,38 @@
 "use client";
-import React, { Suspense } from 'react';
-import dynamic from 'next/dynamic';
-import LazySection from './components/LazySection'; // Import našeho nového wrapperu
+import React, { Suspense } from "react";
+import dynamic from "next/dynamic";
+import LazySection from "./components/LazySection";
 
 // 1. KRITICKÉ KOMPONENTY (Above the fold)
-// Tyto se importují staticky nebo dynamicky s vysokou prioritou
-import Navbar from './components/navbar';
-import PromoBar from './components/promobar';
+import Navbar from "./components/navbar";
+import PromoBar from "./components/promobar";
 
-// HeroSection musí být vidět hned, ale řešíme hydrataci přes dynamic
-const HeroSection = dynamic(() => import('./components/hero'), {
+// HeroSection – kritický obsah
+const HeroSection = dynamic(() => import("./components/hero"), {
   ssr: false,
-  loading: () => <div className="min-h-screen bg-gray-900" />, // Placeholder pro Hero
+  loading: () => <div className="min-h-screen bg-gray-900" />,
 });
 
 // 2. ODLOŽENÉ KOMPONENTY (Below the fold)
-// Důležité: U dynamických importů níže už nepotřebujeme 'ssr: false',
-// protože LazySection zajistí, že se na serveru stejně nevykreslí (nejsou vidět).
-// Tím šetříme JS bundle.
+const WineSeriesSection = dynamic(
+  () => import("./components/WineSeriesSection-Enhanced")
+);
+const WineShowcase = dynamic(() => import("./components/wine"));
+const AboutWinerySection = dynamic(() => import("./components/vinartsvi"));
+const AdoptujVinohrad = dynamic(() => import("./components/adoptuj"));
+const Footer = dynamic(() => import("./components/footer"));
 
-const WineSeriesSection = dynamic(() => import('./components/WineSeriesSection-Enhanced'));
-const WineShowcase = dynamic(() => import('./components/wine'));
-const AboutWinerySection = dynamic(() => import('./components/vinartsvi'));
-const AdoptujVinohrad = dynamic(() => import('./components/adoptuj'));
-const Footer = dynamic(() => import('./components/footer'));
+// ✅ ProductSlider1 – dárkové sety
+const ProductSlider1 = dynamic(
+  () => import("./components/ProductSlider1")
+);
 
-// Skeleton pro loading stavy (aby uživatel věděl, že se něco děje, kdyby scrolloval super rychle)
+// ✅ ProductSlider2 – nejoblíbenější vína
+const ProductSlider2 = dynamic(
+  () => import("./components/ProductSlider2")
+);
+
+// Skeleton pro loading stavy
 const SectionSkeleton = () => (
   <div className="w-full h-full flex items-center justify-center bg-[#fefbea]/50">
     <div className="animate-pulse text-[#ab8754] font-light">Načítání...</div>
@@ -38,12 +45,23 @@ export default function Home() {
       {/* Navbar a PromoBar jsou statické = okamžité */}
       <Navbar />
       <PromoBar />
-      
-      {/* Hero je kritický pro LCP (Largest Contentful Paint), načítáme ho hned */}
+
+      {/* Hero – hlavní hero sekce */}
       <HeroSection />
 
-      {/* --- ZDE ZAČÍNÁ LAZY LOADING --- */}
-      {/* Každá sekce je obalena v LazySection s odhadovanou výškou */}
+      {/* 🔽 HNED POD HERO: SLIDER DÁRKOVÝCH SETŮ */}
+      <LazySection height={500}>
+        <Suspense fallback={<SectionSkeleton />}>
+          <ProductSlider1 />
+        </Suspense>
+      </LazySection>
+
+      {/* 🔽 POD PRODUCTSLIDER1: SLIDER NEJOBLÍBENĚJŠÍCH VÍN */}
+      <LazySection height={500}>
+        <Suspense fallback={<SectionSkeleton />}>
+          <ProductSlider2 />
+        </Suspense>
+      </LazySection>
 
       {/* 1. Kolekce vín (cca 600px výška) */}
       <LazySection height={600}>
@@ -74,7 +92,7 @@ export default function Home() {
       </LazySection>
 
       {/* 5. Footer (cca 400px výška) */}
-      <LazySection height={400} rootMargin="200px"> 
+      <LazySection height={400} rootMargin="200px">
         <Suspense fallback={<div className="h-[400px] bg-stone-950" />}>
           <Footer />
         </Suspense>
