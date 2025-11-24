@@ -256,7 +256,7 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
                   href={`/vina/${categorySlug}`}
                   onClick={() => setSelectedCategory(category.id)}
                   className={`
-                    flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full border transition-all duration-300 font-medium text-xs sm:text-base touch-optimized
+                    flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-lg border transition-all border-gray-300 duration-300 font-medium text-xs sm:text-base touch-optimized
                     ${isSelected ? "text-white border-transparent shadow-lg" : "bg-white/90 text-gray-700 border-gray-200 active:scale-95"}
                     ${!isMobile && !isSelected ? "hover:bg-white hover:border-gray-300 hover:shadow-md" : ""}
                   `}
@@ -264,7 +264,7 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
                 >
                   <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="whitespace-nowrap">{category.label}</span>
-                  <span className={`${isSelected ? "text-white/80" : "text-gray-500"} text-[10px] sm:text-sm`}>({count})</span>
+                  <span className={`${isSelected ? "text-white/80" : "text-gray-500"} text-[15px] sm:text-sm`}>({count})</span>
                 </Link>
               );
             })}

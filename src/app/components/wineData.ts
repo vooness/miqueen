@@ -1065,7 +1065,8 @@ export const categoryToSlug = (category: string): string => {
     'red': 'cervena-vina',
     'rose': 'ruzova-vina',
     'sparkling': 'perliva-vina',
-    'special': 'mimosa-specialni',
+    'special': 'mimosa-special',
+    
     'set': 'darkove-sety'
   };
   return mapping[category] || category;
@@ -1077,7 +1078,7 @@ export const slugToCategory = (slug: string): string => {
     'cervena-vina': 'red',
     'ruzova-vina': 'rose',
     'perliva-vina': 'sparkling',
-    'mimosa-specialni': 'special',
+    'mimosa-special': 'special',
     'darkove-sety': 'set'
   };
   return mapping[slug] || slug;

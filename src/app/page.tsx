@@ -1,25 +1,38 @@
 "use client";
-import React, { Suspense } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import LazySection from "./components/LazySection";
 
 // 1. KRITICKÉ KOMPONENTY (Above the fold)
 import Navbar from "./components/navbar";
-import PromoBar from "./components/promobar";
 
-// HeroSection – kritický obsah
-const HeroSection = dynamic(() => import("./components/hero"), {
+// HeroSection – rozdílné komponenty pro desktop a mobil/tablet
+const HeroDesktop = dynamic(() => import("./components/hero"), {
   ssr: false,
-  loading: () => <div className="min-h-screen bg-gray-900" />,
+  loading: () => <div className="min-h-screen " />,
 });
+
+const HeroMobile = dynamic(() => import("./components/hero-mobil"), {
+  ssr: false,
+  loading: () => <div className="min-h-screen " />,
+});
+
+// CategoryGridDesktop - pouze pro desktop
+const CategoryGridDesktop = dynamic(
+  () => import("./components/CategoryGridDesktop"),
+  {
+    ssr: false,
+    loading: () => <div className="h-64" />,
+  }
+);
 
 // 2. ODLOŽENÉ KOMPONENTY (Below the fold)
 const WineSeriesSection = dynamic(
   () => import("./components/WineSeriesSection-Enhanced")
 );
-const WineShowcase = dynamic(() => import("./components/wine"));
+
 const AboutWinerySection = dynamic(() => import("./components/vinartsvi"));
-const AdoptujVinohrad = dynamic(() => import("./components/adoptuj"));
+
 const Footer = dynamic(() => import("./components/footer"));
 
 // ✅ ProductSlider1 – dárkové sety
@@ -40,14 +53,41 @@ const SectionSkeleton = () => (
 );
 
 export default function Home() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Kontrola velikosti obrazovky při načtení a resize
+    const checkDevice = () => {
+      // Pro mobil a tablet používáme breakpoint 1024px (lg v Tailwindu)
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    // Počáteční kontrola
+    checkDevice();
+
+    // Listener pro resize události
+    window.addEventListener("resize", checkDevice);
+
+    // Cleanup
+    return () => window.removeEventListener("resize", checkDevice);
+  }, []);
+
   return (
     <main className="relative bg-[#fefbea]">
       {/* Navbar a PromoBar jsou statické = okamžité */}
       <Navbar />
-      <PromoBar />
+      
+      {/* Hero – podmíněné načítání podle zařízení */}
+      {isMobile ? <HeroMobile /> : <HeroDesktop />}
 
-      {/* Hero – hlavní hero sekce */}
-      <HeroSection />
+      {/* CategoryGridDesktop - pouze na desktopu */}
+      {!isMobile && (
+        <LazySection height={400}>
+          <Suspense fallback={<SectionSkeleton />}>
+            <CategoryGridDesktop />
+          </Suspense>
+        </LazySection>
+      )}
 
       {/* 🔽 HNED POD HERO: SLIDER DÁRKOVÝCH SETŮ */}
       <LazySection height={500}>
@@ -70,12 +110,7 @@ export default function Home() {
         </Suspense>
       </LazySection>
 
-      {/* 2. Výpis vín (cca 800px výška) */}
-      <LazySection height={800}>
-        <Suspense fallback={<SectionSkeleton />}>
-          <WineShowcase />
-        </Suspense>
-      </LazySection>
+      
 
       {/* 3. O vinařství (cca 700px výška) */}
       <LazySection height={700}>
@@ -84,12 +119,7 @@ export default function Home() {
         </Suspense>
       </LazySection>
 
-      {/* 4. Adoptuj vinohrad (cca 600px výška) */}
-      <LazySection height={600}>
-        <Suspense fallback={<SectionSkeleton />}>
-          <AdoptujVinohrad />
-        </Suspense>
-      </LazySection>
+      
 
       {/* 5. Footer (cca 400px výška) */}
       <LazySection height={400} rootMargin="200px">

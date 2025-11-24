@@ -341,17 +341,7 @@ const AboutWinerySection = () => {
         }
       `}} />
 
-      {/* Top Border */}
-      <div className="relative w-full h-auto">
-        <Image 
-          src="/border.png"
-          alt=""
-          width={1920}
-          height={176}
-          className="w-full h-auto object-contain"
-          priority
-        />
-      </div>
+     
 
       <div className="py-12 md:py-20 lg:py-32">
         {/* Background blobs */}

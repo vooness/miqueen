@@ -1,813 +1,424 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Heart, Grape, Wine, Calendar, Gift, User, Mail, MapPin, Users, FileText } from "lucide-react";
-import { motion, Variants, useReducedMotion } from "framer-motion";
+import { 
+  Heart, Grape, Wine, Gift, Check, ChevronDown, ChevronUp, 
+  Star, ShieldCheck, ArrowRight} from "lucide-react";
 
-const AdoptujVinohradPage = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  const prefersReducedMotion = useReducedMotion();
+const AdoptujVinohradLuxury = () => {
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  
+  // Konstanty pro design
   const accentColor = "#ab8754";
-  const paperColor = "#fefbea";
+  const bgColor = "#fefbea"; // Požadovaná béžová všude
+  const textColor = "#1a1a1a"; // Téměř černá pro maximální kontrast
 
-  // Detekce mobilního zařízení
+  // Intersection Observer pro odhalování prvků
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("active");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
 
-    checkMobile();
-
-    const debouncedResize = () => {
-      clearTimeout((window as Window & { adoptResizeTimer?: number }).adoptResizeTimer);
-      (window as Window & { adoptResizeTimer?: number }).adoptResizeTimer = window.setTimeout(checkMobile, 150);
-    };
-
-    window.addEventListener('resize', debouncedResize, { passive: true });
-    return () => {
-      window.removeEventListener('resize', debouncedResize);
-      clearTimeout((window as Window & { adoptResizeTimer?: number }).adoptResizeTimer);
-    };
+    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
-  // Vypni animace na mobilu
-  const shouldAnimate = !isMobile && !prefersReducedMotion;
+  // Načtení videa
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      const onPlay = () => setVideoLoaded(true);
+      video.addEventListener('canplay', onPlay, { once: true });
+    }
+  }, []);
 
-  // Memoizované balíčky
-  const packages = useMemo(() => [
+  const scrollToPackages = () => {
+    const el = document.getElementById('pricing');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // DATA - Přesně podle zadání
+  const packages = [
     {
+      id: 0,
+      title: "Malý vinař",
+      description: "Ideální vstup do světa vinařství",
       heads: 12,
       bottles: 12,
-      deliveries: "2x ročně po 6 lahvích",
+      deliveries: "2x ročně (6+6 lahví)",
       price: "4 990 Kč",
-      popular: false
+      isPopular: false,
+      giftText: "2x sklenice + vývrtka",
+      features: [
+        "12 hlav révy s jmenovkou",
+        "Certifikát vlastníka",
+        "Pravidelný newsletter",
+        "Osobní návštěva vinohradu"
+      ]
     },
     {
+      id: 1,
+      title: "Zlatý střed",
+      description: "Nejoblíbenější volba našich klientů",
       heads: 24,
       bottles: 24,
-      deliveries: "4x ročně po 6 lahvích",
+      deliveries: "4x ročně (po 6 lahvích)",
       price: "8 690 Kč",
-      popular: true
+      isPopular: true,
+      giftText: "4x sklenice + vývrtka",
+      features: [
+        "24 hlav révy s jmenovkou",
+        "Certifikát vlastníka",
+        "Pravidelný newsletter",
+        "Přístup do VIP skupiny",
+        "Pozvánka na akce"
+      ]
     },
     {
+      id: 2,
+      title: "Velkostatkář",
+      description: "Pro maximální zážitek z Moravy",
       heads: 36,
       bottles: 36,
-      deliveries: "6x ročně po 6 lahvích",
+      deliveries: "6x ročně (po 6 lahvích)",
       price: "9 900 Kč",
-      popular: false
+      isPopular: false,
+      giftText: "6x sklenic + vývrtka",
+      features: [
+        "36 hlav révy s jmenovkou",
+        "Certifikát vlastníka",
+        "Pravidelný newsletter",
+        "VIP péče a servis",
+        "Soukromá degustace"
+      ]
     }
-  ], []);
-
-  // Memoizované benefity
-  const benefits = useMemo(() => [
-    {
-      icon: Grape,
-      title: "Vlastní mikrovinohrad",
-      description: "12, 24 nebo 36 hlav révy dle vlastního výběru. Můžeš rezervovat hlavy z konkrétních čísel řádků - třeba z data narození nebo seznámení."
-    },
-    {
-      icon: User,
-      title: "Pojmenuj si vinohrad",
-      description: "Jméno bude vyvěšeno na krajovém sloupku tvého řádku. Omezení je jen v počtu znaků - maximálně 25."
-    },
-    {
-      icon: FileText,
-      title: "Certifikát vlastníka",
-      description: "Zašleme ti v PDF formátu certifikát, ve kterém můžeš uvést, pro koho je adopce určena i od koho."
-    },
-    {
-      icon: Wine,
-      title: "Kvalitní moravská vína",
-      description: "1 hlava = 1 láhev oceňovaného vína MiQueen s personalizovanou nálepkou. Vlastní výběr vín z naší kolekce."
-    },
-    {
-      icon: Mail,
-      title: "Newsletter z vinohradu",
-      description: "Informace o tom, jak to na vinohradu chodí a jaké práce se aktuálně provádí. 1x za 14 dnů přímo do mailu."
-    },
-    {
-      icon: MapPin,
-      title: "Práce na vinohradu",
-      description: "1x ročně tě pozveme na minimálně 2 hodiny zažít si osobně práci (podlom, řez). Termíny vypisovány 2x ročně."
-    },
-    {
-      icon: Users,
-      title: "Uzavřená skupina",
-      description: "Přístup do Facebook skupiny adoptivních vinohradníků. Sdílej zážitky a buď v kontaktu s děním na vinohradu."
-    },
-    {
-      icon: Calendar,
-      title: "Celoroční zážitek",
-      description: "Délka adopce je na 1 rok. Zažij vinařský rok od jara do podzimu s námi."
-    }
-  ], []);
-
-  // Memoizované kroky
-  const steps = useMemo(() => [
-    {
-      number: "01",
-      title: "Vyber si balíček",
-      description: "Zvol počet hlav révy - 12, 24 nebo 36 podle tvých preferencí"
-    },
-    {
-      number: "02",
-      title: "Personalizuj",
-      description: "Pojmenuj svůj mikrovinohrad a vyber čísla řádků"
-    },
-    {
-      number: "03",
-      title: "Získej certifikát",
-      description: "Obdržíš certifikát vlastníka v PDF formátu"
-    },
-    {
-      number: "04",
-      title: "Užívej si víno",
-      description: "Pravidelně dostáváš skvělá vína po celý rok"
-    }
-  ], []);
-
-  // Conditional animation variants
-  const fadeInUp: Variants = shouldAnimate ? {
-    hidden: { opacity: 0, y: 40 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
-    }
-  } : {
-    hidden: { opacity: 1, y: 0 },
-    visible: { opacity: 1, y: 0 }
-  };
-
-  const staggerContainer: Variants = shouldAnimate ? {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15
-      }
-    }
-  } : {
-    hidden: { opacity: 1 },
-    visible: { opacity: 1 }
-  };
-
-  const scaleIn: Variants = shouldAnimate ? {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
-    }
-  } : {
-    hidden: { opacity: 1, scale: 1 },
-    visible: { opacity: 1, scale: 1 }
-  };
-
-  // Conditional wrapper component
-  const MotionWrapper = shouldAnimate ? motion.div : 'div';
+  ];
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: paperColor }}>
+    <div className="min-h-screen font-sans selection:bg-[#ab8754] selection:text-white" style={{ backgroundColor: bgColor, color: textColor }}>
       
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 lg:py-32">
-        {/* Animated background - pouze desktop */}
-        {!isMobile && (
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl opacity-40" 
-                 style={{ background: `radial-gradient(circle, ${accentColor}30, transparent)`, animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}></div>
-            <div className="absolute bottom-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl opacity-40"
-                 style={{ background: `radial-gradient(circle, ${accentColor}20, transparent)`, animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite 2s' }}></div>
-          </div>
-        )}
+      {/* CSS pro animace */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.5); }
+      `}} />
 
-        <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-10">
-          {/* Header */}
-          <MotionWrapper 
-            className="text-center mb-16"
-            {...(shouldAnimate ? {
-              initial: "hidden",
-              whileInView: "visible",
-              viewport: { once: true, margin: "-100px" },
-              variants: staggerContainer
-            } : {})}
-          >
-            <MotionWrapper 
-              className="inline-flex items-center gap-3 mb-6"
-              {...(shouldAnimate ? { variants: fadeInUp } : {})}
-            >
-              <div className="h-px w-12 bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-              <Heart className="w-8 h-8" style={{ color: accentColor }} />
-              <div className="h-px w-12 bg-gradient-to-l from-transparent via-gray-300 to-transparent"></div>
-            </MotionWrapper>
-
-            <MotionWrapper 
-              className="text-5xl lg:text-7xl font-light text-gray-800 mb-6"
-              {...(shouldAnimate ? { variants: fadeInUp } : {})}
-            >
-              <span style={{ color: accentColor }}>Adoptuj</span> vinohrad
-            </MotionWrapper>
-            
-            <MotionWrapper 
-              className="text-2xl lg:text-3xl font-light italic mb-8" 
-              style={{ color: accentColor }}
-              {...(shouldAnimate ? { variants: fadeInUp } : {})}
-            >
-              Tvůj relax kdykoliv a kdekoliv
-            </MotionWrapper>
-
-            <MotionWrapper 
-              className="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed"
-              {...(shouldAnimate ? { variants: fadeInUp } : {})}
-            >
-              Staň se virtuálním vinařem. Poznej fáze práce na vinohradu během celého roku, 
-              vyzkoušej si práci vinohradníka, měj po celý rok skvělá moravská vína z Pálavy ve své sklénce, 
-              pojmenuj svůj mikrovinohrad a zažij jeden velký celý rok trvající zážitek.
-            </MotionWrapper>
-          </MotionWrapper>
-
-          {/* Video Section - SHOPTET CDN */}
-          <MotionWrapper 
-            className="max-w-5xl mx-auto mb-20"
-            {...(shouldAnimate ? {
-              initial: "hidden",
-              whileInView: "visible",
-              viewport: { once: true, margin: "-100px" },
-              variants: scaleIn
-            } : {})}
-          >
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl border-2 border-gray-200">
-              <div className="aspect-video bg-gradient-to-br from-gray-900 to-black">
-                <video
-                  className="w-full h-full object-cover"
-                  autoPlay={!isMobile}
-                  muted
-                  loop
-                  playsInline
-                  controls
-                  preload={isMobile ? "metadata" : "auto"}
-                >
-                  {/* ✅ VIDEO ZE SHOPTET CDN - NEPOČÍTÁ SE DO VERCEL BANDWIDTH */}
-                  <source src="https://shop.miqueen.cz/user/documents/upload/adoptuj-vinohrad.webm" type="video/webm" />
-                  Váš prohlížeč nepodporuje přehrávání videa.
-                </video>
-              </div>
-            </div>
-            
-            <div className="text-center mt-8">
-              <p className="text-lg text-gray-600 mb-6">
-                Adoptovat vinohrad můžeš <span className="font-semibold" style={{ color: accentColor }}>sám pro sebe</span> anebo jako <span className="font-semibold" style={{ color: accentColor }}>dárek</span>
-              </p>
-              
-              {/* Upozornění o návštěvě vinohradu */}
-              <div 
-                className="inline-flex items-start gap-3 px-6 py-4 bg-white rounded-2xl shadow-lg border-2 max-w-2xl mx-auto"
-                style={{ borderColor: accentColor }}
-              >
-                <MapPin className="w-6 h-6 flex-shrink-0 mt-1" style={{ color: accentColor }} />
-                <div className="text-left">
-                  <h3 className="font-bold text-gray-900 mb-1">Vinohrad můžeš navštívit kdykoliv během roku</h3>
-                  <p className="text-sm text-gray-600">
-                    Přijeď se podívat na svůj mikrovinohrad, poznej práci vinaře a užij si atmosféru Pálavských vinic
-                  </p>
-                </div>
-              </div>
-            </div>
-          </MotionWrapper>
-        </div>
-      </section>
-
-      {/* Border Between Sections */}
-      <div className="relative w-full">
-        <Image 
-          src="/border.png"
-          alt=""
-          width={1920}
-          height={176}
-          className="w-full h-auto"
-          style={{ display: 'block' }}
-          loading="lazy"
-          quality={isMobile ? 70 : 85}
-        />
-      </div>
-
-      {/* Packages Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-800 mb-4">
-              Vyber si <span style={{ color: accentColor }}>balíček</span>
-            </h2>
-            <p className="text-xl text-gray-600">
-              Každý balíček zahrnuje péči o révu po celý rok a pravidelné dodávky vína
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {packages.map((pkg, index) => (
-              <div
-                key={index}
-                className={`relative bg-white rounded-3xl p-8 border-2 transition-all duration-300 ${
-                  pkg.popular ? 'border-[#ab8754] shadow-xl scale-105' : 'border-gray-200'
-                } ${!isMobile ? 'hover:shadow-2xl' : ''}`}
-              >
-                {pkg.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="px-4 py-1.5 rounded-full text-white text-sm font-bold shadow-lg" style={{ backgroundColor: accentColor }}>
-                      NEJOBLÍBENĚJŠÍ
-                    </span>
-                  </div>
-                )}
-
-                <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4" style={{ backgroundColor: `${accentColor}20` }}>
-                    <Grape className="w-10 h-10" style={{ color: accentColor }} />
-                  </div>
-                  
-                  <h3 className="text-3xl font-bold text-gray-900 mb-2">
-                    {pkg.heads} hlav révy
-                  </h3>
-                  
-                  <p className="text-gray-600 mb-4">
-                    {pkg.bottles} lahví ročně
-                  </p>
-                  
-                  <p className="text-sm text-gray-500 mb-6">
-                    {pkg.deliveries}
-                  </p>
-
-                  <div className="text-4xl font-bold mb-6" style={{ color: accentColor }}>
-                    {pkg.price}
-                  </div>
-                </div>
-
-                <a
-                  href="https://shop.miqueen.cz/adoptuj-vinohrad/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`block w-full py-4 rounded-2xl font-bold text-center transition-all touch-manipulation ${
-                    pkg.popular
-                      ? 'text-white shadow-lg'
-                      : 'text-gray-700 border-2 border-gray-300'
-                  } ${!isMobile ? 'hover:scale-105' : 'active:scale-95'}`}
-                  style={pkg.popular ? { backgroundColor: accentColor } : {}}
-                >
-                  Adoptovat nyní
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Border Between Sections */}
-      <div className="relative w-full">
-        <Image 
-          src="/border.png"
-          alt=""
-          width={1920}
-          height={176}
-          className="w-full h-auto"
-          style={{ display: 'block' }}
-          loading="lazy"
-          quality={isMobile ? 70 : 85}
-        />
-      </div>
-
-      {/* Special Offer Section - Uvítací balíček */}
-      <section className="py-20" style={{ backgroundColor: paperColor }}>
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 1. HERO SECTION - Čistý design s videem */}
+      <section className="relative pt-32 pb-16 lg:pt-40 lg:pb-24 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto overflow-hidden">
+        <div className="grid lg:grid-cols-12 gap-12 items-center">
           
-          {/* Header */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style={{ backgroundColor: `${accentColor}20` }}>
-              <Gift className="w-5 h-5" style={{ color: accentColor }} />
-              <span className="font-bold text-sm" style={{ color: accentColor }}>SPECIÁLNÍ NABÍDKA</span>
+          {/* Levá strana: Text (Cols 5) */}
+          <div className="lg:col-span-5 reveal z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 border border-[#ab8754] rounded-full">
+              <Star size={12} fill={accentColor} stroke="none" />
+              <span className="text-xs font-bold tracking-widest uppercase text-[#ab8754]">Limitovaná nabídka 2025</span>
+            </div>
+            
+            <h1 className="text-5xl lg:text-7xl font-serif mb-6 leading-[1.1]">
+              Staňte se <br/>
+              <span className="italic" style={{ color: accentColor }}>majitelem</span> vinohradu
+            </h1>
+            
+            <p className="text-lg text-gray-700 mb-8 leading-relaxed font-medium">
+              Adoptujte hlavy révy na Pálavě. Získejte <strong>vlastní víno</strong>, jméno na vinici a zážitek, který trvá celý rok.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button 
+                onClick={scrollToPackages}
+                className="px-8 py-4 bg-[#ab8754] text-white text-lg font-bold rounded-xl shadow-xl hover:bg-[#9a7848] transition-colors flex items-center justify-center gap-2"
+              >
+                Vybrat adopci <ArrowRight size={20} />
+              </button>
+              <div className="flex items-center justify-center gap-2 px-6 py-4 text-sm font-bold text-gray-600 border border-[#ab8754]/30 rounded-xl">
+                <ShieldCheck size={18} className="text-[#ab8754]" /> Garance spokojenosti
+              </div>
             </div>
 
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-800 mb-4">
-              <span style={{ color: accentColor }}>Uvítací balíček</span> pro nové adoptivní rodiče
-            </h2>
-            
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Děkujeme, že jste se rozhodli stát se součástí vinařské rodiny MiQueen
-            </p>
+            {/* Trust Strip */}
+            <div className="mt-10 pt-8 border-t border-[#ab8754]/20 grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="font-serif text-2xl font-bold text-[#ab8754]">500+</div>
+                <div className="text-xs text-gray-600 font-bold uppercase">Rodin</div>
+              </div>
+              <div className="text-center border-l border-[#ab8754]/20">
+                <div className="font-serif text-2xl font-bold text-[#ab8754]">12-36</div>
+                <div className="text-xs text-gray-600 font-bold uppercase">Lahví vína</div>
+              </div>
+              <div className="text-center border-l border-[#ab8754]/20">
+                <div className="font-serif text-2xl font-bold text-[#ab8754]">365</div>
+                <div className="text-xs text-gray-600 font-bold uppercase">Dní radosti</div>
+              </div>
+            </div>
           </div>
 
-          {/* Main Content Card */}
-          <div
-            className="bg-white rounded-3xl overflow-hidden shadow-xl border-2 transition-shadow duration-300"
-            style={{ borderColor: accentColor }}
-          >
-            <div className="grid lg:grid-cols-2 gap-0">
-              
-              {/* Left side - Image */}
-              <div className="relative h-[400px] lg:h-[600px] bg-gradient-to-br from-gray-50 to-gray-100">
-                <Image
-                  src="https://shop.miqueen.cz/user/documents/upload/sklenicesvyvrtkou.jpg"
-                  alt="Uvítací balíček - sklenice s vývrtkou"
-                  fill
-                  className="object-contain p-8"
-                  loading="lazy"
-                  quality={isMobile ? 70 : 85}
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              </div>
+          {/* Pravá strana: Video (Cols 7) */}
+          <div className="lg:col-span-7 reveal delay-200 relative">
+            <div className="relative aspect-[16/9] rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white">
+               <video
+                  ref={videoRef}
+                  className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  autoPlay muted loop playsInline controls
+                  poster="https://shop.miqueen.cz/user/documents/upload/sklenicesvyvrtkou.jpg"
+                >
+                  <source src="https://shop.miqueen.cz/user/documents/upload/adoptuj-vinohrad.webm" type="video/webm" />
+                </video>
+                {/* Překryv pokud se video nenačte hned */}
+                <div className={`absolute inset-0 bg-[#eaddc5] flex items-center justify-center transition-opacity duration-500 ${videoLoaded ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                  <div className="w-12 h-12 border-4 border-[#ab8754] border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            </div>
+            
+            {/* Floating Badge */}
+            <div className="absolute -bottom-6 -left-6 hidden lg:block bg-white p-6 rounded-2xl shadow-xl max-w-xs border border-gray-100">
+              <p className="font-serif text-xl italic text-[#ab8754] mb-2">&quot;Skvělý dárek!&quot;</p>
+              <p className="text-sm text-gray-600">Nejčastěji kupováno jako dárek k narozeninám či výročí. Certifikát přijde ihned.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-              {/* Right side - Content */}
-              <div className="p-8 lg:p-12">
-                <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
-                  Co získáte zdarma k adopci?
-                </h3>
+      {/* 2. VALUE PROPOSITION - "Proč to děláme" */}
+      <section className="py-16 px-4 reveal">
+        <div className="max-w-6xl mx-auto bg-white rounded-[2rem] p-8 lg:p-12 shadow-sm border border-[#ab8754]/10">
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+             <div className="flex flex-col items-center">
+               <div className="w-16 h-16 bg-[#fefbea] rounded-full flex items-center justify-center mb-4">
+                 <Wine size={32} strokeWidth={1.5} color={accentColor} />
+               </div>
+               <h3 className="text-lg font-bold mb-2">Vína MiQueen</h3>
+               <p className="text-gray-600 text-sm">Pravidelné zásilky oceňovaných vín z Pálavy až k vašim dveřím.</p>
+             </div>
+             <div className="flex flex-col items-center">
+               <div className="w-16 h-16 bg-[#fefbea] rounded-full flex items-center justify-center mb-4">
+                 <Heart size={32} strokeWidth={1.5} color={accentColor} />
+               </div>
+               <h3 className="text-lg font-bold mb-2">Jméno na vinohradu</h3>
+               <p className="text-gray-600 text-sm">Každý řádek má svou cedulku. Vyberte si jméno, které na ní bude stát.</p>
+             </div>
+             <div className="flex flex-col items-center">
+               <div className="w-16 h-16 bg-[#fefbea] rounded-full flex items-center justify-center mb-4">
+                 <Grape size={32} strokeWidth={1.5} color={accentColor} />
+               </div>
+               <h3 className="text-lg font-bold mb-2">Zážitek na rok</h3>
+               <p className="text-gray-600 text-sm">Sledujte vývoj hroznů, přijeďte na návštěvu a staňte se součástí příběhu.</p>
+             </div>
+          </div>
+        </div>
+      </section>
 
-                <div className="space-y-5 mb-8">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${accentColor}20` }}>
-                      <Wine className="w-5 h-5" style={{ color: accentColor }} />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Sklenice s gravírováním</h4>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        Elegantní sklenice na víno s vygravírovaným logem Vinařství MiQueen
-                      </p>
-                    </div>
+      {/* 3. PRICING - JÁDRO STRÁNKY */}
+      <section id="pricing" className="py-16 lg:py-24 px-4">
+        <div className="max-w-[1400px] mx-auto">
+          <div className="text-center mb-16 reveal">
+            <h2 className="text-4xl lg:text-5xl font-serif mb-4">Vyberte si svůj <span style={{color: accentColor}}>balíček</span></h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">Všechny balíčky jsou na 12 měsíců. Platba je jednorázová.</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
+            {packages.map((pkg, i) => (
+              <div 
+                key={i} 
+                className={`reveal relative flex flex-col rounded-3xl p-8 transition-transform duration-300 ${
+                  pkg.isPopular 
+                    ? 'bg-white shadow-2xl ring-1 ring-[#ab8754] scale-100 md:scale-105 z-10' 
+                    : 'bg-white shadow-lg border border-gray-100 hover:-translate-y-1'
+                }`}
+                style={{ transitionDelay: `${i * 100}ms` }}
+              >
+                {pkg.isPopular && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#ab8754] text-white px-4 py-1 rounded-full text-sm font-bold shadow-md">
+                    NEJOBLÍBENĚJŠÍ
                   </div>
+                )}
 
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${accentColor}20` }}>
-                      <Gift className="w-5 h-5" style={{ color: accentColor }} />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Vývrtka s logem</h4>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        Praktická vývrtka s logem vinařství pro snadné otevírání vašich lahví
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${accentColor}20` }}>
-                      <Calendar className="w-5 h-5" style={{ color: accentColor }} />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Dodání s první bedýnkou</h4>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        Uvítací balíček obdržíte společně s vaší první dodávkou vína
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${accentColor}20` }}>
-                      <Mail className="w-5 h-5" style={{ color: accentColor }} />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Pro nákupy přes eshop</h4>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        Balíček je určen pro všechny zákazníky, kteří si adopci zakoupí online
-                      </p>
-                    </div>
-                  </div>
+                <div className="mb-6 text-center">
+                   <h3 className="text-2xl font-bold mb-2">{pkg.title}</h3>
+                   <p className="text-sm text-gray-500 h-10">{pkg.description}</p>
                 </div>
 
-                {/* Package Details */}
-                <div className="rounded-2xl p-6 mb-8" style={{ backgroundColor: `${accentColor}10` }}>
-                  <h4 className="font-bold text-gray-900 mb-4 text-lg">Počet sklenic podle balíčku:</h4>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-700">12 hlav révy</span>
-                      <span className="font-bold" style={{ color: accentColor }}>2 sklenice + vývrtka</span>
-                    </div>
-                    <div className="h-px bg-gray-300"></div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-700">24 hlav révy</span>
-                      <span className="font-bold" style={{ color: accentColor }}>4 sklenice + vývrtka</span>
-                    </div>
-                    <div className="h-px bg-gray-300"></div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-700">36 hlav révy</span>
-                      <span className="font-bold" style={{ color: accentColor }}>6 sklenic + vývrtka</span>
-                    </div>
-                  </div>
+                <div className="text-center mb-8">
+                  <span className="text-4xl font-serif font-bold" style={{color: accentColor}}>{pkg.price}</span>
+                  <span className="text-gray-400 text-sm block mt-1">/ rok</span>
                 </div>
 
-                <a
+                {/* Vizuální oddělovač */}
+                <div className="flex items-center justify-center gap-4 mb-8 p-4 bg-[#fefbea] rounded-xl">
+                   <div className="text-center">
+                     <span className="block font-bold text-lg">{pkg.heads}</span>
+                     <span className="text-xs text-gray-500 uppercase">Hlav</span>
+                   </div>
+                   <div className="w-px h-8 bg-[#ab8754]/20"></div>
+                   <div className="text-center">
+                     <span className="block font-bold text-lg">{pkg.bottles}</span>
+                     <span className="text-xs text-gray-500 uppercase">Lahví</span>
+                   </div>
+                </div>
+
+                <ul className="space-y-4 mb-8 flex-grow">
+                  {pkg.features.map((f, idx) => (
+                    <li key={idx} className="flex items-start gap-3 text-sm text-gray-700">
+                      <Check size={18} className="text-[#ab8754] flex-shrink-0 mt-0.5" />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                  {/* Zvýrazněný dárek v seznamu */}
+                  <li className="flex items-start gap-3 text-sm font-bold text-[#ab8754] bg-[#ab8754]/10 p-2 rounded-lg">
+                    <Gift size={18} className="flex-shrink-0 mt-0.5" />
+                    <span>Zdarma: {pkg.giftText}</span>
+                  </li>
+                </ul>
+
+                <a 
                   href="https://shop.miqueen.cz/adoptuj-vinohrad/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`inline-flex items-center gap-2 px-8 py-4 text-white rounded-full font-bold text-lg shadow-lg transition-all touch-manipulation ${
-                    !isMobile ? 'hover:scale-105 hover:shadow-xl' : 'active:scale-95'
+                  className={`w-full py-4 rounded-xl font-bold text-center transition-all ${
+                    pkg.isPopular 
+                      ? 'bg-[#ab8754] text-white hover:bg-[#9a7848] shadow-lg' 
+                      : 'bg-white border-2 border-gray-200 text-gray-800 hover:border-[#ab8754] hover:text-[#ab8754]'
                   }`}
-                  style={{ backgroundColor: accentColor }}
                 >
-                  Adoptovat vinohrad
-                  <Gift className="w-5 h-5" />
+                  Zvolit balíček
                 </a>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Border Between Sections */}
-      <div className="relative w-full">
-        <Image 
-          src="/border.png"
-          alt=""
-          width={1920}
-          height={176}
-          className="w-full h-auto"
-          style={{ display: 'block' }}
-          loading="lazy"
-          quality={isMobile ? 70 : 85}
-        />
-      </div>
-
-      {/* Benefits Section */}
-      <section className="py-20" style={{ backgroundColor: paperColor }}>
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-800 mb-4">
-              Co <span style={{ color: accentColor }}>získáš</span>?
-            </h2>
-            <p className="text-xl text-gray-600">
-              Adopce vinohradu je celoroční zážitek plný výhod
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {benefits.map((benefit, index) => {
-              const IconComponent = benefit.icon;
-              return (
-                <div
-                  key={index}
-                  className={`bg-white rounded-2xl p-6 border border-gray-200 transition-all duration-300 ${
-                    !isMobile ? 'hover:border-[#ab8754] hover:shadow-xl hover:-translate-y-2' : ''
-                  }`}
-                >
-                  <div className="w-14 h-14 rounded-2xl mb-4 flex items-center justify-center" style={{ backgroundColor: `${accentColor}20` }}>
-                    <IconComponent className="w-7 h-7" style={{ color: accentColor }} />
-                  </div>
-                  
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">
-                    {benefit.title}
-                  </h3>
-                  
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {benefit.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Border Between Sections */}
-      <div className="relative w-full">
-        <Image 
-          src="/border.png"
-          alt=""
-          width={1920}
-          height={176}
-          className="w-full h-auto"
-          style={{ display: 'block' }}
-          loading="lazy"
-          quality={isMobile ? 70 : 85}
-        />
-      </div>
-
-      {/* How it Works */}
-      <section className="py-20 bg-white">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-800 mb-4">
-              Jak to <span style={{ color: accentColor }}>funguje</span>?
-            </h2>
-            <p className="text-xl text-gray-600">
-              4 jednoduché kroky k vlastnímu vinohradu
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {steps.map((step, index) => (
-              <div key={index} className="relative">
-                <div className="text-center">
-                  <div 
-                    className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 text-3xl font-bold text-white shadow-xl" 
-                    style={{ backgroundColor: accentColor }}
-                  >
-                    {step.number}
-                  </div>
-                  
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">
-                    {step.title}
-                  </h3>
-                  
-                  <p className="text-gray-600">
-                    {step.description}
-                  </p>
-                </div>
-
-                {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-10 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-[#ab8754] to-transparent"></div>
-                )}
+                <p className="text-center text-xs text-gray-400 mt-4">{pkg.deliveries}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Border Between Sections */}
-      <div className="relative w-full">
-        <Image 
-          src="/border.png"
-          alt=""
-          width={1920}
-          height={176}
-          className="w-full h-auto"
-          style={{ display: 'block' }}
-          loading="lazy"
-          quality={isMobile ? 70 : 85}
-        />
-      </div>
-
-      {/* Video Gallery Section - VŠECHNA VIDEA ZE SHOPTET CDN */}
-      <section className="py-20" style={{ backgroundColor: paperColor }}>
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-800 mb-4">
-              Podívej se <span style={{ color: accentColor }}>blíže</span>
-            </h2>
-            <p className="text-xl text-gray-600">
-              Zážitky z vinohradu v pohybu
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-            {/* Video 1 */}
-            <div
-              className={`relative rounded-2xl overflow-hidden shadow-lg border-2 border-gray-200 transition-all duration-300 ${
-                !isMobile ? 'hover:shadow-2xl hover:border-[#ab8754]' : ''
-              }`}
-            >
-              <div className="aspect-video bg-gradient-to-br from-gray-900 to-black">
-                <video
-                  className="w-full h-full object-cover"
-                  controls
-                  playsInline
-                  preload="metadata"
-                >
-                  {/* ✅ VIDEO ZE SHOPTET CDN */}
-                  <source src="https://shop.miqueen.cz/user/documents/upload/promo1.mp4" type="video/mp4" />
-                  Váš prohlížeč nepodporuje přehrávání videa.
-                </video>
-              </div>
-            </div>
-
-            {/* Video 2 */}
-            <div
-              className={`relative rounded-2xl overflow-hidden shadow-lg border-2 border-gray-200 transition-all duration-300 ${
-                !isMobile ? 'hover:shadow-2xl hover:border-[#ab8754]' : ''
-              }`}
-            >
-              <div className="aspect-video bg-gradient-to-br from-gray-900 to-black">
-                <video
-                  className="w-full h-full object-cover"
-                  controls
-                  playsInline
-                  preload="metadata"
-                >
-                  {/* ✅ VIDEO ZE SHOPTET CDN */}
-                  <source src="https://shop.miqueen.cz/user/documents/upload/promo2-2.webm" type="video/webm" />
-                  Váš prohlížeč nepodporuje přehrávání videa.
-                </video>
-              </div>
-            </div>
-
-            {/* Video 3 */}
-            <div
-              className={`relative rounded-2xl overflow-hidden shadow-lg border-2 border-gray-200 transition-all duration-300 ${
-                !isMobile ? 'hover:shadow-2xl hover:border-[#ab8754]' : ''
-              }`}
-            >
-              <div className="aspect-video bg-gradient-to-br from-gray-900 to-black">
-                <video
-                  className="w-full h-full object-cover"
-                  controls
-                  playsInline
-                  preload="metadata"
-                >
-                  {/* ✅ VIDEO ZE SHOPTET CDN */}
-                  <source src="https://shop.miqueen.cz/user/documents/upload/promo3.mp4" type="video/mp4" />
-                  Váš prohlížeč nepodporuje přehrávání videa.
-                </video>
-              </div>
-            </div>
-
-            {/* Video 4 */}
-            <div
-              className={`relative rounded-2xl overflow-hidden shadow-lg border-2 border-gray-200 transition-all duration-300 ${
-                !isMobile ? 'hover:shadow-2xl hover:border-[#ab8754]' : ''
-              }`}
-            >
-              <div className="aspect-video bg-gradient-to-br from-gray-900 to-black">
-                <video
-                  className="w-full h-full object-cover"
-                  controls
-                  playsInline
-                  preload="metadata"
-                >
-                  {/* ✅ VIDEO ZE SHOPTET CDN */}
-                  <source src="https://shop.miqueen.cz/user/documents/upload/promo4.mp4" type="video/mp4" />
-                  Váš prohlížeč nepodporuje přehrávání videa.
-                </video>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Border Between Sections */}
-      <div className="relative w-full">
-        <Image 
-          src="/border.png"
-          alt=""
-          width={1920}
-          height={176}
-          className="w-full h-auto"
-          style={{ display: 'block' }}
-          loading="lazy"
-          quality={isMobile ? 70 : 85}
-        />
-      </div>
-
-      {/* CTA Section */}
-      <section className="py-20" style={{ backgroundColor: paperColor }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-white rounded-3xl p-12 shadow-xl border border-gray-200">
-            <Gift className="w-16 h-16 mx-auto mb-6" style={{ color: accentColor }} />
-            
-            <h2 className="text-4xl font-light text-gray-800 mb-6">
-              Perfektní <span style={{ color: accentColor }}>dárek</span>
-            </h2>
-            
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Chceš sobě nebo někomu jinému věnovat skvělý zážitek? 
-              Vyber si svoji odrůdu a můžeš se s námi pustit do vinohradnického dobrodružství.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="https://shop.miqueen.cz/adoptuj-vinohrad/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`px-10 py-5 text-white rounded-full font-bold text-lg shadow-xl touch-manipulation transition-all ${
-                  !isMobile ? 'hover:scale-105' : 'active:scale-95'
-                }`}
-                style={{ backgroundColor: accentColor }}
-              >
-                Adoptovat vinohrad
-              </a>
+      {/* 4. BONUS SECTION - Vizuální a přehledná */}
+      <section className="py-16 px-4 reveal">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-[#ab8754]/20">
+            <div className="grid lg:grid-cols-2">
               
-              <a
-                href="/kontakty/"
-                rel="noopener noreferrer"
-                className={`px-10 py-5 bg-white text-gray-700 rounded-full font-bold text-lg border-2 border-gray-300 touch-manipulation transition-all ${
-                  !isMobile ? 'hover:border-gray-400 hover:shadow-lg hover:scale-105' : 'active:scale-95'
-                }`}
-              >
-                Mám dotaz
-              </a>
+              {/* Vizualizace produktu - OPRAVA IMG TAGU NA NEXT/IMAGE */}
+              <div className="relative h-[350px] lg:h-auto bg-[#fefbea] p-8 flex items-center justify-center border-b lg:border-b-0 lg:border-r border-[#ab8754]/10">
+                <Image 
+                  src="https://shop.miqueen.cz/user/documents/upload/sklenicesvyvrtkou.jpg" 
+                  alt="Dárkový set" 
+                  width={500}
+                  height={500}
+                  unoptimized // Zabrání problémům s konfigurací domény pro Next.js
+                  className="max-h-full max-w-full object-contain mix-blend-multiply w-auto h-auto"
+                />
+                <div className="absolute top-6 left-6 bg-[#ab8754] text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
+                  Dárek ke každé adopci
+                </div>
+              </div>
+
+              {/* Informace */}
+              <div className="p-8 lg:p-16 flex flex-col justify-center">
+                <h3 className="text-3xl font-serif mb-4">Uvítací balíček <span style={{color: accentColor}}>zdarma</span></h3>
+                <p className="text-gray-600 mb-8 leading-relaxed">
+                  Aby byl váš zážitek kompletní, hned na začátku vám pošleme profesionální vinařské vybavení v hodnotě 890 Kč.
+                </p>
+
+                {/* Ikony dárků */}
+                <div className="flex gap-6 mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-[#fefbea] flex items-center justify-center border border-[#ab8754]/20">
+                      <Wine size={20} color={accentColor} />
+                    </div>
+                    <div>
+                      <div className="font-bold">Sklenice</div>
+                      <div className="text-xs text-gray-500">Gravírované</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                     <div className="w-12 h-12 rounded-full bg-[#fefbea] flex items-center justify-center border border-[#ab8754]/20">
+                      <Gift size={20} color={accentColor} />
+                    </div>
+                    <div>
+                      <div className="font-bold">Vývrtka</div>
+                      <div className="text-xs text-gray-500">Someliérská</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tabulka množství - velmi čistá */}
+                <div className="bg-[#fefbea] rounded-xl p-6">
+                  <h4 className="font-bold text-sm uppercase tracking-wide text-gray-500 mb-4 border-b border-[#ab8754]/10 pb-2">Počet sklenic v balíčku</h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span>Malý vinař (12 hlav)</span>
+                      <span className="font-bold">2 ks + vývrtka</span>
+                    </div>
+                     <div className="flex justify-between text-[#ab8754]">
+                      <span className="font-bold">Zlatý střed (24 hlav)</span>
+                      <span className="font-bold">4 ks + vývrtka</span>
+                    </div>
+                     <div className="flex justify-between">
+                      <span>Velkostatkář (36 hlav)</span>
+                      <span className="font-bold">6 ks + vývrtka</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <style jsx>{`
-        * {
-          -webkit-tap-highlight-color: transparent;
-        }
+      {/* 5. FAQ - Clean Accordion */}
+      <section className="py-16 px-4 max-w-3xl mx-auto reveal mb-20">
+        <h2 className="text-3xl font-serif text-center mb-10">Časté dotazy</h2>
+        <div className="space-y-3">
+          <AccordionItem question="Kdy obdržím certifikát?" answer="Ihned po zaplacení vám přijde elektronická verze v PDF, kterou si můžete vytisknout nebo přeposlat jako dárek." />
+          <AccordionItem question="Kdy chodí víno?" answer="První balíček s dárky odesíláme ihned. Další zásilky následují v pravidelných intervalech dle zvoleného balíčku (jaro, léto, podzim, zima)." />
+          <AccordionItem question="Mohu si vybrat odrůdu?" answer="Ano! Po výběru balíčku budete mít možnost specifikovat preferovanou odrůdu z naší aktuální nabídky." />
+        </div>
+        <div className="text-center mt-8">
+           <a href="/kontakty/" className="text-sm font-bold text-[#ab8754] border-b border-[#ab8754] hover:text-black hover:border-black transition-colors pb-0.5">Mám jiný dotaz</a>
+        </div>
+      </section>
 
-        .touch-manipulation {
-          touch-action: manipulation;
-          -webkit-touch-callout: none;
-          -webkit-user-select: none;
-          user-select: none;
-        }
+      {/* 6. MOBILE STICKY BAR */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 md:hidden z-50 shadow-[0_-5px_20px_rgba(0,0,0,0.05)] flex items-center justify-between">
+        <div className="flex flex-col">
+          <span className="text-[10px] uppercase font-bold text-gray-400">Cena od</span>
+          <span className="font-bold text-xl text-[#1a1a1a]">4 990 Kč</span>
+        </div>
+        <button 
+          onClick={scrollToPackages}
+          className="bg-[#ab8754] text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg active:scale-95 transition-transform"
+        >
+          Adoptovat
+        </button>
+      </div>
 
-        /* Vypni animace na mobilu */
-        @media (max-width: 767px) {
-          * {
-            animation: none !important;
-            transition-duration: 0.1s !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };
 
-export default AdoptujVinohradPage;
+// Pomocná komponenta pro FAQ
+const AccordionItem = ({ question, answer }: { question: string, answer: string }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="bg-white rounded-xl border border-[#ab8754]/10 overflow-hidden">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between p-5 text-left hover:bg-[#fefbea] transition-colors"
+      >
+        <span className="font-bold text-gray-800">{question}</span>
+        {isOpen ? <ChevronUp size={18} className="text-[#ab8754]" /> : <ChevronDown size={18} className="text-gray-400" />}
+      </button>
+      <div 
+        className={`px-5 text-gray-600 text-sm leading-relaxed transition-all duration-300 overflow-hidden ${isOpen ? 'max-h-40 pb-5 opacity-100' : 'max-h-0 opacity-0'}`}
+      >
+        {answer}
+      </div>
+    </div>
+  );
+};
+
+export default AdoptujVinohradLuxury;

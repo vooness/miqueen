@@ -118,8 +118,8 @@ const ProductSlider1: React.FC = () => {
   if (!giftSets.length) return null;
 
   return (
-    <section className="bg-[#fefbea] py-12 sm:py-20">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10">
+    <section className="bg-[#fefbea]  ">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 mt-6">
         {/* HLAVIČKA NAD SLIDEREM */}
         <div className="mb-8 sm:mb-10">
           <p className="text-xs sm:text-sm uppercase tracking-[0.24em] text-gray-500 mb-3">
