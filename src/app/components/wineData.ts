@@ -914,7 +914,8 @@ export const wines: WineProduct[] = [
   grapeVariety: "Ryzlink vlašský, Frankovka",
   vintage: 2023,
   price: 410,
-  description: "Elegantní dárek pro milovníky moravského vína. Dárkový set vín z vinařství MiQueen – Mikulovská královna vín spojuje to nejlepší z naší produkce: svěží Ryzlink vlašský 2023 a charakterní Frankovku 2023. Obě vína pocházejí z vinic, kde klademe důraz na šetrné hospodaření, zdravou půdu a biodiverzitu. Součástí balení je stylový dárkový karton na dvě lahve – ideální pro firemní dary, poděkování klientům nebo sváteční příležitosti.",
+  description: "Elegantní dárek pro milovníky moravského vína\n\nDárkový set vín z vinařství MiQueen – Mikulovská královna vín spojuje to nejlepší z naší produkce: svěží Ryzlink vlašský 2023 a charakterní Frankovku 2023. Obě vína pocházejí z vinic, kde klademe důraz na šetrné hospodaření, zdravou půdu a biodiverzitu.\n\nSoučástí balení je stylový dárkový karton na dvě lahve – ideální pro firemní dary, poděkování klientům nebo sváteční příležitosti.",
+
   category: 'set',
   image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/222_navrh-bez-nazvu-2025-11-13t113942-342.png?6915b580',
   shopUrl: 'https://shop.miqueen.cz/darkovy-set-ryzlink-vlassky-frankovka-2023/',
@@ -936,7 +937,8 @@ export const wines: WineProduct[] = [
   grapeVariety: "Ryzlink vlašský, Ryzlink rýnský, Sauvignon, Chardonnay, Tramín červený, Rulandské bílé",
   vintage: 2023,
   price: 1490,
-  description: "Hvězdná medailová šestka je kolekce šesti oceněných vín z vinařství MiQueen, která získala zlaté a stříbrné medaile na prestižních vinařských soutěžích. Set obsahuje: Ryzlink vlašský 2023 (zlatá medaile), Ryzlink rýnský 2023 (zlatá medaile), Sauvignon 2023 (zlatá medaile), Chardonnay 2023 (zlatá medaile), Tramín červený 2023 (stříbrná medaile), Rulandské bílé 2023 (stříbrná medaile). Elegantní dárkové balení je ideální pro firemní dary, výročí nebo jako exkluzivní pozornost pro milovníky kvalitních moravských vín.",
+  description: "Exkluzivní kolekce 6 vín MiQueen – 49 ocenění v jedné krabici\n\nObjevte to nejlepší z Mikulova. Vína MiQueen nejsou jen krásná na pohled – jsou především mistrovsky vyrobená a mnohonásobně oceněná. Tato pečlivě sestavená sada 6 vín vám přináší výběr našich nejúspěšnějších vín ročníku 2023 – ideální pro degustační večer, hodnotný dárek nebo jako elegantní zásoba kvalitního vína domů.\n\nDopravu u tohoto produktu máte zdarma.\n\nOproti nákupu jednotlivých produktů ušetříte s touto sadou 15 %.",
+
   category: 'set',
   image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/225_hvezdna-sestka--1.jpg?69178948',
   shopUrl: 'https://shop.miqueen.cz/hvezdna-medailova-sestka',
