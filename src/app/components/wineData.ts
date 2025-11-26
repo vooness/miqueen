@@ -950,7 +950,7 @@ export const wines: WineProduct[] = [
   servingTemp: '8-12°C',
   winemaker: 'MiQueen Winery',
   region: 'Mikulovská podoblast, Pálava',
-  notes: 'Exkluzivní dárkový set obsahující 6 oceněných vín (4x zlatá medaile, 2x stříbrná medaile). Baleno v prémiové dárkové krabici.',
+  notes: 'Exkluzivní dárkový set obsahující 6 vín která mají 49 ocenění.',
   foodPairing: ['Předkrmy', 'Ryby', 'Drůbež', 'Měkké sýry', 'Dezerty'],
   sku: 'VMQ225',
   residualSugar: null,
