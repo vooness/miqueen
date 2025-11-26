@@ -144,7 +144,7 @@ export const wines: WineProduct[] = [
     volume: 187,
     region: 'Mikulovská podoblast, Perná',
     winemaker: 'MiQueen Winery',
-    notes: 'Balení po 24ks',
+    
     sku: 'VMQ016',
     residualSugar: 0.9
   },
@@ -950,7 +950,7 @@ export const wines: WineProduct[] = [
   servingTemp: '8-12°C',
   winemaker: 'MiQueen Winery',
   region: 'Mikulovská podoblast, Pálava',
-  notes: 'Exkluzivní dárkový set obsahující 6 vín která mají 49 ocenění.',
+  notes: 'Exkluzivní dárkový set obsahující 6 vín , která mají 49 ocenění.',
   foodPairing: ['Předkrmy', 'Ryby', 'Drůbež', 'Měkké sýry', 'Dezerty'],
   sku: 'VMQ225',
   residualSugar: null,
