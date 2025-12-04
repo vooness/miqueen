@@ -161,6 +161,26 @@ const CATEGORIES: CategoryConfig[] = [
       }
     ]
   },
+  {
+    id: 'nealko',
+    slug: 'nealko-speciality',
+    title: 'Nealkoholické speciality MiQueen | Hroznové mošty a nealko nápoje',
+    metaTitle: 'Nealko speciality | Vinařství MiQueen',
+    h1: 'Nealkoholické speciality z vinice',
+    description: 'Nealkoholické speciality z vinařství MiQueen - hroznové mošty, nealko nápoje s matcha a další osvěžující produkty. Vhodné pro řidiče, sportovce a každého.',
+    longDescription: 'Dopřejte si jedinečný zážitek bez kapky alkoholu. Naše nealkoholické speciality přinášejí výběrové suroviny, autentickou chuť a osvěžení bez kompromisů. Vhodné pro řidiče, sportovce i každého, kdo si chce dopřát něco extra – i bez promile.',
+    keywords: ['nealkoholické nápoje', 'hroznový mošt', 'nealko', 'matcha', 'bez alkoholu', 'pro řidiče', 'zdravé nápoje', 'osvěžení'],
+    faqItems: [
+      {
+        question: 'Obsahují vaše nealko produkty přidaný cukr?',
+        answer: 'Ne, naše nealkoholické speciality neobsahují žádný přidaný cukr. Pouze přírodní cukry z hroznů.'
+      },
+      {
+        question: 'Pro koho jsou nealko speciality vhodné?',
+        answer: 'Pro řidiče, sportovce, těhotné ženy a každého, kdo hledá kvalitní osvěžení bez alkoholu.'
+      }
+    ]
+  },
 ];
 
 // Helper funkce pro mapování

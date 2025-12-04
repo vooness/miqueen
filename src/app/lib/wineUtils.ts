@@ -19,7 +19,8 @@ export const categoryToSlug = (category: string): string => {
     'rose': 'ruzova',
     'sparkling': 'perliva',
     'special': 'mimosa',
-    'set': 'sety'
+    'set': 'sety',
+    'nealko': 'nealko-speciality'
   };
   return mapping[category] || category;
 };
@@ -31,7 +32,8 @@ export const slugToCategory = (slug: string): string => {
     'ruzova': 'rose',
     'perliva': 'sparkling',
     'mimosa': 'special',
-    'sety': 'set'
+    'sety': 'set',
+    'nealko-speciality': 'nealko'
   };
   return mapping[slug] || slug;
 };
@@ -43,7 +45,8 @@ export const getCategoryName = (category: string): string => {
     'rose': 'Růžová',
     'sparkling': 'Perlivá',
     'special': 'Mimosa',
-    'set': 'Sety'
+    'set': 'Sety',
+    'nealko': 'Nealko'
   };
   return mapping[category] || category;
 };

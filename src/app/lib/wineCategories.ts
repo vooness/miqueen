@@ -82,6 +82,16 @@ export const wineCategories: WineCategory[] = [
     color: '#ab8754'
   },
   {
+    id: 'nealko',
+    slug: 'nealko-speciality',
+    name: 'Nealko speciality',
+    title: 'Nealkoholické speciality MiQueen',
+    description: 'Nealkoholické nápoje z vinice. Hroznové mošty a speciální nealko nápoje pro každého.',
+    metaDescription: 'Nealkoholické speciality z vinařství MiQueen - hroznové mošty, nealko nápoje s matcha. Vhodné pro řidiče a sportovce.',
+    icon: 'Leaf',
+    color: '#22C55E'
+  },
+  {
     id: 'new',
     slug: 'novinky',
     name: 'Novinky',

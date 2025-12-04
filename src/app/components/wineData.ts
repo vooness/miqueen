@@ -1,6 +1,6 @@
-// wineData.ts - FINÁLNÍ KOMPLETNÍ DATABÁZE VŠECH 40 VÍN MiQueen
+// wineData.ts - FINÁLNÍ KOMPLETNÍ DATABÁZE VŠECH VÍN MiQueen
 // Aktualizováno podle shop.miqueen.cz - říjen/listopad 2024
-// 40 produktů se správnými odkazy a hodnotami zbytkového cukru
+// 41 produktů se správnými odkazy a hodnotami zbytkového cukru
 // ŘAZENÍ: OD NEJSUŠŠÍCH (nejméně sladkých) PO NEJSLADŠÍ
 
 export interface WineProduct {
@@ -12,7 +12,7 @@ export interface WineProduct {
   price: number;
   rating?: number;
   description: string;
-  category: 'white' | 'red' | 'rose' | 'sparkling' | 'special' | 'set';
+  category: 'white' | 'red' | 'rose' | 'sparkling' | 'special' | 'set' | 'nealko';
   image: string;
   shopUrl: string;
   badge?: 'new' | 'bestseller' | 'award' | 'limited' | 'tip';
@@ -263,8 +263,6 @@ export const wines: WineProduct[] = [
   },
 
   // ========== FRIZZANTE (750ml) - 5 produktů ==========
-  
- 
   
   // ID 12: Frizzante Ryzlink vlašský 2023
   {
@@ -904,58 +902,79 @@ export const wines: WineProduct[] = [
     residualSugar: null
   },
 
+  // ID 41: Dárkový set Ryzlink vlašský PS 2023 a Frankovka VH 2023
+  {
+    id: 41,
+    name: "Dárkový set Ryzlink vlašský PS 2023 a Frankovka VH 2023",
+    variety: "Mix",
+    grapeVariety: "Ryzlink vlašský, Frankovka",
+    vintage: 2023,
+    price: 410,
+    description: "Elegantní dárek pro milovníky moravského vína\n\nDárkový set vín z vinařství MiQueen – Mikulovská královna vín spojuje to nejlepší z naší produkce: svěží Ryzlink vlašský 2023 a charakterní Frankovku 2023. Obě vína pocházejí z vinic, kde klademe důraz na šetrné hospodaření, zdravou půdu a biodiverzitu.\n\nSoučástí balení je stylový dárkový karton na dvě lahve – ideální pro firemní dary, poděkování klientům nebo sváteční příležitosti.",
+    category: 'set',
+    image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/222_navrh-bez-nazvu-2025-11-13t113942-342.png?6915b580',
+    shopUrl: 'https://shop.miqueen.cz/darkovy-set-ryzlink-vlassky-frankovka-2023/',
+    badge: 'new',
+    volume: 750,
+    servingTemp: '10-18°C',
+    winemaker: 'MiQueen Winery',
+    region: 'Mikulov, Pálava',
+    notes: 'Stylový dárkový karton, ideální pro firemní dary a poděkování',
+    foodPairing: ['Ryby', 'Kuřecí maso', 'Grilované maso', 'Sýry'],
+    sku: 'VMQ222',
+    residualSugar: null,
+    rating: 4.5
+  },
+
+  // ID 42: Hvězdná medailová šestka
+  {
+    id: 42,
+    name: "Hvězdná medailová šestka",
+    variety: "Dárkový set",
+    grapeVariety: "Ryzlink vlašský, Ryzlink rýnský, Sauvignon, Chardonnay, Tramín červený, Rulandské bílé",
+    vintage: 2023,
+    price: 1490,
+    description: "Exkluzivní kolekce 6 vín MiQueen – 49 ocenění v jedné krabici\n\nObjevte to nejlepší z Mikulova. Vína MiQueen nejsou jen krásná na pohled – jsou především mistrovsky vyrobená a mnohonásobně oceněná. Tato pečlivě sestavená sada 6 vín vám přináší výběr našich nejúspěšnějších vín ročníku 2023 – ideální pro degustační večer, hodnotný dárek nebo jako elegantní zásoba kvalitního vína domů.\n\nDopravu u tohoto produktu máte zdarma.\n\nOproti nákupu jednotlivých produktů ušetříte s touto sadou 15 %.",
+    category: 'set',
+    image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/225_hvezdna-sestka--1.jpg?69178948',
+    shopUrl: 'https://shop.miqueen.cz/hvezdna-medailova-sestka',
+    badge: 'award',
+    quality: 'pozdni-sber',
+    dryness: 'suche',
+    alcohol: 12.5,
+    volume: 750,
+    servingTemp: '8-12°C',
+    winemaker: 'MiQueen Winery',
+    region: 'Mikulovská podoblast, Pálava',
+    notes: 'Exkluzivní dárkový set obsahující 6 vín , která mají 49 ocenění.',
+    foodPairing: ['Předkrmy', 'Ryby', 'Drůbež', 'Měkké sýry', 'Dezerty'],
+    sku: 'VMQ225',
+    residualSugar: null,
+    rating: 5.0
+  },
+
+  // ========== NEALKO SPECIALITY ==========
   
-
-
-{
-  id: 41,
-  name: "Dárkový set Ryzlink vlašský PS 2023 a Frankovka VH 2023",
-  variety: "Mix",
-  grapeVariety: "Ryzlink vlašský, Frankovka",
-  vintage: 2023,
-  price: 410,
-  description: "Elegantní dárek pro milovníky moravského vína\n\nDárkový set vín z vinařství MiQueen – Mikulovská královna vín spojuje to nejlepší z naší produkce: svěží Ryzlink vlašský 2023 a charakterní Frankovku 2023. Obě vína pocházejí z vinic, kde klademe důraz na šetrné hospodaření, zdravou půdu a biodiverzitu.\n\nSoučástí balení je stylový dárkový karton na dvě lahve – ideální pro firemní dary, poděkování klientům nebo sváteční příležitosti.",
-
-  category: 'set',
-  image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/222_navrh-bez-nazvu-2025-11-13t113942-342.png?6915b580',
-  shopUrl: 'https://shop.miqueen.cz/darkovy-set-ryzlink-vlassky-frankovka-2023/',
-  badge: 'new',
-  volume: 750,
-  servingTemp: '10-18°C',
-  winemaker: 'MiQueen Winery',
-  region: 'Mikulov, Pálava',
-  notes: 'Stylový dárkový karton, ideální pro firemní dary a poděkování',
-  foodPairing: ['Ryby', 'Kuřecí maso', 'Grilované maso', 'Sýry'],
-  sku: 'VMQ222',
-  residualSugar: null,
-  rating: 4.5
-},
-{
-  id: 42,
-  name: "Hvězdná medailová šestka",
-  variety: "Dárkový set",
-  grapeVariety: "Ryzlink vlašský, Ryzlink rýnský, Sauvignon, Chardonnay, Tramín červený, Rulandské bílé",
-  vintage: 2023,
-  price: 1490,
-  description: "Exkluzivní kolekce 6 vín MiQueen – 49 ocenění v jedné krabici\n\nObjevte to nejlepší z Mikulova. Vína MiQueen nejsou jen krásná na pohled – jsou především mistrovsky vyrobená a mnohonásobně oceněná. Tato pečlivě sestavená sada 6 vín vám přináší výběr našich nejúspěšnějších vín ročníku 2023 – ideální pro degustační večer, hodnotný dárek nebo jako elegantní zásoba kvalitního vína domů.\n\nDopravu u tohoto produktu máte zdarma.\n\nOproti nákupu jednotlivých produktů ušetříte s touto sadou 15 %.",
-
-  category: 'set',
-  image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/225_hvezdna-sestka--1.jpg?69178948',
-  shopUrl: 'https://shop.miqueen.cz/hvezdna-medailova-sestka',
-  badge: 'award',
-  quality: 'pozdni-sber',
-  dryness: 'suche',
-  alcohol: 12.5,
-  volume: 750,
-  servingTemp: '8-12°C',
-  winemaker: 'MiQueen Winery',
-  region: 'Mikulovská podoblast, Pálava',
-  notes: 'Exkluzivní dárkový set obsahující 6 vín , která mají 49 ocenění.',
-  foodPairing: ['Předkrmy', 'Ryby', 'Drůbež', 'Měkké sýry', 'Dezerty'],
-  sku: 'VMQ225',
-  residualSugar: null,
-  rating: 5.0
-}
+  // ID 43: Dudkův nabíječ
+  {
+    id: 43,
+    name: "Dudkův nabíječ",
+    variety: "Nealkoholický mošt s matcha",
+    grapeVariety: "Ryzlink vlašský",
+    vintage: 2025,
+    price: 59,
+    description: "Když potřebujete nakopnout – ale bez kofeinu a bez výčitek. Dudkův nabíječ je nealkoholický, pasterizovaný hroznový mošt z odrůdy Ryzlink vlašský (50 % objemu), vody a doladěný výjimečnou kombinací s matcha Japan Superior – vysoce kvalitního japonského zeleného čaje. Přírodní oxid uhličitý (CO₂) dodává jemnou perlivost a šmrnc. Bez alkoholu, přirozeně energizující, na bázi hroznů a zeleného čaje, žádný přidaný cukr.",
+    category: 'nealko',
+    image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/231_dn.png?693162ca',
+    shopUrl: 'https://shop.miqueen.cz/dudkuv-nabijec/',
+    badge: 'new',
+    alcohol: 0,
+    volume: 250,
+    winemaker: 'MiQueen Winery',
+    notes: 'Ideální jako alternativa vína pro řidiče, sportovce nebo pro každého, kdo touží po zajímavém nealko zážitku. 1 karton = 20 ks',
+    sku: 'DN',
+    residualSugar: null
+  }
 ];
 
 // Helper funkce
@@ -1015,18 +1034,21 @@ export const getStatistics = () => {
     rose: wines.filter(w => w.category === 'rose').length,
     sparkling: wines.filter(w => w.category === 'sparkling').length,
     special: wines.filter(w => w.category === 'special').length,
-    set: wines.filter(w => w.category === 'set').length
+    set: wines.filter(w => w.category === 'set').length,
+    nealko: wines.filter(w => w.category === 'nealko').length
   };
 
   const volumes = {
     mini: wines.filter(w => w.volume && w.volume < 250).length,
+    small: wines.filter(w => w.volume === 250).length,
     standard: wines.filter(w => w.volume === 750).length
   };
 
   const vintages = {
     2022: wines.filter(w => w.vintage === 2022).length,
     2023: wines.filter(w => w.vintage === 2023).length,
-    2024: wines.filter(w => w.vintage === 2024).length
+    2024: wines.filter(w => w.vintage === 2024).length,
+    2025: wines.filter(w => w.vintage === 2025).length
   };
 
   const newWines2024 = wines.filter(w => w.badge === 'new' || w.vintage === 2024);
@@ -1043,7 +1065,7 @@ export const getStatistics = () => {
     vintages,
     newWines2024: newWines2024.length,
     sugarStats,
-    status: wines.length === 40,
+    status: wines.length >= 40,
   };
 };
 
@@ -1068,8 +1090,8 @@ export const categoryToSlug = (category: string): string => {
     'rose': 'ruzova-vina',
     'sparkling': 'perliva-vina',
     'special': 'mimosa-special',
-    
-    'set': 'darkove-sety'
+    'set': 'darkove-sety',
+    'nealko': 'nealko-speciality'
   };
   return mapping[category] || category;
 };
@@ -1081,7 +1103,8 @@ export const slugToCategory = (slug: string): string => {
     'ruzova-vina': 'rose',
     'perliva-vina': 'sparkling',
     'mimosa-special': 'special',
-    'darkove-sety': 'set'
+    'darkove-sety': 'set',
+    'nealko-speciality': 'nealko'
   };
   return mapping[slug] || slug;
 };
@@ -1093,7 +1116,8 @@ export const getCategoryName = (category: string): string => {
     'rose': 'Růžová vína',
     'sparkling': 'Perlivá vína',
     'special': 'Mimosa speciální',
-    'set': 'Dárkové sety'
+    'set': 'Dárkové sety',
+    'nealko': 'Nealko speciality'
   };
   return mapping[category] || category;
 };

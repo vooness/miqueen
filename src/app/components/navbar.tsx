@@ -33,7 +33,8 @@ const NAV_ITEMS: NavItem[] = [
       { label: 'Růžová vína', href: '/vina/ruzova-vina' },
       { label: 'Perlivá vína', href: '/vina/perliva-vina' },
       { label: 'Mimosa', href: '/vina/mimosa-special' },
-      { label: 'Dárkové sety', href: '/vina/darkove-sety' }
+      { label: 'Dárkové sety', href: '/vina/darkove-sety' },
+      { label: 'Nealko speciality', href: '/vina/nealko-speciality' },
     ]
   },
   { label: 'Blog', href: '/blog' },

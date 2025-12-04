@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, ShoppingCart, Sparkles, Droplets, Cherry, Grape, Wine, Package, ExternalLink, Gift, MapPin } from "lucide-react";
+import { Star, ShoppingCart, Sparkles, Droplets, Cherry, Grape, Wine, Package, ExternalLink, Gift, MapPin, Leaf } from "lucide-react";
 import { wines, getWinesByCategorySortedBySweetness, getWineCountByCategory } from "./wineData";
 import WineFilterBar, { WineFilters } from "./WineFilterBar";
 import { createSlug } from "@/app/lib/wineUtils";
@@ -23,6 +23,7 @@ const getCategorySlug = (category: string): string => {
     sparkling: "perliva-vina",
     special: "mimosa-special",
     set: "darkove-sety",
+    nealko: "nealko-speciality",
   };
   return reverseMapping[category] || "vsechna-vina";
 };
@@ -185,6 +186,7 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
       { id: "sparkling", icon: Wine, label: "Perlivá", color: "#ab8754" },
       { id: "special", icon: Package, label: "Mimosa", color: "#ab8754" },
       { id: "set", icon: Gift, label: "Sety", color: "#ab8754" },
+      { id: "nealko", icon: Leaf, label: "Nealko", color: "#22C55E" },
     ],
     []
   );
@@ -388,7 +390,7 @@ const WineGridPage: React.FC<WineGridPageProps> = ({ initialCategory = "all" }) 
                         className="text-[9px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full"
                         style={{ backgroundColor: "#ab875410", color: "#ab8754" }}
                       >
-                        {wine.volume === 200 ? "Mini 200ml" : wine.volume === 187 ? "Mini 187ml" : "750ml"}
+                        {wine.volume === 200 ? "Mini 200ml" : wine.volume === 187 ? "Mini 187ml" : wine.volume === 250 ? "250ml" : "750ml"}
                       </span>
                     </div>
                   )}

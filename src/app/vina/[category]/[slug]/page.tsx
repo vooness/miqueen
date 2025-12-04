@@ -43,7 +43,8 @@ const getHighResImageUrl = (url: string) => {
 const getCategorySlug = (category: string): string => {
   const mapping: Record<string, string> = {
     'white': 'bila-vina', 'red': 'cervena-vina', 'rose': 'ruzova-vina',
-    'sparkling': 'perliva-vina', 'special': 'mimosa-specialni', 'set': 'darkove-sety'
+    'sparkling': 'perliva-vina', 'special': 'mimosa-specialni', 'set': 'darkove-sety',
+    'nealko': 'nealko-speciality'
   };
   return mapping[category] || category;
 };
