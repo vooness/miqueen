@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Cormorant_Garamond, Marcellus } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import SimpleCookieBanner from "./components/cookies";
 import AgeVerification from "./components/AgeVerification";
@@ -400,6 +401,22 @@ export default function RootLayout({
   return (
     <html lang="cs" className={`${cormorant.variable} ${marcellus.variable}`}>
       <head>
+        {/* ========== GOOGLE TAG MANAGER - HEAD ========== */}
+        <Script
+          id="gtm-script"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','GTM-MJXFWMRS');
+            `,
+          }}
+        />
+        {/* ========== END GOOGLE TAG MANAGER ========== */}
+
         {/* Dodatečné meta tagy přímo v head */}
         <meta name="format-detection" content="telephone=yes" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -417,6 +434,8 @@ export default function RootLayout({
         {/* Preconnect pro rychlejší loading */}
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Preconnect pro GTM */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
         
         {/* Komplexní JSON-LD Schema pro maximální SEO */}
         <script
@@ -628,6 +647,17 @@ export default function RootLayout({
         />
       </head>
       <body className={`${geistSans.className} ${cormorant.variable} ${marcellus.variable} bg-[#faf8f5]`}>
+        {/* ========== GOOGLE TAG MANAGER (noscript) - BODY ========== */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-MJXFWMRS"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+        {/* ========== END GOOGLE TAG MANAGER (noscript) ========== */}
+
         {/* Age Verification Modal - zobrazí se při první návštěvě */}
         <AgeVerification />
         
