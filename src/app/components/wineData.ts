@@ -802,7 +802,7 @@ export const wines: WineProduct[] = [
     rating: 4.5,
     description: "MIMOSA v kombinaci suchého Sauvignonu Frizzante a 100% pomerančové šťávy má svěží, lehce citrusovou chuť s výraznou kyselinkou. Vínová složka dodává suchý, minerální charakter, který krásně vyvažuje sladkost a plnost čerstvé pomerančové šťávy.",
     category: 'special',
-    image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/detail/159_navrh-bez-nazvu--43.png',
+    image: 'https://cdn.myshoptet.com/usr/shop.miqueen.cz/user/shop/big/156_navrh-bez-nazvu--92.png?68fa73d9',
     shopUrl: 'https://shop.miqueen.cz/mimosa/',
     alcohol: 8,
     volume: 750,
