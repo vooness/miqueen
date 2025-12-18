@@ -974,7 +974,9 @@ export const wines: WineProduct[] = [
     notes: 'Ideální jako alternativa vína pro řidiče, sportovce nebo pro každého, kdo touží po zajímavém nealko zážitku. 1 karton = 20 ks',
     sku: 'DN',
     residualSugar: null
-  }
+  } ,
+
+   
 ];
 
 // Helper funkce
