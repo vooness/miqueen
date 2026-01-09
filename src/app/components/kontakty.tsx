@@ -56,32 +56,40 @@ const MiQueenContactPage: React.FC = () => {
     }
   ];
 
-  const teamMembers = [
-    {
-      name: "Michal Rovenský",
-      position: "Jednatel",
-      image: "/profil2.png",
-      description: "Jednatel vinařství zodpovědný za strategický rozvoj a vedení společnosti",
-      email: "michal@miqueen.cz",
-      phone: "+420731610344"
-    },
-    {
-      name: "Mgr. Lucie Rovenská",
-      position: "Manager vinohradů",
-      image: "/profil3.png",
-      description: "Specialistka na pěstování vinné révy a péči o vinohrady",
-      email: "lucie@miqueen.cz",
-      phone: "+420731610345"
-    },
-    {
-      name: "Jiří Konečný",
-      position: "Sales manager",
-      image: "/profil1.png",
-      description: "Obchodní manažer pro prodej vín a firemní spolupráce",
-      email: "jirka@miqueen.cz",
-      phone: "+420603778898"
-    }
-  ];
+const teamMembers = [
+  {
+    name: "Michal Rovenský",
+    position: "Jednatel",
+    image: "/profil2.png",
+    description: "Jednatel vinařství zodpovědný za strategický rozvoj a vedení společnosti",
+    email: "michal@miqueen.cz",
+    phone: "+420731610344"
+  },
+  {
+    name: "Mgr. Lucie Rovenská",
+    position: "Manager vinohradů",
+    image: "/profil3.png",
+    description: "Specialistka na pěstování vinné révy a péči o vinohrady",
+    email: "lucie@miqueen.cz",
+    phone: "+420731610345"
+  },
+  {
+    name: "Jiří Konečný",
+    position: "Sales manager",
+    image: "/profil1.png",
+    description: "Obchodní manažer pro prodej vín a firemní spolupráce",
+    email: "jirka@miqueen.cz",
+    phone: "+420603778898"
+  },
+  {
+    name: "Tomáš Anders",
+    position: "Manager vinohradu a sales manager",
+    image: "/fotky/kontakt4.jpg",
+    description: "Správce vinohradů a obchodní zástupce pro klíčové partnery",
+    email: "tomas@miqueen.cz",
+    phone: "+420731777712"
+  }
+];
 
   const subjectOptions = [
     "Adoptuj vinohrad",
@@ -307,7 +315,7 @@ const MiQueenContactPage: React.FC = () => {
               Poznejte lidi, kteří stojí za kvalitou našich vín a výjimečným servisem
             </p>
             
-            <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
               {teamMembers.map((member, index) => (
                 <div
                   key={index}
