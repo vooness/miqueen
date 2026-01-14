@@ -66,13 +66,14 @@ const teamMembers = [
     phone: "+420731610344"
   },
   {
-    name: "Mgr. Lucie Rovenská",
-    position: "Manager vinohradů",
-    image: "/profil3.png",
-    description: "Specialistka na pěstování vinné révy a péči o vinohrady",
-    email: "lucie@miqueen.cz",
-    phone: "+420731610345"
-  },
+  name: "Mgr. Lucie Rovenská",
+  position: "Manažerka vinohradů, projektová manažerka „Adoptuj vinohrad“, marketing",
+  image: "/profil3.png",
+  description: "Zodpovídá za správu vinohradů, vedení projektu Adoptuj vinohrad a marketingové aktivity.",
+  email: "lucie@miqueen.cz",
+  phone: "+420731610345"
+},
+
   {
     name: "Jiří Konečný",
     position: "Sales manager",
