@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    "Rodinné vinařství Miqueen z Mikulova. Prémiová moravská vína – Ryzlink rýnský, Veltlínské zelené, Pálava. Degustace, exkurze a online prodej vín.",
+    "Rodinné vinařství Miqueen z Mikulova. Prémiová moravská vína – Ryzlink rýnský, Veltlínské zelené. Degustace, exkurze a online prodej vín.",
 
   applicationName: "Vinařství Miqueen",
   authors: [{ name: "Vinařství Miqueen", url: "https://miqueen.cz" }],
@@ -100,7 +100,7 @@ export const metadata: Metadata = {
       "Ochutnejte výjimečná moravská vína z rodinného vinařství Miqueen. Ryzlink rýnský, Veltlínské zelené, Pálava. Degustace a online prodej.",
     images: [
       {
-        url: "https://miqueen.cz/og-image.jpg",
+        url: "https://miqueen.cz/fotky/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Vinařství Miqueen – Moravská vína z Mikulova",
@@ -116,7 +116,7 @@ export const metadata: Metadata = {
     title: "Vinařství Miqueen – Prémiová moravská vína",
     description:
       "Rodinné vinařství z Mikulova. Ochutnejte naše vína nebo nás navštivte na degustaci.",
-    images: ["https://miqueen.cz/og-image.jpg"],
+    images: ["https://miqueen.cz/fotky/og-image.jpg"],
   },
 
   robots: {
@@ -247,7 +247,7 @@ export default function RootLayout({
                   telephone: "+420777123456",
                   email: "info@miqueen.cz",
                   priceRange: "$$",
-                  image: "https://miqueen.cz/og-image.jpg",
+                  image: "https://miqueen.cz/fotky/og-image.jpg",
                   address: {
                     "@type": "PostalAddress",
                     streetAddress: "Hlavní 123",
